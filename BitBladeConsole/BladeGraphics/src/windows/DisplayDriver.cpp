@@ -3,17 +3,17 @@
 */
 
 #include "DisplayDriver.h"
-#include <FrameBuffer.h>
+#include <ImageData.h>
 #include <PixelColor.h>
 
 #include <windows.h>
 #include <vector>
 
 // Explicit instantiation of the template
-template void DisplayDriver::Render<BGRA>(const FrameBuffer<BGRA>& buffer);
+template void DisplayDriver::Render<BGRA>(const ImageData<BGRA>& data);
 
 template<typename PixelColor>
-void DisplayDriver::Render(const FrameBuffer<PixelColor>& frameBuffer)
+void DisplayDriver::Render(const ImageData<PixelColor>& frameBuffer)
 {
 	const int width = frameBuffer.GetWidth();
 	const int height = frameBuffer.GetHeight();

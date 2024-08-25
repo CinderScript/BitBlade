@@ -4,7 +4,7 @@
 #include "BladeGraphics.h"
 #include "DisplayDriver.h"
 #include "PixelOperations.h"
-#include "FrameBuffer.h"
+#include "ImageData.h"
 #include "PixelColor.h"
 
 
@@ -14,7 +14,7 @@ int BladeGraphics::TestFrame() {
 	const int screenHeight = 600;
 
 	// Create a frame buffer with BGRA format
-	FrameBuffer<BGRA> frameBuffer(screenWidth, screenHeight);
+	ImageData<BGRA> frameBuffer(screenWidth, screenHeight);
 
 	// Define the color for the rectangle using the BGRA format
 	BGRA rectangleColor = { 0, 0, 255, 255 }; // Red color in BGRA format (B=0, G=0, R=255, A=255)

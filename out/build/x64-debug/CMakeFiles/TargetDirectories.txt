@@ -1,6 +1,0 @@
-C:/Users/Cinde/source/repos/BitBlade/out/build/x64-debug/CMakeFiles/BitBlade.dir
-C:/Users/Cinde/source/repos/BitBlade/out/build/x64-debug/CMakeFiles/edit_cache.dir
-C:/Users/Cinde/source/repos/BitBlade/out/build/x64-debug/CMakeFiles/rebuild_cache.dir
-C:/Users/Cinde/source/repos/BitBlade/out/build/x64-debug/BitBladeConsole/CMakeFiles/BitBladeConsole.dir
-C:/Users/Cinde/source/repos/BitBlade/out/build/x64-debug/BitBladeConsole/CMakeFiles/edit_cache.dir
-C:/Users/Cinde/source/repos/BitBlade/out/build/x64-debug/BitBladeConsole/CMakeFiles/rebuild_cache.dir

@@ -1,44 +1,44 @@
-/* FrameBuffer.h
+/* ImageData.h
 */
 
-#ifndef FRAME_BUFFER_H
-#define FRAME_BUFFER_H
+#ifndef IMAGE_DATA_H
+#define IMAGE_DATA_H
 
 #include <cstdint>
 #include <cstdlib> // For malloc and free
 
 template<typename PixelColor>
-class FrameBuffer {
+class ImageData {
 public:
-	FrameBuffer(int width, int height)
+	ImageData(int width, int height)
 		: width(width), height(height) {
 		// Dynamically allocate memory in the heap (which should be in SDRAM)
-		buffer = static_cast<PixelColor*>(malloc(width * height * sizeof(PixelColor)));
+		data = static_cast<PixelColor*>(malloc(width * height * sizeof(PixelColor)));
 	}
 
-	~FrameBuffer() {
+	~ImageData() {
 		// Free the dynamically allocated memory
-		free(buffer);
+		free(data);
 	}
 
 	int GetWidth() const { return width; }
 	int GetHeight() const { return height; }
 
 	void SetPixel(int x, int y, const PixelColor& pixel) {
-		buffer[y * width + x] = pixel;
+		data[y * width + x] = pixel;
 	}
 
 	void GetPixel(int x, int y, PixelColor& pixel) const {
-		pixel = buffer[y * width + x];
+		pixel = data[y * width + x];
 	}
 
 	const PixelColor* GetBuffer() const {
-		return buffer;
+		return data;
 	}
 
 private:
 	int width, height;
-	PixelColor* buffer; // Pointer to the pixel data stored in SDRAM
+	PixelColor* data; // Pointer to the pixel data stored in SDRAM
 };
 
-#endif // FRAME_BUFFER_H
+#endif // IMAGE_DATA_H

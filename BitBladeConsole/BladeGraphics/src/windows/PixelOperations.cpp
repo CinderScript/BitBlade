@@ -7,10 +7,10 @@
 
 template<typename PixelColor>
 void PixelOperations<PixelColor>::DrawRectangle(
-	FrameBuffer<PixelColor>& buffer, int x, int y, int width, int height, const PixelColor& color) {
+	ImageData<PixelColor>& data, int x, int y, int width, int height, const PixelColor& color) {
 
-	int bufferWidth = buffer.GetWidth();
-	int bufferHeight = buffer.GetHeight();
+	int bufferWidth = data.GetWidth();
+	int bufferHeight = data.GetHeight();
 
 	for (int i = 0; i < height; ++i) {
 		for (int j = 0; j < width; ++j) {
@@ -18,7 +18,7 @@ void PixelOperations<PixelColor>::DrawRectangle(
 			int pixelY = y + i;
 
 			if (pixelX >= 0 && pixelX < bufferWidth && pixelY >= 0 && pixelY < bufferHeight) {
-				buffer.SetPixel(pixelX, pixelY, color);
+				data.SetPixel(pixelX, pixelY, color);
 			}
 		}
 	}

@@ -7,14 +7,14 @@
 #include <windows.h>
 #include <vector>
 
-#include "FrameBuffer.h"
+#include "ImageData.h"
 
 class DisplayDriver {
 public:
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	template<typename PixelColor>
-	void Render(const FrameBuffer<PixelColor>& buffer);
+	void Render(const ImageData<PixelColor>& data);
 };
 
 #endif // DISPLAY_DRIVER_H
