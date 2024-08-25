@@ -65,7 +65,7 @@ build CMakeFiles\BitBlade.dir\BitBlade.cpp.obj: CXX_COMPILER__BitBlade_unscanned
 #############################################
 # Link the executable BitBlade.exe
 
-build BitBlade.exe: CXX_EXECUTABLE_LINKER__BitBlade_Debug BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeConsole.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\DisplayDriver.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\PixelOperations.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\ImageBuffer.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\BladeGraphics.cpp.obj CMakeFiles\BitBlade.dir\BitBlade.cpp.obj || BitBladeConsole\BitBladeConsole
+build BitBlade.exe: CXX_EXECUTABLE_LINKER__BitBlade_Debug BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeConsole.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\DisplayDriver.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\PixelOperations.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\BladeGraphics.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\SpriteObject.cpp.obj CMakeFiles\BitBlade.dir\BitBlade.cpp.obj || BitBladeConsole\BitBladeConsole
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = user32.lib  gdi32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
@@ -138,7 +138,7 @@ build BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\P
   TARGET_COMPILE_PDB = BitBladeConsole\CMakeFiles\BitBladeConsole.dir\
   TARGET_PDB = ""
 
-build BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\ImageBuffer.cpp.obj: CXX_COMPILER__BitBladeConsole_unscanned_Debug C$:\Users\Cinde\source\repos\BitBlade\BitBladeConsole\BladeGraphics\src\ImageBuffer.cpp || cmake_object_order_depends_target_BitBladeConsole
+build BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\BladeGraphics.cpp.obj: CXX_COMPILER__BitBladeConsole_unscanned_Debug C$:\Users\Cinde\source\repos\BitBlade\BitBladeConsole\BladeGraphics\src\BladeGraphics.cpp || cmake_object_order_depends_target_BitBladeConsole
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Ob0 /Od /RTC1 -std:c++17
   INCLUDES = -IC:\Users\Cinde\source\repos\BitBlade\BitBladeConsole\BladeGraphics\include
   OBJECT_DIR = BitBladeConsole\CMakeFiles\BitBladeConsole.dir
@@ -146,7 +146,7 @@ build BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\ImageBuff
   TARGET_COMPILE_PDB = BitBladeConsole\CMakeFiles\BitBladeConsole.dir\
   TARGET_PDB = ""
 
-build BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\BladeGraphics.cpp.obj: CXX_COMPILER__BitBladeConsole_unscanned_Debug C$:\Users\Cinde\source\repos\BitBlade\BitBladeConsole\BladeGraphics\src\BladeGraphics.cpp || cmake_object_order_depends_target_BitBladeConsole
+build BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\SpriteObject.cpp.obj: CXX_COMPILER__BitBladeConsole_unscanned_Debug C$:\Users\Cinde\source\repos\BitBlade\BitBladeConsole\BladeGraphics\src\SpriteObject.cpp || cmake_object_order_depends_target_BitBladeConsole
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Ob0 /Od /RTC1 -std:c++17
   INCLUDES = -IC:\Users\Cinde\source\repos\BitBlade\BitBladeConsole\BladeGraphics\include
   OBJECT_DIR = BitBladeConsole\CMakeFiles\BitBladeConsole.dir
@@ -159,7 +159,7 @@ build BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\BladeGrap
 #############################################
 # Object library BitBladeConsole
 
-build BitBladeConsole\BitBladeConsole: phony BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeConsole.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\DisplayDriver.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\PixelOperations.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\ImageBuffer.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\BladeGraphics.cpp.obj
+build BitBladeConsole\BitBladeConsole: phony BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeConsole.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\DisplayDriver.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\windows\PixelOperations.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\BladeGraphics.cpp.obj BitBladeConsole\CMakeFiles\BitBladeConsole.dir\BladeGraphics\src\SpriteObject.cpp.obj
 
 
 #############################################

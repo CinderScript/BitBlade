@@ -1,9 +1,19 @@
+/* BladeConsole.cpp
+*
+* Updates the game loop
+* Keeps track of each object
+* Updates objects positions and rotations
+* Sets objects height visibility
+*/
+
 #include "BladeConsole.h"
 
-#include <DisplayDriver.h>
+#include <BladeGraphics.h>
 
-int BladeConsole::TestFunction()
+void BladeConsole::TestFrame()
 {
-	DisplayDriver test;
-	return test.Test();
+	BladeGraphics test;
+	test.TestFrame();
 }
+
+// GameUpdateLoop() { }

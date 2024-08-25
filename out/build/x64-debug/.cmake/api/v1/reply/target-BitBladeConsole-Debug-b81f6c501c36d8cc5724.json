@@ -11,10 +11,10 @@
 			"path" : "BitBladeConsole/CMakeFiles/BitBladeConsole.dir/./BladeGraphics/src/windows/PixelOperations.cpp.obj"
 		},
 		{
-			"path" : "BitBladeConsole/CMakeFiles/BitBladeConsole.dir/./BladeGraphics/src/ImageBuffer.cpp.obj"
+			"path" : "BitBladeConsole/CMakeFiles/BitBladeConsole.dir/./BladeGraphics/src/BladeGraphics.cpp.obj"
 		},
 		{
-			"path" : "BitBladeConsole/CMakeFiles/BitBladeConsole.dir/./BladeGraphics/src/BladeGraphics.cpp.obj"
+			"path" : "BitBladeConsole/CMakeFiles/BitBladeConsole.dir/./BladeGraphics/src/SpriteObject.cpp.obj"
 		}
 	],
 	"backtrace" : 1,
@@ -127,13 +127,13 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "BitBladeConsole/BladeGraphics/src/ImageBuffer.cpp",
+			"path" : "BitBladeConsole/BladeGraphics/src/BladeGraphics.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "BitBladeConsole/BladeGraphics/src/BladeGraphics.cpp",
+			"path" : "BitBladeConsole/BladeGraphics/src/SpriteObject.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

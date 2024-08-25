@@ -74,14 +74,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "BitBlade::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-BitBlade-Debug-e43df44a825efdd15d5f.json",
+					"jsonFile" : "target-BitBlade-Debug-c9dee09a617d232f50ab.json",
 					"name" : "BitBlade",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
 					"id" : "BitBladeConsole::@554f61026754dccf986a",
-					"jsonFile" : "target-BitBladeConsole-Debug-9f583e318bd39e45bcbc.json",
+					"jsonFile" : "target-BitBladeConsole-Debug-b81f6c501c36d8cc5724.json",
 					"name" : "BitBladeConsole",
 					"projectIndex" : 1
 				}

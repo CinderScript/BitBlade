@@ -189,13 +189,13 @@
 		{
 			"backtrace" : 3,
 			"isGenerated" : true,
-			"path" : "out/build/x64-debug/BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/ImageBuffer.cpp.obj",
+			"path" : "out/build/x64-debug/BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/BladeGraphics.cpp.obj",
 			"sourceGroupIndex" : 2
 		},
 		{
 			"backtrace" : 3,
 			"isGenerated" : true,
-			"path" : "out/build/x64-debug/BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/BladeGraphics.cpp.obj",
+			"path" : "out/build/x64-debug/BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/SpriteObject.cpp.obj",
 			"sourceGroupIndex" : 2
 		}
 	],
