@@ -1,0 +1,12 @@
+# ninja log v5
+6	400	7462639877736678	CMakeFiles/BitBlade.dir/BitBlade.cpp.obj	22c179a56fe46f4a
+12	38	7462631287737008	BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/windows/DisplayDriver.cpp.obj	d2d0a21867ae496b
+400	479	7462639878361673	BitBlade.exe	7fa74a90170cddfd
+35	61	7462480791305308	BitBladeConsole/BitBladeConsole.lib	7f591d9d36375f73
+6	90	7462644432468930	build.ninja	486e1d66433819ef
+9	35	7462639874142920	BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeConsole.cpp.obj	79ca6612f66311d8
+10	35	7462551962570532	BitBladeConsole/BladeGraphics/CMakeFiles/BladeGraphics.dir/src/windows/DisplayDriver.cpp.obj	a63c16194c0ea10c
+7	33	7462644449656427	BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/ImageBuffer.cpp.obj	af6f20ee3446985f
+10	34	7462644449656427	BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/BladeGraphics.cpp.obj	707cd0a10e557112
+5	34	7462644449656427	BitBladeConsole/CMakeFiles/BitBladeConsole.dir/BladeGraphics/src/windows/PixelOperations.cpp.obj	888b4099726f712
+34	144	7462644450437688	BitBlade.exe	e7bccc9363c6251

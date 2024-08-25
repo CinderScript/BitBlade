@@ -1,0 +1,102 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "BitBladeConsole",
+					"jsonFile" : "directory-BitBladeConsole-Debug-8a771eecf37c337daf38.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "BitBladeConsole",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "BitBlade",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "BitBladeConsole",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "BitBlade::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-BitBlade-Debug-e43df44a825efdd15d5f.json",
+					"name" : "BitBlade",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "BitBladeConsole::@554f61026754dccf986a",
+					"jsonFile" : "target-BitBladeConsole-Debug-9f583e318bd39e45bcbc.json",
+					"name" : "BitBladeConsole",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Cinde/source/repos/BitBlade/out/build/x64-debug",
+		"source" : "C:/Users/Cinde/source/repos/BitBlade"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
