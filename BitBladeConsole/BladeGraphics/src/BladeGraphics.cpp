@@ -6,8 +6,67 @@
 #include "PixelOperations.h"
 #include "ImageData.h"
 
+BladeGraphics::BladeGraphics()
+	: frameBuffer(1024, 600)
+{
+	uint16_t backgroundColor = 0xB5BF; // Light blue-gray color in RGB565
+	for (int y = 0; y < frameBuffer.GetHeight(); ++y) {
+		for (int x = 0; x < frameBuffer.GetWidth(); ++x) {
+			frameBuffer.SetPixel(x, y, backgroundColor);
+		}
+	}
+}
 
-int BladeGraphics::TestFrame() {
+BladeGraphics::~BladeGraphics() {
+	// Clean up any dynamically allocated sprites
+	for (auto sprite : sprites) {
+		delete sprite;
+	}
+}
+
+void BladeGraphics::DisplayGraphics() {
+	// Render the internal frame buffer on the screen using DisplayDriver
+	UpdateGraphics();
+
+	DisplayDriver displayDriver;
+	displayDriver.Render(frameBuffer);
+}
+
+void BladeGraphics::UpdateGraphics() {
+	// Clear the framebuffer with the background color (light blue-gray)
+	uint16_t backgroundColor = 0xB5BF; // Light blue-gray color in RGB565
+
+	for (int y = 0; y < frameBuffer.GetHeight(); ++y) {
+		for (int x = 0; x < frameBuffer.GetWidth(); ++x) {
+			frameBuffer.SetPixel(x, y, backgroundColor);
+		}
+	}
+
+	// Draw each sprite onto the framebuffer
+	PixelOperations pixelOps;
+	for (auto& sprite : sprites) {
+		if (sprite && sprite->GetImageData()) {
+			pixelOps.DrawImage(frameBuffer, sprite->GetX(), sprite->GetY(), *(sprite->GetImageData()));
+		}
+	}
+}
+
+size_t BladeGraphics::AddSprite(ImageData* imageData) {
+	SpriteObject* newSprite = new SpriteObject(imageData);
+	sprites.push_back(newSprite);
+	return sprites.size() - 1; // Return the ID of the newly added sprite
+}
+
+void BladeGraphics::RemoveSprite(int spriteId) {
+	if (spriteId >= 0 && spriteId < sprites.size()) {
+		delete sprites[spriteId];  // Free the memory
+		sprites.erase(sprites.begin() + spriteId);
+	}
+}
+
+/* ************************** TESTS ****************************** */
+
+int BladeGraphics::DisplayBufferTest() {
 	const int screenWidth = 1024;
 	const int screenHeight = 600;
 
@@ -33,4 +92,3 @@ int BladeGraphics::TestFrame() {
 
 	return 123; // Return a test value
 }
-

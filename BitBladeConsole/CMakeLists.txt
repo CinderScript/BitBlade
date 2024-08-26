@@ -8,11 +8,21 @@ set(SOURCES
     "BladeGraphics/src/windows/DisplayDriver.cpp"
     "BladeGraphics/src/windows/PixelOperations.cpp"
     "BladeGraphics/src/BladeGraphics.cpp" 
-     "BladeGraphics/src/ImageData.cpp")
+    "BladeGraphics/src/ImageData.cpp" 
+    "BladeGraphics/src/windows/ImageLoader.cpp" 
+    "BladeGraphics/src/SpriteObject.cpp")
 
 # Create the BitBladeConsole object library
 add_library(BitBladeConsole OBJECT ${SOURCES})
 
-target_include_directories(BitBladeConsole PRIVATE 
+target_include_directories(BitBladeConsole PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
     "${CMAKE_CURRENT_SOURCE_DIR}/BladeGraphics/include"
 )
+
+
+if (WIN32)
+    target_include_directories(BitBladeConsole PRIVATE 
+        "${CMAKE_CURRENT_SOURCE_DIR}/BladeGraphics/stb-master"
+    )
+endif()

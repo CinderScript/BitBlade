@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+#stb image loading
+stb-master/
+
 # CMake
 CMakeLists.txt.user
 CMakeCache.txt

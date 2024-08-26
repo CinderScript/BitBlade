@@ -10,7 +10,7 @@ using std::cout;
 int main()
 {
 	BladeConsole console;
-	console.TestFrame();
+	console.DisplayImageTest();
 
 	cout << 123 << "\n";
 }
