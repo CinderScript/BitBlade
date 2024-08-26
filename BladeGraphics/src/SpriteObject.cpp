@@ -26,7 +26,7 @@ void SpriteObject::SetScale(float scaleX, float scaleY) {
 	this->scaleY = scaleY;
 }
 
-void SpriteObject::SetPivotPoint(int x, int y) {
+void SpriteObject::SetPivot(int x, int y) {
 	this->pivotX = x;
 	this->pivotY = y;
 }

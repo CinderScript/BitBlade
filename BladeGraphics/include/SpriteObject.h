@@ -15,7 +15,7 @@ public:
 	void SetPosition(int x, int y);
 	void SetRotation(float rotation);
 	void SetScale(float scaleX, float scaleY);
-	void SetPivotPoint(int x, int y);
+	void SetPivot(int x, int y);
 
 	int GetX() const;
 	int GetY() const;

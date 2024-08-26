@@ -6,7 +6,7 @@
 #include "ImageLoader.h"
 #include <stdexcept>
 
-ImageData* ImageLoader::LoadImage(const std::string& imageName) {
+ImageData* ImageLoader::LoadImageData(const std::string& imageName) {
 
 	std::string filePath = "C:/Users/Cinde/source/repos/BitBlade/images/" + imageName;
 

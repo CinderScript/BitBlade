@@ -1,2 +1,0 @@
-# BitBladeConsole/BladeLink/CMakeLists.txt
-
