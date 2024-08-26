@@ -8,7 +8,7 @@ set(SOURCES
     "BladeGraphics/src/windows/DisplayDriver.cpp"
     "BladeGraphics/src/windows/PixelOperations.cpp"
     "BladeGraphics/src/BladeGraphics.cpp" 
-    )
+     "BladeGraphics/src/ImageData.cpp")
 
 # Create the BitBladeConsole object library
 add_library(BitBladeConsole OBJECT ${SOURCES})

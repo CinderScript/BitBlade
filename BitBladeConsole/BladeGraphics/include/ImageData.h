@@ -5,40 +5,24 @@
 #define IMAGE_DATA_H
 
 #include <cstdint>
-#include <cstdlib> // For malloc and free
+#include <cstdlib>
 
-template<typename PixelColor>
 class ImageData {
 public:
-	ImageData(int width, int height)
-		: width(width), height(height) {
-		// Dynamically allocate memory in the heap (which should be in SDRAM)
-		data = static_cast<PixelColor*>(malloc(width * height * sizeof(PixelColor)));
-	}
+	ImageData(int width, int height);
+	~ImageData();
 
-	~ImageData() {
-		// Free the dynamically allocated memory
-		free(data);
-	}
+	int GetWidth() const;
+	int GetHeight() const;
 
-	int GetWidth() const { return width; }
-	int GetHeight() const { return height; }
+	void SetPixel(int x, int y, uint16_t pixel);  // Using uint16_t for RGB565
+	void GetPixel(int x, int y, uint16_t& pixel) const;
 
-	void SetPixel(int x, int y, const PixelColor& pixel) {
-		data[y * width + x] = pixel;
-	}
-
-	void GetPixel(int x, int y, PixelColor& pixel) const {
-		pixel = data[y * width + x];
-	}
-
-	const PixelColor* GetBuffer() const {
-		return data;
-	}
+	const uint16_t* GetBuffer() const;
 
 private:
 	int width, height;
-	PixelColor* data; // Pointer to the pixel data stored in SDRAM
+	uint16_t* data; // Pointer to the pixel data stored in SDRAM
 };
 
 #endif // IMAGE_DATA_H

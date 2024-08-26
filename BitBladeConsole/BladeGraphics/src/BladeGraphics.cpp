@@ -5,8 +5,6 @@
 #include "DisplayDriver.h"
 #include "PixelOperations.h"
 #include "ImageData.h"
-#include "PixelColor.h"
-
 
 
 int BladeGraphics::TestFrame() {
@@ -14,10 +12,10 @@ int BladeGraphics::TestFrame() {
 	const int screenHeight = 600;
 
 	// Create a frame buffer with BGRA format
-	ImageData<BGRA> frameBuffer(screenWidth, screenHeight);
+	ImageData frameBuffer(screenWidth, screenHeight);
 
 	// Define the color for the rectangle using the BGRA format
-	BGRA rectangleColor = { 0, 0, 255, 255 }; // Red color in BGRA format (B=0, G=0, R=255, A=255)
+	uint16_t rectangleColor = { 255 };
 
 	// Calculate the position and size of the rectangle to center it
 	int rectWidth = 200;
@@ -26,7 +24,7 @@ int BladeGraphics::TestFrame() {
 	int rectY = (screenHeight - rectHeight) / 2;
 
 	// Create a PixelOperations instance for BGRA format and draw the rectangle
-	PixelOperations<BGRA> pixelOps;
+	PixelOperations pixelOps;
 	pixelOps.DrawRectangle(frameBuffer, rectX, rectY, rectWidth, rectHeight, rectangleColor);
 
 	// Render the buffer on the screen using DisplayDriver

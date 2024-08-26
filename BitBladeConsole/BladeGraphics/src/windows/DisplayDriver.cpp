@@ -4,19 +4,39 @@
 
 #include "DisplayDriver.h"
 #include <ImageData.h>
-#include <PixelColor.h>
 
 #include <windows.h>
-#include <vector>
 
-// Explicit instantiation of the template
-template void DisplayDriver::Render<BGRA>(const ImageData<BGRA>& data);
+// Helper method to convert RGB565 to BGRA
+void DisplayDriver::ConvertRGB565ToBGRA(const ImageData& src, BYTE* dest) {
 
-template<typename PixelColor>
-void DisplayDriver::Render(const ImageData<PixelColor>& frameBuffer)
-{
+	const int width = src.GetWidth();
+	const int height = src.GetHeight();
+	const uint16_t* buffer = src.GetBuffer();
+
+	for (int i = 0; i < width * height; ++i) {
+		uint16_t rgb565 = buffer[i];
+
+		uint8_t r = (rgb565 >> 11) & 0x1F;
+		uint8_t g = (rgb565 >> 5) & 0x3F;
+		uint8_t b = rgb565 & 0x1F;
+
+		dest[i * 4 + 0] = (b << 3) | (b >> 2);  // Blue
+		dest[i * 4 + 1] = (g << 2) | (g >> 4);  // Green
+		dest[i * 4 + 2] = (r << 3) | (r >> 2);  // Red
+		dest[i * 4 + 3] = 255;                  // Alpha (full opacity)
+	}
+}
+
+void DisplayDriver::Render(const ImageData& frameBuffer) {
 	const int width = frameBuffer.GetWidth();
 	const int height = frameBuffer.GetHeight();
+
+	// Allocate memory for the BGRA buffer
+	BYTE* bgraBuffer = new BYTE[width * height * 4];  // 4 bytes per pixel for BGRA
+
+	// Convert the RGB565 data to BGRA
+	ConvertRGB565ToBGRA(frameBuffer, bgraBuffer);
 
 	// Create a simple window
 	WNDCLASS wc = {};
@@ -50,8 +70,7 @@ void DisplayDriver::Render(const ImageData<PixelColor>& frameBuffer)
 
 	// Main loop
 	MSG msg = {};
-	while (GetMessage(&msg, NULL, 0, 0))
-	{
+	while (GetMessage(&msg, NULL, 0, 0)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 
@@ -59,29 +78,28 @@ void DisplayDriver::Render(const ImageData<PixelColor>& frameBuffer)
 		StretchDIBits(hdc,
 			0, 0, width, height,
 			0, 0, width, height,
-			reinterpret_cast<const BYTE*>(frameBuffer.GetBuffer()),  // Convert PixelColor* to BYTE* for GDI
+			bgraBuffer,  // Use the converted BGRA buffer
 			&bmi,
 			DIB_RGB_COLORS,
 			SRCCOPY);
 		ReleaseDC(hwnd, hdc);
 	}
+
+	// Free the BGRA buffer
+	delete[] bgraBuffer;
 }
 
-LRESULT CALLBACK DisplayDriver::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	switch (uMsg)
-	{
+LRESULT CALLBACK DisplayDriver::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	switch (uMsg) {
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
 
-	case WM_PAINT:
-	{
+	case WM_PAINT: {
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hwnd, &ps);
 		EndPaint(hwnd, &ps);
-	}
-	return 0;
+	} return 0;
 	}
 
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);

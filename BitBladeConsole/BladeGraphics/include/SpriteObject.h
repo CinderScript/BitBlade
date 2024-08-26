@@ -10,7 +10,7 @@ public:
 
 private:
 	int id;
-
+	ImageData image;
 };
 
 #endif // SPRITE_OBJECT_H

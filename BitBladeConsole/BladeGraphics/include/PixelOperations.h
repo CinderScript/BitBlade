@@ -6,10 +6,10 @@
 
 #include "ImageData.h"
 
-template<typename PixelColor>
 class PixelOperations {
 public:
-	void DrawRectangle(ImageData<PixelColor>& data, int x, int y, int width, int height, const PixelColor& color);
+	void DrawRectangle(ImageData& imageData, int x, int y, int width, int height, uint16_t color);
+
 };
 
 #endif // PIXEL_OPERATIONS_H

@@ -3,11 +3,9 @@
 */
 
 #include "PixelOperations.h"
-#include "PixelColor.h"
 
-template<typename PixelColor>
-void PixelOperations<PixelColor>::DrawRectangle(
-	ImageData<PixelColor>& data, int x, int y, int width, int height, const PixelColor& color) {
+void PixelOperations::DrawRectangle(
+	ImageData& data, int x, int y, int width, int height, uint16_t color) {
 
 	int bufferWidth = data.GetWidth();
 	int bufferHeight = data.GetHeight();
@@ -23,5 +21,3 @@ void PixelOperations<PixelColor>::DrawRectangle(
 		}
 	}
 }
-
-template class PixelOperations<BGRA>;
