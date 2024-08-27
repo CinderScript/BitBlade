@@ -11,21 +11,23 @@
 using std::cout;
 
 
-size_t LoadImageData(BladeGraphics& bladeGraphics, const std::string& imageName) {
-	// Use the ImageLoader to load the image from the specified file
+size_t LoadMasterSprite(BladeGraphics& bladeGraphics, const std::string& imageName)
+{
+
 	ImageData* imageData = ImageLoader::LoadImageData(imageName);
 
-	// Send the loaded ImageData to BladeGraphics and get the index
-	size_t imageIndex = bladeGraphics.AddSprite(imageData);
+	size_t imageIndex = bladeGraphics.AddMasterSprite(imageData);
 
-	// Return the index of the loaded image
 	return imageIndex;
 }
 
 
 void DisplayImageTest(BladeGraphics& bladeGraphics)
 {
-	LoadImageData(bladeGraphics, "SunsetBackground.bmp");
+	size_t masterID = LoadMasterSprite(bladeGraphics, "SunsetBackground.bmp");
+
+	SpriteInstance* sprite = bladeGraphics.AddSpriteInstance(masterID);
+
 	bladeGraphics.DisplayGraphics();
 }
 

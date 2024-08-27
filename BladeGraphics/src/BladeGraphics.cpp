@@ -2,7 +2,6 @@
 */
 
 #include "BladeGraphics.h"
-#include "DisplayDriver.h"
 #include "PixelOperations.h"
 #include "ImageData.h"
 
@@ -18,8 +17,8 @@ BladeGraphics::BladeGraphics()
 }
 
 BladeGraphics::~BladeGraphics() {
-	// Clean up any dynamically allocated sprites
-	for (auto sprite : sprites) {
+	// Clean up any dynamically allocated spriteDataPool
+	for (auto sprite : spriteDataPool) {
 		delete sprite;
 	}
 }
@@ -44,51 +43,34 @@ void BladeGraphics::UpdateGraphics() {
 
 	// Draw each sprite onto the framebuffer
 	PixelOperations pixelOps;
-	for (auto& sprite : sprites) {
+	for (auto& sprite : spriteInstancePool) {
 		if (sprite && sprite->GetImageData()) {
 			pixelOps.DrawImage(frameBuffer, sprite->GetX(), sprite->GetY(), *(sprite->GetImageData()));
 		}
 	}
 }
 
-size_t BladeGraphics::AddSprite(ImageData* imageData) {
-	SpriteObject* newSprite = new SpriteObject(imageData);
-	sprites.push_back(newSprite);
-	return sprites.size() - 1; // Return the ID of the newly added sprite
+size_t BladeGraphics::AddMasterSprite(ImageData* imageData) {
+	MasterSpriteData* newSprite = new MasterSpriteData(imageData);
+	spriteDataPool.push_back(newSprite);
+	return spriteDataPool.size() - 1; // Return the ID of the newly added sprite
 }
 
-void BladeGraphics::RemoveSprite(int spriteId) {
-	if (spriteId >= 0 && spriteId < sprites.size()) {
-		delete sprites[spriteId];  // Free the memory
-		sprites.erase(sprites.begin() + spriteId);
+void BladeGraphics::RemoveMasterSprite(int spriteId) {
+	if (spriteId >= 0 && spriteId < spriteDataPool.size()) {
+		delete spriteDataPool[spriteId];  // Free the memory
+		spriteDataPool.erase(spriteDataPool.begin() + spriteId);
 	}
 }
+SpriteInstance* BladeGraphics::AddSpriteInstance(size_t masterSpriteID) {
+	SpriteInstance* newSprite = new SpriteInstance(spriteDataPool[masterSpriteID]);
+	spriteInstancePool.push_back(newSprite);
+	return newSprite;
+}
 
-/* ************************** TESTS ****************************** */
-
-int BladeGraphics::DisplayBufferTest() {
-	const int screenWidth = 1024;
-	const int screenHeight = 600;
-
-	// Create a frame buffer with BGRA format
-	ImageData frameBuffer(screenWidth, screenHeight);
-
-	// Define the color for the rectangle using the BGRA format
-	uint16_t rectangleColor = { 255 };
-
-	// Calculate the position and size of the rectangle to center it
-	int rectWidth = 200;
-	int rectHeight = 100;
-	int rectX = (screenWidth - rectWidth) / 2;
-	int rectY = (screenHeight - rectHeight) / 2;
-
-	// Create a PixelOperations instance for BGRA format and draw the rectangle
-	PixelOperations pixelOps;
-	pixelOps.DrawRectangle(frameBuffer, rectX, rectY, rectWidth, rectHeight, rectangleColor);
-
-	// Render the buffer on the screen using DisplayDriver
-	DisplayDriver displayDriver;
-	displayDriver.Render(frameBuffer); // Render the buffer on the screen
-
-	return 123; // Return a test value
+void BladeGraphics::RemoveSpriteInstance(int spriteInstanceID) {
+	if (spriteInstanceID >= 0 && spriteInstanceID < spriteInstancePool.size()) {
+		delete spriteInstancePool[spriteInstanceID];  // Free the memory
+		spriteInstancePool.erase(spriteInstancePool.begin() + spriteInstanceID);
+	}
 }
