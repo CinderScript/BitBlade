@@ -4,8 +4,9 @@ project(BitBladeConsole)
 
 # Add the source files for the console
 set(SOURCES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/BladeConsole.cpp"
-    "main.cpp")
+    "main.cpp" 
+    "src/BladeConsole.cpp"
+    "src/GraphicsConnector.cpp")
 
 add_executable(BitBladeConsole ${SOURCES})
 

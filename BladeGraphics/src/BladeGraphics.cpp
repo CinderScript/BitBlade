@@ -21,6 +21,10 @@ BladeGraphics::~BladeGraphics() {
 	for (auto sprite : spriteDataPool) {
 		delete sprite;
 	}
+
+	for (auto sprite : spriteInstancePool) {
+		delete sprite;
+	}
 }
 
 void BladeGraphics::DisplayGraphics() {
