@@ -2,79 +2,53 @@
 */
 
 #include "BladeGraphics.h"
-#include "PixelOperations.h"
-#include "ImageData.h"
+#include "BladeLink.h"
 
-BladeGraphics::BladeGraphics()
-	: frameBuffer(1024, 600)
+
+BladeGraphics::BladeGraphics() : bladeLink(std::make_unique<BladeLink>(true))
 {
-	uint16_t backgroundColor = 0xB5BF; // Light blue-gray color in RGB565
-	for (int y = 0; y < frameBuffer.GetHeight(); ++y) {
-		for (int x = 0; x < frameBuffer.GetWidth(); ++x) {
-			frameBuffer.SetPixel(x, y, backgroundColor);
-		}
-	}
+	// the link has been set up and now we need to let Console know that it can begin sending
+	bladeLink->SignalThisThreadReady();
 }
 
-BladeGraphics::~BladeGraphics() {
-	// Clean up any dynamically allocated spriteDataPool
-	for (auto sprite : spriteDataPool) {
-		delete sprite;
-	}
-
-	for (auto sprite : spriteInstancePool) {
-		delete sprite;
-	}
+BladeGraphics::~BladeGraphics()
+{
+	// dispose of the bladeLink
 }
 
-void BladeGraphics::DisplayGraphics() {
-	// Render the internal frame buffer on the screen using DisplayDriver
-	UpdateGraphics();
+void BladeGraphics::UpdateGraphics()
+{
+	// wait until Console sends a Ready signal
+	bladeLink->WaitForConnectedThreadReady();
 
-	DisplayDriver displayDriver;
-	displayDriver.Render(frameBuffer);
+	// resolve GameObjects or Prefabs with BladeGraphics if necessary
+	processConsoleMessage(bladeLink->GetBladeMessage());
+
+	// perform all Loading and instancing of sprites
+	// send back resolved metadata for MasterSpriteData and SpriteInstance
+
+	// signal ready before performing graphics update so Console can begin 
+	// processing the new frame while BladeGraphics works concurrently
+	bladeLink->SignalThisThreadReady();
+
+	// Process Graphical Updates
+	// graphics.Update();
+
+	system("pause");
 }
 
-void BladeGraphics::UpdateGraphics() {
-	// Clear the framebuffer with the background color (light blue-gray)
-	uint16_t backgroundColor = 0xB5BF; // Light blue-gray color in RGB565
 
-	for (int y = 0; y < frameBuffer.GetHeight(); ++y) {
-		for (int x = 0; x < frameBuffer.GetWidth(); ++x) {
-			frameBuffer.SetPixel(x, y, backgroundColor);
-		}
-	}
-
-	// Draw each sprite onto the framebuffer
-	PixelOperations pixelOps;
-	for (auto& sprite : spriteInstancePool) {
-		if (sprite && sprite->GetImageData()) {
-			pixelOps.DrawImage(frameBuffer, sprite->GetX(), sprite->GetY(), *(sprite->GetImageData()));
-		}
-	}
+void BladeGraphics::sendGraphicsMetadata()
+{
+	//bladeLink->SendBladeMessage(testMessage);
 }
 
-size_t BladeGraphics::AddMasterSprite(ImageData* imageData) {
-	MasterSpriteData* newSprite = new MasterSpriteData(imageData);
-	spriteDataPool.push_back(newSprite);
-	return spriteDataPool.size() - 1; // Return the ID of the newly added sprite
-}
-
-void BladeGraphics::RemoveMasterSprite(int spriteId) {
-	if (spriteId >= 0 && spriteId < spriteDataPool.size()) {
-		delete spriteDataPool[spriteId];  // Free the memory
-		spriteDataPool.erase(spriteDataPool.begin() + spriteId);
-	}
-}
-SpriteInstance* BladeGraphics::AddSpriteInstance(size_t masterSpriteID) {
-	SpriteInstance* newSprite = new SpriteInstance(spriteDataPool[masterSpriteID]);
-	spriteInstancePool.push_back(newSprite);
-	return newSprite;
-}
-
-void BladeGraphics::RemoveSpriteInstance(int spriteInstanceID) {
-	if (spriteInstanceID >= 0 && spriteInstanceID < spriteInstancePool.size()) {
-		delete spriteInstancePool[spriteInstanceID];  // Free the memory
-		spriteInstancePool.erase(spriteInstancePool.begin() + spriteInstanceID);
-	}
+void BladeGraphics::processConsoleMessage(const char* message)
+{
+	//std::cout << "BladeConsole: ";
+	//for (size_t i = 0; i < message.size() && i < 5; ++i) {
+	//	if (i > 0) std::cout << ", ";
+	//	std::cout << message[i];
+	//}
+	//std::cout << "\n";
 }

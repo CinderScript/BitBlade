@@ -8,12 +8,19 @@
 #endif
 #endif
 
-#include "main.h"
+#include <iostream>
+
+#include <windows.h>
+#include <vector>
+
+#include "BladeGraphics.h"
+#include "BladeGraphicsProcessor.h"
+#include "ImageLoader.h"
 
 using std::cout;
 
 
-size_t LoadMasterSprite(BladeGraphics& bladeGraphics, const std::string& imageName)
+size_t LoadMasterSprite(BladeGraphicsProcessor& bladeGraphics, const std::string& imageName)
 {
 
 	ImageData* imageData = ImageLoader::LoadImageData(imageName);
@@ -24,7 +31,7 @@ size_t LoadMasterSprite(BladeGraphics& bladeGraphics, const std::string& imageNa
 }
 
 
-void DisplayImageTest(BladeGraphics& bladeGraphics)
+void DisplayImageTest(BladeGraphicsProcessor& bladeGraphics)
 {
 	size_t masterID = LoadMasterSprite(bladeGraphics, "SunsetBackground.bmp");
 
@@ -42,14 +49,12 @@ int main()
 #endif
 #endif
 
-	ConsoleConnector connector;
-	//connector.sendMessage("LoadSprite image.bmp");
-	//std::string response = connector.receiveMessage();
-	//std::cout << "Response: " << response << std::endl;
+	BladeGraphics graphics;
 
-	//BladeGraphics graphics;
-	//DisplayImageTest(graphics);
+	while (true) {
+		graphics.UpdateGraphics();
+	}
 
-	cout << 55 << "\n";
+	cout << "\n" << "Graphics Done" << "\n";
 
 }

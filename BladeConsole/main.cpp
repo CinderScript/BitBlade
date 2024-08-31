@@ -12,5 +12,11 @@ using std::cout;
 
 int main()
 {
-	cout << 123 << "\n";
+	BladeConsole console;
+
+	while (true) {
+		console.UpdateConsole();
+	}
+
+	cout << "\n" << "Console Done" << "\n";
 }

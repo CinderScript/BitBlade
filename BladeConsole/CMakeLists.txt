@@ -6,7 +6,9 @@ project(BitBladeConsole)
 set(SOURCES
     "main.cpp" 
     "src/BladeConsole.cpp"
-    "src/GraphicsConnector.cpp")
+    "src/GameEngine.cpp"
+    "../Common/src/windows/BladeLink.cpp"
+)
 
 add_executable(BitBladeConsole ${SOURCES})
 

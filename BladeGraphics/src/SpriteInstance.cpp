@@ -11,7 +11,7 @@ SpriteInstance::SpriteInstance(MasterSpriteData* spriteData)
 }
 
 SpriteInstance::~SpriteInstance() {
-	// image data is owned by SpriteInstance, which is owned by BladeGraphics
+	// image data is owned by SpriteInstance, which is owned by BladeGraphicsProcessor
 }
 
 void SpriteInstance::SetPosition(int x, int y) {

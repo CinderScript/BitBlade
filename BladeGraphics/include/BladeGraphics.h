@@ -4,35 +4,25 @@
 #ifndef BLADE_GRAPHICS_H 
 #define BLADE_GRAPHICS_H
 
-#include <vector>
-#include <deque>
+#include "IBladeLink.h"
+#include <iostream>
+#include <string>
 
-#include "DisplayDriver.h"
-#include "MasterSpriteData.h"
-#include "SpriteInstance.h"
-
+using std::string;
 
 class BladeGraphics {
 public:
 	BladeGraphics();
 	~BladeGraphics();
 
-	void DisplayGraphics();
 	void UpdateGraphics();
 
-	int DisplayBufferTest();
-
-	// Methods for managing Sprites
-	size_t AddMasterSprite(ImageData* imageData);
-	void RemoveMasterSprite(int spriteId);
-
-	SpriteInstance* AddSpriteInstance(size_t masterSpriteID);
-	void RemoveSpriteInstance(int spriteInstanceID);
 
 private:
-	ImageData frameBuffer;
-	std::vector<MasterSpriteData*> spriteDataPool;	// master copies of sprites - owns image data
-	std::deque<SpriteInstance*> spriteInstancePool;	// sprites to be displayed to screen
+	std::unique_ptr<IBladeLink> bladeLink;
+
+	void processConsoleMessage(const char* message);
+	void sendGraphicsMetadata();
 };
 
 #endif // BLADE_GRAPHICS_H
