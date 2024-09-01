@@ -5,8 +5,8 @@
 #define BLADE_GRAPHICS_H
 
 #include "IBladeLink.h"
-#include <iostream>
-#include <string>
+
+#include <iostream> // unique_ptr
 
 using std::string;
 

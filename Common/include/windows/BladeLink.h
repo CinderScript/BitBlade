@@ -7,8 +7,6 @@
 #include "IBladeLink.h"
 #include <Windows.h>
 
-using std::vector;
-
 class BladeLink : public IBladeLink {
 public:
 	BladeLink(bool isServer);
@@ -17,7 +15,7 @@ public:
 	void WaitForConnectedThreadReady() override;
 	const char* GetBladeMessage() override;
 
-	void PackInstruction(uint8_t functionCode, const char* data, size_t length) override;
+	void PackInstruction(char functionCode, const char* data, size_t length) override;
 	void SendBladeMessage() override;
 
 	void SignalThisThreadReady() override;
@@ -25,10 +23,10 @@ public:
 private:
 	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
 	static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
-	static constexpr int mapLength = 1000;
-	static constexpr int mapSize = sizeof(char) * mapLength;
 
 	bool isServer;
+
+	char* packedInstructions; /////////////!!!!!////////////////
 
 	char* outputMessageBuffer;
 	char* inputMessageBuffer;

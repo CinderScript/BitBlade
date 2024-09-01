@@ -29,7 +29,7 @@ void BladeConsole::UpdateConsole()
 	// wait 1 second to simulate work
 	// gameEngine.Update();
 
-	bladeLink->SendBladeMessage(testMessage);
+	bladeLink->SendBladeMessage();
 	bladeLink->SignalThisThreadReady();
 
 	bladeLink->WaitForConnectedThreadReady();

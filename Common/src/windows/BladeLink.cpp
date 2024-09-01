@@ -7,9 +7,8 @@
 #include <iostream>
 
 #include "BladeLink.h"
+#include "GfxCommand.h"
 
-
-using std::string;
 
 BladeLink::BladeLink(bool isServer)
 	: hOutputBufferHandle(NULL), hInputBufferHandle(NULL),
@@ -17,6 +16,8 @@ BladeLink::BladeLink(bool isServer)
 	inputMessageBuffer(NULL), outputMessageBuffer(NULL),
 	isServer(isServer)
 {
+	packedInstructions = new char[GRAPHICS_BUFFER_LENGTH]();
+
 	hThisThreadReady = isServer ? ConnectEvent("BitBladeGraphics98801") : ConnectEvent("BitBladeConsole98801");
 	hConnectingThreadReady = isServer ? ConnectEvent("BitBladeConsole98801") : ConnectEvent("BitBladeGraphics98801");
 
@@ -65,7 +66,7 @@ void BladeLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOut, 
 	if (handleOut == NULL) {
 		// If it doesn't exist, create a new one
 		std::cout << "No existing memory map found, creating a new one." << std::endl;
-		handleOut = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, static_cast<DWORD>(mapSize), mapName);
+		handleOut = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, static_cast<DWORD>(GRAPHICS_BUFFER_LENGTH), mapName);
 		if (handleOut == NULL) {
 			std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
 		}
@@ -75,7 +76,7 @@ void BladeLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOut, 
 	}
 
 	if (handleOut != NULL) {
-		bufferOut = static_cast<char*>(MapViewOfFile(handleOut, FILE_MAP_ALL_ACCESS, 0, 0, mapSize));
+		bufferOut = static_cast<char*>(MapViewOfFile(handleOut, FILE_MAP_ALL_ACCESS, 0, 0, GRAPHICS_BUFFER_LENGTH));
 		if (bufferOut == NULL) {
 			std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
 		}
@@ -118,24 +119,26 @@ const char* BladeLink::GetBladeMessage() {
 	return inputMessageBuffer;
 }
 
-void BladeLink::PackInstruction(uint8_t functionCode, const char* data, size_t length) {
-	if (currentPosition + length + 2 > mapSize) { // Check buffer overflow (+1 for function code, +1 for EOF code)
+void BladeLink::PackInstruction(char functionCode, const char* data, size_t length) {
+	if (currentPosition + length + 2 > GRAPHICS_BUFFER_LENGTH) { // Check buffer overflow (+1 for function code, +1 for EOF code)
 		std::cerr << "Buffer overflow prevented." << std::endl;
 		return;
 	}
 
 	// Write the function code to the buffer
-	outputMessageBuffer[currentPosition++] = functionCode;
+	packedInstructions[currentPosition++] = functionCode;
 
 	// Write the data to the buffer
-	memcpy(outputMessageBuffer + currentPosition, data, length);
+	memcpy(packedInstructions + currentPosition, data, length);
 	currentPosition += length;
 }
 
 void BladeLink::SendBladeMessage() {
 
 	// add EOF code
-	outputMessageBuffer[currentPosition] = 255;
+	packedInstructions[currentPosition] = +GfxCommand::End;
 
 	// On spi implementation, start DMA transfer
+	memcpy(outputMessageBuffer, packedInstructions, currentPosition);
+	currentPosition = 0;
 }
