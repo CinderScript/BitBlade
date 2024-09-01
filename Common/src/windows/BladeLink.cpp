@@ -12,12 +12,13 @@
 using std::string;
 
 BladeLink::BladeLink(bool isServer)
-	: fileHandle(NULL), messageBuffer(NULL)
+	: hOutputBufferHandle(NULL), hInputBufferHandle(NULL),
+	hThisThreadReady(NULL), hConnectingThreadReady(NULL),
+	inputMessageBuffer(NULL), outputMessageBuffer(NULL),
+	isServer(isServer)
 {
-
 	hThisThreadReady = isServer ? ConnectEvent("BitBladeGraphics98801") : ConnectEvent("BitBladeConsole98801");
 	hConnectingThreadReady = isServer ? ConnectEvent("BitBladeConsole98801") : ConnectEvent("BitBladeGraphics98801");
-
 
 	if (hThisThreadReady == NULL) {
 		std::cerr << "Failed to create ThisThreadReady event: " << GetLastError() << std::endl;
@@ -28,22 +29,20 @@ BladeLink::BladeLink(bool isServer)
 		return;
 	}
 
-
-	fileHandle = CreateOrOpenMemoryMap();
-	if (fileHandle != NULL) {
-		messageBuffer = MapView();
+	if (isServer) {
+		CreateOrOpenMemoryMap(graphicsOutputFileName, hOutputBufferHandle, outputMessageBuffer);
+		CreateOrOpenMemoryMap(consoleOutputFileName, hInputBufferHandle, inputMessageBuffer);
 	}
-	if (messageBuffer == NULL) {
-		std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
-		if (fileHandle != NULL) {
-			CloseHandle(fileHandle);
-		}
+	else {
+		CreateOrOpenMemoryMap(graphicsOutputFileName, hInputBufferHandle, inputMessageBuffer);
+		CreateOrOpenMemoryMap(consoleOutputFileName, hOutputBufferHandle, outputMessageBuffer);
 	}
 }
 
 BladeLink::~BladeLink() {
-	if (messageBuffer != NULL) UnmapViewOfFile(messageBuffer);
-	if (fileHandle != NULL) CloseHandle(fileHandle);
+	if (outputMessageBuffer != NULL) UnmapViewOfFile(outputMessageBuffer);
+	if (hOutputBufferHandle != NULL) CloseHandle(hOutputBufferHandle);
+	if (hInputBufferHandle != NULL) CloseHandle(hInputBufferHandle);
 	if (hThisThreadReady != NULL) CloseHandle(hThisThreadReady);
 	if (hConnectingThreadReady != NULL) CloseHandle(hConnectingThreadReady);
 }
@@ -60,30 +59,34 @@ HANDLE BladeLink::ConnectEvent(const char* eventName) {
 	return hEvent;
 }
 
-HANDLE BladeLink::CreateOrOpenMemoryMap() {
+void BladeLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOut, char* bufferOut) {
 	// Try to open existing memory-mapped file
-	HANDLE hMap = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, memoryFileName);
-	if (hMap == NULL) {
+	handleOut = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, mapName);
+	if (handleOut == NULL) {
 		// If it doesn't exist, create a new one
 		std::cout << "No existing memory map found, creating a new one." << std::endl;
-		hMap = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, static_cast<DWORD>(mapSize), memoryFileName);
-		if (hMap == NULL) {
+		handleOut = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, static_cast<DWORD>(mapSize), mapName);
+		if (handleOut == NULL) {
 			std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
 		}
 	}
 	else {
-		std::cout << "Opened existing memory map." << std::endl;
+		std::cout << "Opened existing memory map:" << mapName << std::endl;
 	}
-	return hMap;
-}
 
-char* BladeLink::MapView() {
-	if (fileHandle == NULL) return NULL;
-	char* pMap = static_cast<char*>(MapViewOfFile(fileHandle, FILE_MAP_ALL_ACCESS, 0, 0, mapSize));
-	if (pMap == NULL) {
-		std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
+	if (handleOut != NULL) {
+		bufferOut = static_cast<char*>(MapViewOfFile(handleOut, FILE_MAP_ALL_ACCESS, 0, 0, mapSize));
+		if (bufferOut == NULL) {
+			std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
+		}
 	}
-	return pMap;
+	if (bufferOut == NULL) {
+		std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
+		if (handleOut != NULL) {
+			CloseHandle(handleOut);
+			return;
+		}
+	}
 }
 
 void BladeLink::SignalThisThreadReady() {
@@ -112,13 +115,27 @@ void BladeLink::WaitForConnectedThreadReady()
 }
 
 const char* BladeLink::GetBladeMessage() {
-	return messageBuffer;
+	return inputMessageBuffer;
 }
 
-void BladeLink::SendBladeMessage(const char* message, const size_t size) {
-	if (size > mapLength) {
-		std::cerr << "Message size exceeds buffer capacity." << std::endl;
+void BladeLink::PackInstruction(uint8_t functionCode, const char* data, size_t length) {
+	if (currentPosition + length + 2 > mapSize) { // Check buffer overflow (+1 for function code, +1 for EOF code)
+		std::cerr << "Buffer overflow prevented." << std::endl;
 		return;
 	}
-	memcpy(messageBuffer, message, size * sizeof(uint16_t));
+
+	// Write the function code to the buffer
+	outputMessageBuffer[currentPosition++] = functionCode;
+
+	// Write the data to the buffer
+	memcpy(outputMessageBuffer + currentPosition, data, length);
+	currentPosition += length;
+}
+
+void BladeLink::SendBladeMessage() {
+
+	// add EOF code
+	outputMessageBuffer[currentPosition] = 255;
+
+	// On spi implementation, start DMA transfer
 }

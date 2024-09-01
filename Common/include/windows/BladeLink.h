@@ -17,23 +17,31 @@ public:
 	void WaitForConnectedThreadReady() override;
 	const char* GetBladeMessage() override;
 
-	void SendBladeMessage(const char* message, const size_t size) override;
+	void PackInstruction(uint8_t functionCode, const char* data, size_t length) override;
+	void SendBladeMessage() override;
 
 	void SignalThisThreadReady() override;
 
 private:
-	static constexpr LPCSTR memoryFileName = "BitBladeConnectionBuffer98801";
+	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
+	static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
 	static constexpr int mapLength = 1000;
 	static constexpr int mapSize = sizeof(char) * mapLength;
-	HANDLE fileHandle;
-	char* messageBuffer;
+
+	bool isServer;
+
+	char* outputMessageBuffer;
+	char* inputMessageBuffer;
+	size_t currentPosition = 0; // Position tracker for writing to the buffer
+
+	HANDLE hOutputBufferHandle;
+	HANDLE hInputBufferHandle;
 
 	HANDLE hThisThreadReady;
 	HANDLE hConnectingThreadReady;
 
 	HANDLE ConnectEvent(const char* eventName);
-	HANDLE CreateOrOpenMemoryMap();
-	char* MapView();
+	void CreateOrOpenMemoryMap(const LPCSTR& test, HANDLE& handleOut, char* bufferOut);
 };
 
 #endif // BLADE_LINK_H

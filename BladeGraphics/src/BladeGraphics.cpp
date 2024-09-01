@@ -45,10 +45,5 @@ void BladeGraphics::sendGraphicsMetadata()
 
 void BladeGraphics::processConsoleMessage(const char* message)
 {
-	//std::cout << "BladeConsole: ";
-	//for (size_t i = 0; i < message.size() && i < 5; ++i) {
-	//	if (i > 0) std::cout << ", ";
-	//	std::cout << message[i];
-	//}
-	//std::cout << "\n";
+
 }

@@ -14,7 +14,9 @@ public:
 
 	virtual void WaitForConnectedThreadReady() = 0;
 	virtual const char* GetBladeMessage() = 0;
-	virtual void SendBladeMessage(const char* message, const size_t size) = 0;
+
+	virtual void PackInstruction(uint8_t functionCode, const char* data, size_t length) = 0;
+	virtual void SendBladeMessage() = 0;
 
 	virtual void SignalThisThreadReady() = 0;
 };
