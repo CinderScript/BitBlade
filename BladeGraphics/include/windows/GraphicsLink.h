@@ -1,24 +1,24 @@
-/* BladeLink.h
+/* GraphicsLink.h
 */
 
 #ifndef BLADE_LINK_H
 #define BLADE_LINK_H
 
-#include "IBladeLink.h"
+#include "IGraphicsLink.h"
 #include <Windows.h>
 
-class BladeLink : public IBladeLink {
+class GraphicsLink : public IGraphicsLink {
 public:
-	BladeLink(bool isServer);
-	~BladeLink() override;
+	GraphicsLink(bool isServer);
+	~GraphicsLink() override;
 
-	void WaitForConnectedThreadReady() override;
+	void WaitForConnectedThreadFinish() override;
 	const char* GetBladeMessage() override;
 
 	void PackInstruction(char functionCode, const char* data, size_t length) override;
 	void SendBladeMessage() override;
 
-	void SignalThisThreadReady() override;
+	void SignalGraphicsUpdateSent() override;
 
 private:
 	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
@@ -38,7 +38,7 @@ private:
 	HANDLE hThisThreadReady;
 	HANDLE hConnectingThreadReady;
 
-	HANDLE ConnectEvent(const char* eventName);
+	HANDLE CreateOrConnectEvent(const char* eventName);
 	void CreateOrOpenMemoryMap(const LPCSTR& test, HANDLE& handleOut, char* bufferOut);
 };
 

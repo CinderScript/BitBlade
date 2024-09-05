@@ -2,34 +2,71 @@
 */
 
 #include "BladeGraphics.h"
-#include "BladeLink.h"
+#include "GraphicsLink.h"
 #include "GfxCommand.h"
-#include "BladeLinkBufferHelper.h"
+#include "BladeLink.h"
 
 
-BladeGraphics::BladeGraphics() : bladeLink(std::make_unique<BladeLink>(true))
+BladeGraphics::BladeGraphics() : bladeLink(std::make_unique<GraphicsLink>(true))
 {
-	// the link has been set up and now we need to let Console know that it can begin sending
-	bladeLink->SignalThisThreadReady();
+	// STARTUP SEQUENCE
+
+	bladeLink->SignalGraphicsUpdateSent();
 }
 
-BladeGraphics::~BladeGraphics()
+BladeGraphics::~BladeGraphics() {}
+
+
+//			CONSOLE									GRAPHICS
+// START:
+// TICK graphics 1
+// (nothing to wait for)													
+// send update: 1								
+
+// (interrupt, event) send 1 finished	-------> // (await signal) console send 1 finish
+// TICK graphics 2								// graphics PROCSSES tick 1
+// (await signal) for graphics finish	<------- // (signal) graphics process finished: 1
+// send update: 2								// send result: A
+
+// (interrupt, resolve, event) result A	<-------	// (interrupt, event) send A finish
+// (interrupt, event) send 2 finished	-------> // (await signal) console send 2 finish
+// TICK graphics 3								// graphics PROCSSES tick 2	
+// 		cont. resolve A processing		------->	// (await signal) result A resolved
+// (await signal) for graphics finish	<------- // (signal) graphics process finished: 2
+//		cont. resolve A processing				// send result: B
+// send update: 3																	
+
+// (interrupt, resolve, event) result B	<-------	// (interrupt, event) send B finish
+// (interrupt, event) send 3 finished	-------> // (await signal) console send 3 finish
+// TICK graphics 4								// graphics PROCSSES tick 3	
+//		cont. resolve B processing		------->	// (await signal) result B resolved
+// (await signal) for graphics finish	<------- // (signal) graphics process finished: 3
+//		cont. resolve B processing				// send result: C	
+// send update: 4								
+// continue ...
+
+
+
+
+void BladeGraphics::StartGraphics()
 {
-	// dispose of the bladeLink
+	bladeLink->WaitForConnectedThreadFinish(); // WAIT FOR A
+
+	// UPDATE GRAPHICS
+	processConsoleMessage();				// TICK A
+	bladeLink->SendBladeMessage();			// begin background dma send
+
 }
 
 void BladeGraphics::UpdateGraphics()
 {
-	// send message containing resolved sprites
-	bladeLink->SendBladeMessage();
+	// wait until Console sends a message
+	bladeLink->WaitForConnectedThreadFinish(); // WAIT FOR B
+	bladeLink->SignalGraphicsUpdateSent(); // - wait for SendGraphicsUpdateMessage to finish
 
-	// wait until Console sends a Ready signal
-	bladeLink->WaitForConnectedThreadReady();
-
-	// signal ready before performing graphics update so Console can begin 
-	// processing the new frame while BladeGraphics works concurrently
-	bladeLink->SignalThisThreadReady();
-	processConsoleMessage(bladeLink->GetBladeMessage());
+	// UPDATE GRAPHICS
+	processConsoleMessage();
+	bladeLink->SendBladeMessage();			// begin background dma send
 
 	system("pause");
 }
@@ -37,11 +74,11 @@ void BladeGraphics::UpdateGraphics()
 
 void BladeGraphics::sendGraphicsMetadata()
 {
-	//bladeLink->SendBladeMessage(testMessage);
+	//bladeLink->SendGraphicsUpdateMessage(testMessage);
 }
 
 
-void BladeGraphics::processConsoleMessage(const char* message)
+void BladeGraphics::processConsoleMessage()
 {
 	size_t pos = 0;
 	const char* buffer = bladeLink->GetBladeMessage();

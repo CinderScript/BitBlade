@@ -1,22 +1,22 @@
-/* IBladeLink.h
+/* IGraphicsLink.h
 */
 
-#ifndef IBLADE_LINK_H
-#define IBLADE_LINK_H
+#ifndef IGRAPHICS_LINK_H
+#define IGRAPHICS_LINK_H
 
-class IBladeLink {
+class IGraphicsLink {
 public:
 	static constexpr int GRAPHICS_BUFFER_LENGTH = 1000;
 
-	virtual ~IBladeLink() {}
+	virtual ~IGraphicsLink() {}
 
-	virtual void WaitForConnectedThreadReady() = 0;
+	virtual void WaitForConnectedThreadFinish() = 0;
 	virtual const char* GetBladeMessage() = 0;
 
 	virtual void PackInstruction(char functionCode, const char* data, size_t length) = 0;
 	virtual void SendBladeMessage() = 0;
 
-	virtual void SignalThisThreadReady() = 0;
+	virtual void SignalGraphicsUpdateSent() = 0;
 };
 
-#endif // IBLADE_LINK_H
+#endif // IGRAPHICS_LINK_H

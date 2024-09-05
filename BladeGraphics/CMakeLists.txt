@@ -13,7 +13,8 @@ set(SOURCES
     "src/windows/DisplayDriver.cpp"
     "src/windows/PixelOperations.cpp"
     "src/windows/ImageLoader.cpp"
-    "../Common/src/windows/BladeLink.cpp")
+    "src/windows/GraphicsLink.cpp"
+)
 
 add_executable(BitBladeGraphics ${SOURCES})
 

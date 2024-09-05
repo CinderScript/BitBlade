@@ -4,7 +4,7 @@
 #ifndef BLADE_GRAPHICS_H 
 #define BLADE_GRAPHICS_H
 
-#include "IBladeLink.h"
+#include "IGraphicsLink.h"
 
 #include <iostream> // unique_ptr
 
@@ -15,13 +15,14 @@ public:
 	BladeGraphics();
 	~BladeGraphics();
 
+	void StartGraphics();
 	void UpdateGraphics();
 
 
 private:
-	std::unique_ptr<IBladeLink> bladeLink;
+	std::unique_ptr<GraphicsLink> bladeLink;
 
-	void processConsoleMessage(const char* message);
+	void processConsoleMessage();
 	void sendGraphicsMetadata();
 };
 

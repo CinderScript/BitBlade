@@ -6,11 +6,11 @@
 #include <string>
 #include <iostream>
 
-#include "BladeLink.h"
+#include "GraphicsLink.h"
 #include "GfxCommand.h"
 
 
-BladeLink::BladeLink(bool isServer)
+GraphicsLink::GraphicsLink(bool isServer)
 	: hOutputBufferHandle(NULL), hInputBufferHandle(NULL),
 	hThisThreadReady(NULL), hConnectingThreadReady(NULL),
 	inputMessageBuffer(NULL), outputMessageBuffer(NULL),
@@ -18,8 +18,8 @@ BladeLink::BladeLink(bool isServer)
 {
 	packedInstructions = new char[GRAPHICS_BUFFER_LENGTH]();
 
-	hThisThreadReady = isServer ? ConnectEvent("BitBladeGraphics98801") : ConnectEvent("BitBladeConsole98801");
-	hConnectingThreadReady = isServer ? ConnectEvent("BitBladeConsole98801") : ConnectEvent("BitBladeGraphics98801");
+	hThisThreadReady = isServer ? CreateOrConnectEvent("BitBladeGraphics98801") : CreateOrConnectEvent("BitBladeConsole98801");
+	hConnectingThreadReady = isServer ? CreateOrConnectEvent("BitBladeConsole98801") : CreateOrConnectEvent("BitBladeGraphics98801");
 
 	if (hThisThreadReady == NULL) {
 		std::cerr << "Failed to create ThisThreadReady event: " << GetLastError() << std::endl;
@@ -40,7 +40,7 @@ BladeLink::BladeLink(bool isServer)
 	}
 }
 
-BladeLink::~BladeLink() {
+GraphicsLink::~GraphicsLink() {
 	if (outputMessageBuffer != NULL) UnmapViewOfFile(outputMessageBuffer);
 	if (hOutputBufferHandle != NULL) CloseHandle(hOutputBufferHandle);
 	if (hInputBufferHandle != NULL) CloseHandle(hInputBufferHandle);
@@ -48,7 +48,7 @@ BladeLink::~BladeLink() {
 	if (hConnectingThreadReady != NULL) CloseHandle(hConnectingThreadReady);
 }
 
-HANDLE BladeLink::ConnectEvent(const char* eventName) {
+HANDLE GraphicsLink::CreateOrConnectEvent(const char* eventName) {
 	HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, eventName);
 	if (hEvent == NULL && GetLastError() == ERROR_ALREADY_EXISTS) {
 		hEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, eventName);
@@ -60,7 +60,7 @@ HANDLE BladeLink::ConnectEvent(const char* eventName) {
 	return hEvent;
 }
 
-void BladeLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOut, char* bufferOut) {
+void GraphicsLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOut, char* bufferOut) {
 	// Try to open existing memory-mapped file
 	handleOut = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, mapName);
 	if (handleOut == NULL) {
@@ -90,11 +90,11 @@ void BladeLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOut, 
 	}
 }
 
-void BladeLink::SignalThisThreadReady() {
+void GraphicsLink::SignalGraphicsUpdateSent() {
 	SetEvent(hThisThreadReady);
 }
 
-void BladeLink::WaitForConnectedThreadReady()
+void GraphicsLink::WaitForConnectedThreadFinish()
 {
 	DWORD waitResult = WaitForSingleObject(hConnectingThreadReady, INFINITE);
 
@@ -115,11 +115,11 @@ void BladeLink::WaitForConnectedThreadReady()
 	}
 }
 
-const char* BladeLink::GetBladeMessage() {
+const char* GraphicsLink::GetBladeMessage() {
 	return inputMessageBuffer;
 }
 
-void BladeLink::PackInstruction(char functionCode, const char* data, size_t length) {
+void GraphicsLink::PackInstruction(char functionCode, const char* data, size_t length) {
 	if (currentPosition + length + 2 > GRAPHICS_BUFFER_LENGTH) { // Check buffer overflow (+1 for function code, +1 for EOF code)
 		std::cerr << "Buffer overflow prevented." << std::endl;
 		return;
@@ -133,7 +133,7 @@ void BladeLink::PackInstruction(char functionCode, const char* data, size_t leng
 	currentPosition += length;
 }
 
-void BladeLink::SendBladeMessage() {
+void GraphicsLink::SendBladeMessage() {
 
 	// add EOF code
 	packedInstructions[currentPosition] = +GfxCommand::End;

@@ -7,11 +7,13 @@ set(SOURCES
     "main.cpp" 
     "src/BladeConsole.cpp"
     "src/GameEngine.cpp"
-    "../Common/src/windows/BladeLink.cpp"
+    "src/windows/ConsoleLink.cpp"
+    "src/AbstractConsoleLink.cpp"
 )
 
 add_executable(BitBladeConsole ${SOURCES})
 
 target_include_directories(BitBladeConsole PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/windows"
 )
