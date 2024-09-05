@@ -10,17 +10,26 @@
 
 class ConsoleLink {
 public:
+	template<typename T>
+	using OnMessageReceivedEvent = void (T::*)(const char*);
+
 	ConsoleLink();
 	~ConsoleLink();
 
 	void PackInstruction(char functionCode, const char* data, size_t length);
 	void SendGraphicsInstructions();
 	void WaitForGraphicsReadySignal();
-	void SetOnResolvedObjectsReceivedHandler(OnMessageReceivedEvent handleResolvedObjects);
+
+	template<typename T>
+	void SetOnResolvedObjectsReceivedHandler(T* instance, OnMessageReceivedEvent<T> messageReceivedHandler);
 
 private:
 	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
 	static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
+
+	// Pointers to store the object and the member function
+	void* handleResolvedObjectsInstance;  // Using void* to store any class object pointer
+	void (*handleResolvedObjectsMethod)(void*, const char*);  // Function pointer that takes object and message
 
 	// buffers
 	char* packedInstructions;	// double buffer for sending graphics update
@@ -41,8 +50,6 @@ private:
 
 	std::mutex mtx;
 	bool isGraphicsReady = false;
-
-	OnMessageReceivedEvent handleResolvedObjects_;			// set by BladeConsole
 
 	HANDLE CreateOrConnectEvent(const char* eventName);
 	void CreateOrOpenMemoryMap(const LPCSTR& test, HANDLE& handleOut, char* bufferOut);

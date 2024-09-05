@@ -13,7 +13,7 @@ BladeConsole::BladeConsole() : bladeLink(std::make_unique<ConsoleLink>())
 {
 	// STARTUP SEQUENCE
 	//bladeLink->WaitForGraphicsProcessingFinish();
-	//bladeLink->SetOnResolvedObjectsReceivedHandler(resolvedObjectsReceivedHandler);
+	bladeLink->SetOnResolvedObjectsReceivedHandler(this, &resolvedObjectsReceivedHandler);
 }
 
 BladeConsole::~BladeConsole() {}

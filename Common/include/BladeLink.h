@@ -6,7 +6,6 @@
 
 static constexpr int GRAPHICS_BUFFER_LENGTH = 1000;
 typedef void (*NotificationEvent)();
-typedef void (*OnMessageReceivedEvent)(const char* message);
 
 template<typename T>
 inline void readFromBuffer(const char* buffer, T& valueOut, size_t& posOut) {

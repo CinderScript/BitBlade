@@ -102,9 +102,11 @@ void ConsoleLink::WaitForGraphicsReadySignal() // blocking
 		std::this_thread::sleep_for(std::chrono::microseconds(10));
 	}
 }
-void ConsoleLink::SetOnResolvedObjectsReceivedHandler(OnMessageReceivedEvent handleResolvedObjects)
-{
-	handleResolvedObjects_ = handleResolvedObjects;
+
+template<typename T>
+void ConsoleLink::SetOnResolvedObjectsReceivedHandler(T* instance, OnMessageReceivedEvent<T> messageReceivedHandler) {
+	handleResolvedObjectsInstance = (void*)instance;
+	handleResolvedObjectsMethod = reinterpret_cast<void (*)(void*, const char*)>(messageReceivedHandler);
 }
 
 ///  PRIVATE
@@ -160,7 +162,7 @@ void ConsoleLink::irqHandlerOnConsoleTransferFinish() {
 }
 
 void ConsoleLink::irqHandlerOnResolvedObjectsReceived() {
-	handleResolvedObjects_(inputMessageBuffer);
+	(*handleResolvedObjectsMethod)(handleResolvedObjectsInstance, inputMessageBuffer); // invoke callback
 	gpioSignalFinishedProcessingResolvedObjects();
 }
 
