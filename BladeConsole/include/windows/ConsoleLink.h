@@ -4,7 +4,7 @@
 #ifndef CONSOLE_LINK_H
 #define CONSOLE_LINK_H
 
-#include "BladeLink.h"
+#include "BladeLinkCommon.h"
 class BladeConsole;  // Forward declaration
 
 #include <Windows.h>
@@ -23,11 +23,7 @@ public:
 	void WaitForGraphicsReadySignal();
 	void WaitForGraphicsStartupConnection(); // reuses resolve objects received irq (blocking)
 
-	void SetOnResolvedObjectsReceivedHandler(BladeConsole* console, CallbackType callback) {
-		// Store the object and member function pointer
-		bladeConsole = console;
-		onMessageReceivedHandler = callback;
-	}
+	void SetOnResolvedObjectsReceivedHandler(BladeConsole* console, CallbackType callback);
 
 private:
 

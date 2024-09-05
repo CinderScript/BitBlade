@@ -8,7 +8,6 @@ set(SOURCES
     "src/BladeConsole.cpp"
     "src/GameEngine.cpp"
     "src/windows/ConsoleLink.cpp"
-    "src/AbstractConsoleLink.cpp"
 )
 
 add_executable(BitBladeConsole ${SOURCES})

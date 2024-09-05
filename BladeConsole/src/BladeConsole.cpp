@@ -7,7 +7,7 @@
 */
 
 #include "BladeConsole.h"
-#include "BladeLink.h"
+#include "BladeLinkCommon.h"
 
 BladeConsole::BladeConsole() : bladeLink(std::make_unique<ConsoleLink>())
 {

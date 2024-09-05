@@ -109,6 +109,13 @@ void ConsoleLink::WaitForGraphicsStartupConnection()
 	listenForResolvedObjectsReceivedGpioIrqBlocking();
 }
 
+void ConsoleLink::SetOnResolvedObjectsReceivedHandler(BladeConsole* console, CallbackType callback)
+{
+	// Store the object and member function pointer
+	bladeConsole = console;
+	onMessageReceivedHandler = callback;
+}
+
 ///  PRIVATE
 
 HANDLE ConsoleLink::CreateOrConnectEvent(const char* eventName) {
