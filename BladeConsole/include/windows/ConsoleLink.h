@@ -5,13 +5,15 @@
 #define CONSOLE_LINK_H
 
 #include "BladeLink.h"
+class BladeConsole;  // Forward declaration
+
 #include <Windows.h>
 #include <mutex>
 
 class ConsoleLink {
 public:
-	template<typename T>
-	using OnMessageReceivedEvent = void (T::*)(const char*);
+	//using OnMessageReceivedEvent = void (*)(const char*);
+	using CallbackType = void (BladeConsole::*)(const char*);
 
 	ConsoleLink();
 	~ConsoleLink();
@@ -19,17 +21,18 @@ public:
 	void PackInstruction(char functionCode, const char* data, size_t length);
 	void SendGraphicsInstructions();
 	void WaitForGraphicsReadySignal();
+	void WaitForGraphicsStartupConnection(); // reuses resolve objects received irq (blocking)
 
-	template<typename T>
-	void SetOnResolvedObjectsReceivedHandler(T* instance, OnMessageReceivedEvent<T> messageReceivedHandler);
+	void SetOnResolvedObjectsReceivedHandler(BladeConsole* console, CallbackType callback) {
+		// Store the object and member function pointer
+		bladeConsole = console;
+		onMessageReceivedHandler = callback;
+	}
 
 private:
+
 	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
 	static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
-
-	// Pointers to store the object and the member function
-	void* handleResolvedObjectsInstance;  // Using void* to store any class object pointer
-	void (*handleResolvedObjectsMethod)(void*, const char*);  // Function pointer that takes object and message
 
 	// buffers
 	char* packedInstructions;	// double buffer for sending graphics update
@@ -51,6 +54,10 @@ private:
 	std::mutex mtx;
 	bool isGraphicsReady = false;
 
+	// Pointers to store the object and the member function
+	BladeConsole* bladeConsole;
+	CallbackType onMessageReceivedHandler;
+
 	HANDLE CreateOrConnectEvent(const char* eventName);
 	void CreateOrOpenMemoryMap(const LPCSTR& test, HANDLE& handleOut, char* bufferOut);
 
@@ -66,8 +73,6 @@ private:
 
 	void gpioSignalFinishedProcessingResolvedObjects();				// Graphics result resolved
 	void gpioSignalFinishedConsoleTransferSignal();
-public:
-
 };
 
 #endif // CONSOLE_LINK_H

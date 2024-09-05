@@ -103,10 +103,10 @@ void ConsoleLink::WaitForGraphicsReadySignal() // blocking
 	}
 }
 
-template<typename T>
-void ConsoleLink::SetOnResolvedObjectsReceivedHandler(T* instance, OnMessageReceivedEvent<T> messageReceivedHandler) {
-	handleResolvedObjectsInstance = (void*)instance;
-	handleResolvedObjectsMethod = reinterpret_cast<void (*)(void*, const char*)>(messageReceivedHandler);
+void ConsoleLink::WaitForGraphicsStartupConnection()
+{
+	// this event is not yet in use - reusing it for a startup signal
+	listenForResolvedObjectsReceivedGpioIrqBlocking();
 }
 
 ///  PRIVATE
@@ -162,7 +162,7 @@ void ConsoleLink::irqHandlerOnConsoleTransferFinish() {
 }
 
 void ConsoleLink::irqHandlerOnResolvedObjectsReceived() {
-	(*handleResolvedObjectsMethod)(handleResolvedObjectsInstance, inputMessageBuffer); // invoke callback
+	(bladeConsole->*onMessageReceivedHandler)(inputMessageBuffer);
 	gpioSignalFinishedProcessingResolvedObjects();
 }
 
