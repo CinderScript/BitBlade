@@ -1,46 +1,78 @@
 /* GraphicsLink.h
 */
 
-#ifndef BLADE_LINK_H
-#define BLADE_LINK_H
+#ifndef GRAPHICS_LINK_H
+#define GRAPHICS_LINK_H
 
-#include "IGraphicsLink.h"
+#include "BladeLinkCommon.h"
+class BladeGraphics;  // Forward declaration
+
 #include <Windows.h>
+#include <mutex>
+#include <atomic>
+#include <future>
 
-class GraphicsLink : public IGraphicsLink {
+class GraphicsLink {
 public:
-	GraphicsLink(bool isServer);
-	~GraphicsLink() override;
+	GraphicsLink();
+	~GraphicsLink();
 
-	void WaitForConnectedThreadFinish() override;
-	const char* GetBladeMessage() override;
+	void PackInstruction(char functionCode, const char* data, size_t length);
+	const char* GetGraphicsInstructions();
 
-	void PackInstruction(char functionCode, const char* data, size_t length) override;
-	void SendBladeMessage() override;
-
-	void SignalGraphicsUpdateSent() override;
+	void SendGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
+	void SendResolvedGraphicsObjects();
+	void AwaitConsoleInstructionsReceivedSignal();
+	void AwaitConsoleFinishedResolvingObjectsSignal();
+	void SignalGraphicsFinishedProcessing();
 
 private:
-	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
+
 	static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
+	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
 
-	bool isServer;
+	// buffers
+	char* packedInstructions;	// double buffer for sending graphics update
+	char* outputMessageBuffer;	// given packed instructions when finished
+	char* inputMessageBuffer;	// resolved objects received
+	size_t currentPosition;		// Position tracker for writing to the buffer
 
-	char* packedInstructions; /////////////!!!!!////////////////
-
-	char* outputMessageBuffer;
-	char* inputMessageBuffer;
-	size_t currentPosition = 0; // Position tracker for writing to the buffer
-
+	// memory mapped files
 	HANDLE hOutputBufferHandle;
 	HANDLE hInputBufferHandle;
 
-	HANDLE hThisThreadReady;
-	HANDLE hConnectingThreadReady;
+	// events
+	HANDLE hfinishedConsoleInstructionTransferSignal;	// sent by console gpio (catch)
+	HANDLE hfinishedConsoleResolvedObjectsFinishSignal;	// sent by console gpio (catch)
+
+	HANDLE hGraphicsFinishedProcessingSignal;				// sent by graphics gpio  (send)
+	HANDLE hGraphicsResolvedObjectSendFinishSignal;			// sent by graphics gpio  (send)
+
+	std::mutex mtx;
+	std::atomic<bool> isInstructionsReceived;
+	std::atomic<bool> isConsoleObjectResolveComplete;
+
+	std::future<void> futureInstructionsReceivedListener;
+	std::future<void> futureConsoleResolvedObjectsListener;
+	std::atomic<bool> graphicsLinkStopSignal;
 
 	HANDLE CreateOrConnectEvent(const char* eventName);
 	void CreateOrOpenMemoryMap(const LPCSTR& test, HANDLE& handleOut, char* bufferOut);
+
+	void irqHandlerOnObjectsTransferFinish();
+	void irqHandlerOnInstructionsReceivedSignal();
+	void irqHandlerOnConsoleResolvedFinishedSignal();
+
+	// simulate gpio pins with events
+	void gpioSignalFinishedProcessingGraphics();	  // triggered by main loop
+	void gpioSignalFinishedResolvedObjectsTransfer(); // triggered by DMA
+
+	// simulated irq triggering
+	// listen or start in another thread to simulate non blocking irq signalling
+	void triggerResolvedObjectsTransferFinishDmaIrqAsync();						// simulate triggering irq handler
+	void triggerListenerInstructionsReceivedGpioIrqAsync();
+	void triggerListenerConsoleResolvedObjectsGpioIrqAsync();
 };
 
-#endif // BLADE_LINK_H
+#endif // GRAPHICS_LINK_H
 

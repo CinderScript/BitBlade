@@ -4,14 +4,13 @@
 #include "BladeGraphics.h"
 #include "GraphicsLink.h"
 #include "GfxCommand.h"
-#include "BladeLink.h"
+#include "BladeLinkCommon.h"
 
 
-BladeGraphics::BladeGraphics() : bladeLink(std::make_unique<GraphicsLink>(true))
+BladeGraphics::BladeGraphics() : bladeLink(std::make_unique<GraphicsLink>())
 {
 	// STARTUP SEQUENCE
-
-	bladeLink->SignalGraphicsUpdateSent();
+	bladeLink->SendGraphicsStartupEvent();
 }
 
 BladeGraphics::~BladeGraphics() {}
@@ -31,7 +30,7 @@ BladeGraphics::~BladeGraphics() {}
 // (interrupt, resolve, event) result A	<-------	// (interrupt, event) send A finish
 // (interrupt, event) send 2 finished	-------> // (await signal) console send 2 finish
 // TICK graphics 3								// graphics PROCSSES tick 2	
-// 		cont. resolve A processing		------->	// (await signal) result A resolved
+// 		cont. resolve A processing		------->	// (await signal) result A resolved (will usually resolve before tick finishes)
 // (await signal) for graphics finish	<------- // (signal) graphics process finished: 2
 //		cont. resolve A processing				// send result: B
 // send update: 3																	
@@ -46,42 +45,43 @@ BladeGraphics::~BladeGraphics() {}
 // continue ...
 
 
-
-
 void BladeGraphics::StartGraphics()
 {
-	bladeLink->WaitForConnectedThreadFinish(); // WAIT FOR A
+	bladeLink->AwaitConsoleInstructionsReceivedSignal();	// graphics processed via callback on arival
 
-	// UPDATE GRAPHICS
-	processConsoleMessage();				// TICK A
-	bladeLink->SendBladeMessage();			// begin background dma send
+	ProcessGraphics();
 
+	// Console has no resolved objects yet (don't wait for signal)
+
+	bladeLink->SignalGraphicsFinishedProcessing();
+
+	// signal graphics finished
+	bladeLink->SendResolvedGraphicsObjects();
 }
 
 void BladeGraphics::UpdateGraphics()
 {
-	// wait until Console sends a message
-	bladeLink->WaitForConnectedThreadFinish(); // WAIT FOR B
-	bladeLink->SignalGraphicsUpdateSent(); // - wait for SendGraphicsUpdateMessage to finish
+	// this dma interrupt signals console after resolved objects send finishes
 
-	// UPDATE GRAPHICS
-	processConsoleMessage();
-	bladeLink->SendBladeMessage();			// begin background dma send
+	bladeLink->AwaitConsoleInstructionsReceivedSignal();	// graphics processed via callback on arival
+
+	ProcessGraphics();
+
+	bladeLink->AwaitConsoleFinishedResolvingObjectsSignal();
+
+	bladeLink->SignalGraphicsFinishedProcessing();
+
+	bladeLink->SendResolvedGraphicsObjects();
+
 
 	system("pause");
 }
 
 
-void BladeGraphics::sendGraphicsMetadata()
-{
-	//bladeLink->SendGraphicsUpdateMessage(testMessage);
-}
-
-
-void BladeGraphics::processConsoleMessage()
+void BladeGraphics::ProcessGraphics()
 {
 	size_t pos = 0;
-	const char* buffer = bladeLink->GetBladeMessage();
+	const char* buffer = bladeLink->GetGraphicsInstructions();
 
 	GfxCommand cmd;
 

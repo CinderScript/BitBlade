@@ -19,7 +19,6 @@ public:
 private:
 	std::unique_ptr<ConsoleLink> bladeLink;
 	void resolvedObjectsReceivedHandler(const char* message);
-
 };
 
 #endif // BLADE_CONSOLE_H
