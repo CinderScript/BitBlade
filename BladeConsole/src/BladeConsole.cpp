@@ -9,15 +9,13 @@
 #include "BladeConsole.h"
 #include "BladeLinkCommon.h"
 
-BladeConsole::BladeConsole() : bladeLink(std::make_unique<ConsoleLink>())
+BladeConsole::BladeConsole() : console(new ConsoleLink())
 {
 	//// STARTUP SEQUENCE
-	bladeLink->SetOnResolvedObjectsReceivedHandler(this, &BladeConsole::resolvedObjectsReceivedHandler);
-	bladeLink->WaitForGraphicsStartupEvent();
+	console->WaitForGraphicsStartupEvent();
 }
 
 BladeConsole::~BladeConsole() {}
-
 
 //			CONSOLE									GRAPHICS
 // START:
@@ -30,6 +28,7 @@ BladeConsole::~BladeConsole() {}
 // (await signal) for graphics finish	<------- // (signal) graphics process finished: 1
 // send update: 2								// send result: A
 
+// UPDATE:									// UPDATE:
 // (interrupt, resolve, event) result A	<-------	// (interrupt, event) send A finish
 // (interrupt, event) send 2 finished	-------> // (await signal) console send 2 finish
 // TICK graphics 3								// graphics PROCSSES tick 2	
@@ -49,19 +48,38 @@ BladeConsole::~BladeConsole() {}
 
 void BladeConsole::StartConsole() {
 	// perform first game tick
-	// gameEngine.Tick();							// tick
+	// gameEngine.Tick();							// tick 1
 
-	bladeLink->SendGraphicsInstructions();		// irq sends event when finished
+	console->SendGraphicsInstructions();		// irq when finished
+	// dma irq sends finish sending event
+
+	// gameEngine.Tick();							// tick 2
+
+	console->WaitForGraphicsReadySignal();	// wait for graphics to finish reading tick 1
+
+	console->SendGraphicsInstructions();		// send update 2
 }
 
 void BladeConsole::UpdateConsole()
 {
+	// try to resolve objects from previous tick before calculating graphics
+	if (console->HasReceivedResolvedObjects()) {
+		console->SignalObjectsResolvedComplete();
+	}
 	// gameEngine.Tick();							// tick
 
-	// blocks until: graphics gets frame before last -> graphics finishes, console resolves objects -> sends resolved event
-	bladeLink->WaitForGraphicsReadySignal();
+	// wait for objects to resolve from tick before last so graphics can stop waiting
+	if (console->HasReceivedResolvedObjects()) {
+		console->WaitForResolvedObjectsReceived();
+		console->SignalObjectsResolvedComplete();
+	}
 
-	bladeLink->SendGraphicsInstructions();		// irq sends event when finished
+	// blocks until: graphics gets frame before last -> graphics finishes, console resolves objects -> sends resolved event
+	console->WaitForGraphicsReadySignal();
+
+	console->SendGraphicsInstructions();		// irq when finished
+	// dma irq sends finish sending event
+
 }
 
 void BladeConsole::resolvedObjectsReceivedHandler(const char* message)

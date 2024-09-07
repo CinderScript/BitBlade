@@ -17,7 +17,7 @@ public:
 	void UpdateConsole();
 
 private:
-	std::unique_ptr<ConsoleLink> bladeLink;
+	ConsoleLink* console;
 	void resolvedObjectsReceivedHandler(const char* message);
 };
 

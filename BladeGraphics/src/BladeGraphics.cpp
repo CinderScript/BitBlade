@@ -7,10 +7,10 @@
 #include "BladeLinkCommon.h"
 
 
-BladeGraphics::BladeGraphics() : bladeLink(std::make_unique<GraphicsLink>())
+BladeGraphics::BladeGraphics() : console(std::make_unique<GraphicsLink>())
 {
 	// STARTUP SEQUENCE
-	bladeLink->SendGraphicsStartupEvent();
+	console->SendGraphicsStartupEvent();
 }
 
 BladeGraphics::~BladeGraphics() {}
@@ -47,31 +47,32 @@ BladeGraphics::~BladeGraphics() {}
 
 void BladeGraphics::StartGraphics()
 {
-	bladeLink->AwaitConsoleInstructionsReceivedSignal();	// graphics processed via callback on arival
+	console->AwaitConsoleInstructionsReceivedSignal();
 
 	ProcessGraphics();
 
 	// Console has no resolved objects yet (don't wait for signal)
 
-	bladeLink->SignalGraphicsFinishedProcessing();
+	console->SignalGraphicsFinishedProcessing();
 
-	// signal graphics finished
-	bladeLink->SendResolvedGraphicsObjects();
+	console->SendResolvedGraphicsObjects(); // triggers irq on finish
+	// dma irq sends finish sending event
 }
 
 void BladeGraphics::UpdateGraphics()
 {
 	// this dma interrupt signals console after resolved objects send finishes
 
-	bladeLink->AwaitConsoleInstructionsReceivedSignal();	// graphics processed via callback on arival
+	console->AwaitConsoleInstructionsReceivedSignal();
 
 	ProcessGraphics();
 
-	bladeLink->AwaitConsoleFinishedResolvingObjectsSignal();
+	console->AwaitConsoleFinishedResolvingObjectsSignal();
 
-	bladeLink->SignalGraphicsFinishedProcessing();
+	console->SignalGraphicsFinishedProcessing();
 
-	bladeLink->SendResolvedGraphicsObjects();
+	console->SendResolvedGraphicsObjects(); // triggers irq on finish
+	// dma irq sends finish sending event
 
 
 	system("pause");
@@ -81,7 +82,7 @@ void BladeGraphics::UpdateGraphics()
 void BladeGraphics::ProcessGraphics()
 {
 	size_t pos = 0;
-	const char* buffer = bladeLink->GetGraphicsInstructions();
+	const char* buffer = console->GetGraphicsInstructions();
 
 	GfxCommand cmd;
 

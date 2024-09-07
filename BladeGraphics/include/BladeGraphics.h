@@ -20,7 +20,7 @@ public:
 
 
 private:
-	std::unique_ptr<GraphicsLink> bladeLink;
+	std::unique_ptr<GraphicsLink> console;
 	void ProcessGraphics();
 };
 

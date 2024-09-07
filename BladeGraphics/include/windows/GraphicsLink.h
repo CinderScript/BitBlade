@@ -44,17 +44,18 @@ private:
 	// events
 	HANDLE hfinishedConsoleInstructionTransferSignal;	// sent by console gpio (catch)
 	HANDLE hfinishedConsoleResolvedObjectsFinishSignal;	// sent by console gpio (catch)
-
 	HANDLE hGraphicsFinishedProcessingSignal;				// sent by graphics gpio  (send)
 	HANDLE hGraphicsResolvedObjectSendFinishSignal;			// sent by graphics gpio  (send)
 
-	std::mutex mtx;
-	std::atomic<bool> isInstructionsReceived;
-	std::atomic<bool> isConsoleObjectResolveComplete;
-
+	bool isInstructionsReceived;
+	std::mutex mtxInstructionsReceived;
 	std::future<void> futureInstructionsReceivedListener;
-	std::future<void> futureConsoleResolvedObjectsListener;
-	std::atomic<bool> graphicsLinkStopSignal;
+
+	bool isConsoleObjectResolveComplete;
+	std::mutex mtxConsoleObjectResolve;
+	std::future<void> futureConsoleObjectsResolvedListener;
+
+	std::atomic<bool> linkStopSignal;
 
 	HANDLE CreateOrConnectEvent(const char* eventName);
 	void CreateOrOpenMemoryMap(const LPCSTR& test, HANDLE& handleOut, char* bufferOut);
@@ -70,8 +71,8 @@ private:
 	// simulated irq triggering
 	// listen or start in another thread to simulate non blocking irq signalling
 	void triggerResolvedObjectsTransferFinishDmaIrqAsync();						// simulate triggering irq handler
-	void triggerListenerInstructionsReceivedGpioIrqAsync();
-	void triggerListenerConsoleResolvedObjectsGpioIrqAsync();
+	std::future<void> triggerListenerInstructionsReceivedGpioIrqAsync();
+	std::future<void> triggerListenerConsoleResolvedObjectsGpioIrqAsync();
 };
 
 #endif // GRAPHICS_LINK_H

@@ -9,20 +9,23 @@ class BladeConsole;  // Forward declaration
 
 #include <Windows.h>
 #include <mutex>
+#include <atomic>
+#include <future>
 
 class ConsoleLink {
 public:
-	using ProcessMessageCallback = void (BladeConsole::*)(const char*);
-
 	ConsoleLink();
 	~ConsoleLink();
 
 	void PackInstruction(char functionCode, const char* data, size_t length);
-	void SendGraphicsInstructions();
-	void WaitForGraphicsReadySignal();
-	void WaitForGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
+	const char* GetReceivedResolvedObjectsInstructions();
+	bool HasReceivedResolvedObjects();
 
-	void SetOnResolvedObjectsReceivedHandler(BladeConsole* console, ProcessMessageCallback callback);
+	void SendGraphicsInstructions();
+	void SignalObjectsResolvedComplete();
+	void WaitForGraphicsReadySignal();
+	void WaitForResolvedObjectsReceived();
+	void WaitForGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
 
 private:
 	static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
@@ -44,12 +47,16 @@ private:
 	HANDLE hGraphicsFinishedProcessingSignal;				// sent by graphics gpio (catch)
 	HANDLE hGraphicsResolvedObjectSendFinishSignal;			// sent by graphics gpio (catch)
 
-	std::mutex mtx;
 	bool isGraphicsReady;
+	std::mutex mutexIsGraphicsReady;
+	std::future<void> futureGraphicsReadyListener;
 
-	// Pointers to store the object and the member function
-	BladeConsole* bladeConsole;
-	ProcessMessageCallback onMessageReceivedHandler;
+
+	bool isResolvedObjectsReceived;
+	std::mutex mutexResolvedObjectsReceived;
+	std::future<void> futureResolvedObjectsListener;
+
+	std::atomic<bool> linkStopSignal;
 
 	HANDLE CreateOrConnectEvent(const char* eventName);
 	void CreateOrOpenMemoryMap(const LPCSTR& test, HANDLE& handleOut, char* bufferOut);
@@ -61,8 +68,8 @@ private:
 	// simulated irq triggering
 	// listen or start in another thread to simulate non blocking irq signalling
 	void triggerConsoleTransferFinishDmaIrqAsync();						// simulate triggering irq handler
-	void triggerListenerResolvedObjectsReceivedGpioIrqBlocking();				// simulate triggering irq handler
-	void triggerListenerGraphicsReadyGpioIrqAsync();							// simulate triggering irq handler
+	std::future<void> triggerListenerResolvedObjectsReceivedGpioIrqAsync();				// simulate triggering irq handler
+	std::future<void> triggerListenerGraphicsReadyGpioIrqAsync();							// simulate triggering irq handler
 
 	void gpioSignalFinishedProcessingResolvedObjects();				// Graphics result resolved
 	void gpioSignalFinishedConsoleTransfer();

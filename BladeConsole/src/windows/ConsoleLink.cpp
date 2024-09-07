@@ -18,7 +18,7 @@
 ///  PUBLIC
 
 ConsoleLink::ConsoleLink()
-	: isGraphicsReady(true), currentPosition(0), bladeConsole(nullptr), onMessageReceivedHandler(nullptr)
+	: linkStopSignal(false), isGraphicsReady(true), isResolvedObjectsReceived(false), currentPosition(0)
 {
 	// isGraphicsReady:
 	// we want isGraphicsReady = true, because the first time 
@@ -49,9 +49,24 @@ ConsoleLink::ConsoleLink()
 
 	CreateOrOpenMemoryMap(graphicsOutputFileName, hOutputBufferHandle, inputMessageBuffer);
 	CreateOrOpenMemoryMap(consoleOutputFileName, hInputBufferHandle, outputMessageBuffer);
+
+	// start simulated irq listening
+	futureGraphicsReadyListener = triggerListenerGraphicsReadyGpioIrqAsync();
+	futureResolvedObjectsListener = triggerListenerResolvedObjectsReceivedGpioIrqAsync();
 }
 
 ConsoleLink::~ConsoleLink() {
+
+	linkStopSignal = true;
+
+	SetEvent(hGraphicsFinishedProcessingSignal); // Unblock any waiting
+	if (futureGraphicsReadyListener.valid())
+		futureGraphicsReadyListener.wait(); // Ensure the task completes before destruction
+
+	SetEvent(hGraphicsResolvedObjectSendFinishSignal); // Unblock any waiting
+	if (futureResolvedObjectsListener.valid())
+		futureResolvedObjectsListener.wait(); // Ensure the task completes before destruction
+
 	if (outputMessageBuffer != NULL) UnmapViewOfFile(outputMessageBuffer);
 	if (inputMessageBuffer != NULL) UnmapViewOfFile(inputMessageBuffer);
 
@@ -80,7 +95,23 @@ void ConsoleLink::PackInstruction(char functionCode, const char* data, size_t le
 	memcpy(packedInstructions + currentPosition, data, length);
 	currentPosition += length;
 }
-void ConsoleLink::SendGraphicsInstructions() {
+const char* ConsoleLink::GetReceivedResolvedObjectsInstructions()
+{
+	return inputMessageBuffer;
+}
+
+bool ConsoleLink::HasReceivedResolvedObjects()
+{
+	std::lock_guard<std::mutex> lock(mutexResolvedObjectsReceived);
+	return isResolvedObjectsReceived;
+}
+
+void ConsoleLink::SendGraphicsInstructions()
+{
+	{
+		std::lock_guard<std::mutex> lock(mutexIsGraphicsReady);
+		isGraphicsReady = false;
+	}
 
 	// add EOF code
 	packedInstructions[currentPosition] = +GfxCommand::End;
@@ -92,26 +123,28 @@ void ConsoleLink::SendGraphicsInstructions() {
 	// trigger simulated irq (starts a background task or thread)
 	triggerConsoleTransferFinishDmaIrqAsync();
 }
+
+void ConsoleLink::SignalObjectsResolvedComplete()
+{
+	{
+		std::lock_guard<std::mutex> lock(mutexResolvedObjectsReceived);
+		isResolvedObjectsReceived = false;
+	}
+	gpioSignalFinishedProcessingResolvedObjects();
+}
+
 // used by BladeConsole to block until graphics is ready for the next send.  BladeGraphics
 // wont send finished signal until it receives the next instruction message, processes the message,
 // and then receives confirmation that BladeConsole has resolved objects from previous Graphics 
 // message sent.
 void ConsoleLink::WaitForGraphicsReadySignal() // blocking
 {
-	// start listening for resolved objects sent
-	// will start listening 
-	triggerListenerResolvedObjectsReceivedGpioIrqBlocking();
-
-	// start listening for received graphics message
-	triggerListenerGraphicsReadyGpioIrqAsync();
-
 	// graphics is ready after finished processing and 
 	// receiving finishedProcessingResolvedObjectsSignal
 	while (true) {
 		{ // Scope of the lock_guard starts here
-			std::lock_guard<std::mutex> lock(mtx); // Mutex is locked
+			std::lock_guard<std::mutex> lock(mutexIsGraphicsReady);
 			if (isGraphicsReady) {
-				isGraphicsReady = false;
 				break; // If condition is met, breaks out of the loop
 			}
 			// Scope of the lock_guard ends here, and the mutex is unlocked
@@ -119,18 +152,24 @@ void ConsoleLink::WaitForGraphicsReadySignal() // blocking
 		std::this_thread::sleep_for(std::chrono::microseconds(10)); // Sleep is outside the lock_guard scope but inside the while loop
 	}
 }
-// lock_guard is destroyed here, and mutex is released
+void ConsoleLink::WaitForResolvedObjectsReceived()
+{
+	while (true) {
+		{ // Scope of the lock_guard starts here
+			std::lock_guard<std::mutex> lock(mutexResolvedObjectsReceived);
+			if (isResolvedObjectsReceived) {
+				break; // If condition is met, breaks out of the loop
+			}
+			// Scope of the lock_guard ends here, and the mutex is unlocked
+		}
+		std::this_thread::sleep_for(std::chrono::microseconds(10)); // Sleep is outside the lock_guard scope but inside the while loop
+	}
+}
+
 void ConsoleLink::WaitForGraphicsStartupEvent()
 {
 	// this event is not yet in use - reusing it for a startup signal
-	triggerListenerResolvedObjectsReceivedGpioIrqBlocking();
-}
-
-void ConsoleLink::SetOnResolvedObjectsReceivedHandler(BladeConsole* console, ProcessMessageCallback callback)
-{
-	// Store the object and member function pointer
-	bladeConsole = console;
-	onMessageReceivedHandler = callback;
+	triggerListenerResolvedObjectsReceivedGpioIrqAsync();
 }
 
 ///  PRIVATE
@@ -186,14 +225,15 @@ void ConsoleLink::irqHandlerOnConsoleTransferFinish() {
 }
 
 void ConsoleLink::irqHandlerOnResolvedObjectsReceived() {
-	(bladeConsole->*onMessageReceivedHandler)(inputMessageBuffer);
-	gpioSignalFinishedProcessingResolvedObjects();
+	std::lock_guard<std::mutex> lock(mutexResolvedObjectsReceived);
+	isResolvedObjectsReceived = true;
 }
 
 void ConsoleLink::irqHandlerOnGraphicsReady() {
-	std::lock_guard<std::mutex> lock(mtx); // Mutex is locked here
+	std::lock_guard<std::mutex> lock(mutexIsGraphicsReady); // Mutex is locked here
 	isGraphicsReady = true;               // Access to shared variable is protected
 } // lock_guard goes out of scope here and automatically releases the mutex
+
 
 /// * * * * MCU IRQ TRIGGER SIMULATION * * * * *///
 
@@ -217,57 +257,75 @@ void ConsoleLink::triggerConsoleTransferFinishDmaIrqAsync() {
 // irq is triggered by connected gpio (originates on Graphics mcu)
 // in windows version, this is blocking to avoid processing graphics objects received in another thread
 // or polling somewhere else in code to check if this irq has been triggered.
-void ConsoleLink::triggerListenerResolvedObjectsReceivedGpioIrqBlocking()
+std::future<void> ConsoleLink::triggerListenerResolvedObjectsReceivedGpioIrqAsync()
 {
-	DWORD waitResult = WaitForSingleObject(hGraphicsResolvedObjectSendFinishSignal, INFINITE);
+	// wait in another thread (non blocking)
+	return std::async(std::launch::async, [this]() {
 
-	switch (waitResult) {
-	case WAIT_OBJECT_0:
-		std::cout << "Console has received resolved graphics objects." << std::endl;
+		while (!linkStopSignal) {
 
-		irqHandlerOnResolvedObjectsReceived();
+			DWORD waitResult = WaitForSingleObject(hGraphicsResolvedObjectSendFinishSignal, 20);
 
-		break;
-	case WAIT_ABANDONED:
-		std::cerr << "The wait was abandoned, potentially due to an error in another thread." << std::endl;
-		break;
-	case WAIT_FAILED:
-		std::cerr << "Wait failed with error: " << GetLastError() << std::endl;
-		break;
-	default:
-		std::cerr << "Unexpected wait result." << std::endl;
-		break;
-	}
+			if (linkStopSignal)
+				break;
+
+			switch (waitResult) {
+			case WAIT_OBJECT_0:
+				std::cout << "Console has received resolved graphics objects." << std::endl;
+
+				irqHandlerOnResolvedObjectsReceived();
+
+				break;
+			case WAIT_ABANDONED:
+				std::cerr << "The wait was abandoned, potentially due to an error in another thread." << std::endl;
+				break;
+			case WAIT_FAILED:
+				std::cerr << "Wait failed with error: " << GetLastError() << std::endl;
+				break;
+			default:
+				std::cerr << "Unexpected wait result." << std::endl;
+				break;
+			}
+		}
+		});
 }
 
 // irq is triggered by connected gpio (originates on Graphics mcu)
-void ConsoleLink::triggerListenerGraphicsReadyGpioIrqAsync() // blocking
+std::future<void> ConsoleLink::triggerListenerGraphicsReadyGpioIrqAsync()
 {
 	// wait in another thread (non blocking)
-	auto future = std::async(std::launch::async, [this]() {
+	return std::async(std::launch::async, [this]() {
 
-		DWORD waitResult = WaitForSingleObject(hGraphicsFinishedProcessingSignal, INFINITE);
+		while (!linkStopSignal) {
+			DWORD waitResult = WaitForSingleObject(hGraphicsFinishedProcessingSignal, 20);
 
-		switch (waitResult) {
-		case WAIT_OBJECT_0:
-			std::cout << "Graphics has finished processing the update." << std::endl;
+			if (linkStopSignal)
+				break;
 
-			irqHandlerOnGraphicsReady();
+			switch (waitResult) {
+			case WAIT_OBJECT_0:
+				std::cout << "Graphics has finished processing the update." << std::endl;
 
-			break;
-		case WAIT_ABANDONED:
-			std::cerr << "The wait was abandoned, potentially due to an error in another thread." << std::endl;
-			break;
-		case WAIT_FAILED:
-			std::cerr << "Wait failed with error: " << GetLastError() << std::endl;
-			break;
-		default:
-			std::cerr << "Unexpected wait result." << std::endl;
-			break;
+				irqHandlerOnGraphicsReady();
+
+				break;
+			case WAIT_TIMEOUT:
+				//std::cerr << "Wait timed out. Listening for console resolving objects again." << std::endl;
+				break;
+			case WAIT_ABANDONED:
+				std::cerr << "The wait was abandoned, potentially due to an error in another thread." << std::endl;
+				break;
+			case WAIT_FAILED:
+				std::cerr << "Wait failed with error: " << GetLastError() << std::endl;
+				break;
+			default:
+				std::cerr << "Unexpected wait result." << std::endl;
+				break;
+			}
 		}
 		});
-
 }
+
 
 /// * * * * GPIO PIN SIMULATION * * * * *///
 
