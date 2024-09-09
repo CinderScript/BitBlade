@@ -8,8 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Include the Common directory
 include_directories(
-	"${CMAKE_SOURCE_DIR}/Common/include" 
-	"${CMAKE_SOURCE_DIR}/Common/include/windows"
+	"Common/include" 
 )
 
 add_subdirectory(BladeConsole)

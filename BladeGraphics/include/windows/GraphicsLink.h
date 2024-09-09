@@ -5,8 +5,6 @@
 #define GRAPHICS_LINK_H
 
 #include "BladeLinkCommon.h"
-class BladeGraphics;  // Forward declaration
-
 #include <Windows.h>
 #include <mutex>
 #include <atomic>

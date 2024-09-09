@@ -21,12 +21,12 @@ add_executable(BitBladeGraphics ${SOURCES})
 target_link_libraries(BitBladeGraphics PRIVATE user32 gdi32)
 
 target_include_directories(BitBladeGraphics PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/windows"
+    "include"
+    "include/windows"
 )
 
 if (WIN32)
     target_include_directories(BitBladeGraphics PRIVATE 
-        "${CMAKE_CURRENT_SOURCE_DIR}/stb-master"
+        "stb-master"
     )
 endif()

@@ -1,21 +1,5 @@
 /* BladeConsole.cpp
-*
-* Ticks the game loop
-* Keeps track of each object
-* Ticks objects positions and rotations
-* Sets objects height visibility
 */
-
-#include "BladeConsole.h"
-#include "BladeLinkCommon.h"
-
-BladeConsole::BladeConsole() : console(new ConsoleLink())
-{
-	//// STARTUP SEQUENCE
-	console->WaitForGraphicsStartupEvent();
-}
-
-BladeConsole::~BladeConsole() {}
 
 //			CONSOLE									GRAPHICS
 // START:
@@ -46,43 +30,64 @@ BladeConsole::~BladeConsole() {}
 // send update: 4								
 // continue ...
 
+#include "BladeConsole.h"
+#include "BladeLinkCommon.h"
+
+#include <iostream>
+
+BladeConsole::BladeConsole() : game(nullptr)
+{
+	//// STARTUP SEQUENCE
+	link.WaitForGraphicsStartupEvent();
+}
+
+BladeConsole::~BladeConsole() {}
+
+void BladeConsole::LoadGame(unique_ptr<BitBladeGame> loadedGame)
+{
+	game = move(loadedGame); // Store the game in the console
+}
+
 void BladeConsole::StartConsole() {
 	// perform first game tick
-	// gameEngine.Tick();							// tick 1
+	game->GameAwake();							// tick 1
 
-	console->SendGraphicsInstructions();		// irq when finished
+	link.SendGraphicsInstructions();		// irq when finished
 	// dma irq sends finish sending event
 
-	// gameEngine.Tick();							// tick 2
+	game->GameStart();							// tick 2
 
-	console->WaitForGraphicsReadySignal();	// wait for graphics to finish reading tick 1
+	link.WaitForGraphicsReadySignal();		// wait for graphics to finish reading tick 1
 
-	console->SendGraphicsInstructions();		// send update 2
+	link.SendGraphicsInstructions();		// send update 2
 }
 
 void BladeConsole::UpdateConsole()
 {
 	// try to resolve objects from previous tick before calculating graphics
-	if (console->HasReceivedResolvedObjects()) {
-		console->SignalObjectsResolvedComplete();
+	if (link.HasReceivedResolvedObjects()) {
+		ResolveGraphicsObjects();
+		link.SignalObjectsResolvedComplete();
 	}
-	// gameEngine.Tick();							// tick
+
+	game->Tick();							// tick
 
 	// wait for objects to resolve from tick before last so graphics can stop waiting
-	if (console->HasReceivedResolvedObjects()) {
-		console->WaitForResolvedObjectsReceived();
-		console->SignalObjectsResolvedComplete();
+	if (link.HasReceivedResolvedObjects()) {
+		link.WaitForResolvedObjectsReceived();
+		ResolveGraphicsObjects();
+		link.SignalObjectsResolvedComplete();
 	}
 
 	// blocks until: graphics gets frame before last -> graphics finishes, console resolves objects -> sends resolved event
-	console->WaitForGraphicsReadySignal();
+	link.WaitForGraphicsReadySignal();
 
-	console->SendGraphicsInstructions();		// irq when finished
+	link.SendGraphicsInstructions();		// irq when finished
 	// dma irq sends finish sending event
 
 }
 
-void BladeConsole::resolvedObjectsReceivedHandler(const char* message)
+void BladeConsole::ResolveGraphicsObjects()
 {
-	// resolve addresses
+	const char* message = link.GetReceivedResolvedObjectsInstructions();
 }

@@ -6,13 +6,22 @@ project(BitBladeConsole)
 set(SOURCES
     "main.cpp" 
     "src/BladeConsole.cpp"
-    "src/GameEngine.cpp"
     "src/windows/ConsoleLink.cpp"
+
+    "BladeGameEngine/src/BitBladeGame.cpp"
+    "BladeGameEngine/src/Prefab.cpp"
+    "BladeGameEngine/src/GameObject.cpp"
+
+
+    "BladeTestGame/src/TestGame.cpp"
 )
 
 add_executable(BitBladeConsole ${SOURCES})
 
 target_include_directories(BitBladeConsole PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/windows"
+    "include"
+    "include/windows"
+    "BladeGameEngine/include"
+
+    "BladeTestGame/include"
 )

@@ -276,6 +276,9 @@ std::future<void> ConsoleLink::triggerListenerResolvedObjectsReceivedGpioIrqAsyn
 				irqHandlerOnResolvedObjectsReceived();
 
 				break;
+			case WAIT_TIMEOUT:
+				//std::cerr << "Wait timed out. Listening for console resolving objects again." << std::endl;
+				break;
 			case WAIT_ABANDONED:
 				std::cerr << "The wait was abandoned, potentially due to an error in another thread." << std::endl;
 				break;

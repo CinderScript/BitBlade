@@ -6,10 +6,6 @@
 
 #include "GraphicsLink.h"
 
-#include <iostream> // unique_ptr
-
-using std::string;
-
 class BladeGraphics {
 public:
 	BladeGraphics();
@@ -20,7 +16,7 @@ public:
 
 
 private:
-	std::unique_ptr<GraphicsLink> console;
+	GraphicsLink link;
 	void ProcessGraphics();
 };
 
