@@ -21,7 +21,8 @@ _deps
 CMakeUserPresets.json
 
 # vs code
-
+[Bb]uild/
+.vscode/
 
 # User-specific files
 *.rsuser

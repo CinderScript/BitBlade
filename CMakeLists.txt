@@ -11,5 +11,6 @@ include_directories(
 	"Common/include" 
 )
 
-add_subdirectory(BladeConsole)
-add_subdirectory(BladeGraphics)
+add_subdirectory(BitBladeGameEngine)
+add_subdirectory(BitBladeGraphics)
+add_subdirectory(BitBladeTestGame)

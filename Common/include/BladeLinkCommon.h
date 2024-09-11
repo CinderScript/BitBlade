@@ -4,10 +4,14 @@
 #ifndef BLADE_LINK_COMMON_H
 #define BLADE_LINK_COMMON_H
 
+#include <cstddef>  // For size_t
+#include <cstring>  // For memcpy
+
+
 static constexpr int GRAPHICS_BUFFER_LENGTH = 1000;
 
 template<typename T>
-inline void readFromBuffer(const char* buffer, T& valueOut, size_t& posOut) {
+inline void readFromBuffer(const char* buffer, T& valueOut, size_t posOut) {
 	memcpy(&valueOut, buffer + posOut, sizeof(T));
 	posOut += sizeof(T);
 }

@@ -1,0 +1,59 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_CXX_FLAGS": "-fdiagnostics-color=always",
+                "CMAKE_MAKE_PROGRAM": "C:/msys64/usr/bin/make.exe"
+            }
+        },
+        {
+            "name": "configure-debug",
+            "displayName": "Debug",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "configure-release",
+            "displayName": "Release",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build-debug_BitBladeConsole",
+            "configurePreset": "configure-debug",
+            "jobs": 8,
+            "targets": ["BitBladeConsole"]
+        },
+        {
+            "name": "build-release_BitBladeConsole",
+            "configurePreset": "configure-release",
+            "jobs": 8,
+            "targets": ["BitBladeConsole"]
+        },
+        {
+            "name": "build-debug_BitBladeGraphics",
+            "configurePreset": "configure-debug",
+            "jobs": 8,
+            "targets": ["BitBladeGraphics"]
+        },
+        {
+            "name": "build-release_BitBladeGraphics",
+            "configurePreset": "configure-release",
+            "jobs": 8,
+            "targets": ["BitBladeGraphics"]
+        }
+    ]
+}

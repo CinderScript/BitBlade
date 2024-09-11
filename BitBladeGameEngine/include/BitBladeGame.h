@@ -11,18 +11,20 @@
 using std::vector;
 
 // Forward declare BladeConsole to make it a friend of BitBladeGame
-class BladeConsole;
+namespace console {
+	class BladeConsole;  // Forward declaration within the namespace
+}
 
 class BitBladeGame {
 public:
-	friend class BladeConsole;
+	friend class console::BladeConsole;
 
 	virtual ~BitBladeGame();
 
 protected:
 
-	Prefab* LoadPrefab(const char* filename);
-	GameObject* CreateInstance(const Prefab* prefab);
+	Prefab* LoadPrefab( const char* filename );
+	GameObject* CreateInstance( const Prefab* prefab );
 
 	virtual void GameAwake() {}
 	virtual void GameStart() {}
