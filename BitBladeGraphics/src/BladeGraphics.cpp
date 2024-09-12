@@ -78,7 +78,7 @@ void BladeGraphics::UpdateGraphics()
 	// dma irq sends finish sending event
 
 
-	system("pause");
+	system( "pause" );
 }
 
 
@@ -91,18 +91,18 @@ void BladeGraphics::ProcessGraphics()
 
 	while (buffer[pos] != +GfxCommand::End)
 	{
-		cmd = toGfxCommand(buffer[pos++]);
+		cmd = toGfxCommand( buffer[pos++] );
 
 		switch (cmd) {
 		case GfxCommand::CreateMasterSprite:
 		{
 			uint16_t x, y;
-			uint32_t address;
-			readFromBuffer(buffer, x, pos);
-			readFromBuffer(buffer, y, pos);
-			readFromBuffer(buffer, address, pos);
+			uint32_t spriteAddress;
+			readFromBuffer( buffer, x, pos );
+			readFromBuffer( buffer, y, pos );
+			readFromBuffer( buffer, spriteAddress, pos );
 
-			std::cout << "x: " << x << "y: " << y << "address: " << address << "\n";
+			std::cout << "x: " << x << "y: " << y << "address: " << spriteAddress << "\n";
 
 			break;
 		}

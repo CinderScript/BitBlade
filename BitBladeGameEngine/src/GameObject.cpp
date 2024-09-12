@@ -3,7 +3,7 @@
 
 #include "GameObject.h"
 
-GameObject::GameObject()
+GameObject::GameObject( const Prefab& prefab ) : prefab( prefab )
 {
 }
 

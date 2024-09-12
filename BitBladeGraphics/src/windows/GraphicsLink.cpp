@@ -15,14 +15,14 @@
 
 
 GraphicsLink::GraphicsLink()
-	: isInstructionsReceived(false), isConsoleObjectResolveComplete(false), linkStopSignal(false), currentPosition(0)
+	: isInstructionsReceived( false ), isConsoleObjectResolveComplete( false ), linkStopSignal( false ), currentPosition( 0 )
 {
 	packedInstructions = new char[GRAPHICS_BUFFER_LENGTH]();
 
-	hfinishedConsoleInstructionTransferSignal = CreateOrConnectEvent("BitBladeConsoleUpdateSendFinish");
-	hGraphicsFinishedProcessingSignal = CreateOrConnectEvent("BitBladeGraphicsProcessingFinished");
-	hGraphicsResolvedObjectSendFinishSignal = CreateOrConnectEvent("GraphicsResolvedObjectsSendFinish");
-	hfinishedConsoleResolvedObjectsFinishSignal = CreateOrConnectEvent("ConsoleResolvedObjectsFinish");
+	hfinishedConsoleInstructionTransferSignal = CreateOrConnectEvent( "BitBladeConsoleUpdateSendFinish" );
+	hGraphicsFinishedProcessingSignal = CreateOrConnectEvent( "BitBladeGraphicsProcessingFinished" );
+	hGraphicsResolvedObjectSendFinishSignal = CreateOrConnectEvent( "GraphicsResolvedObjectsSendFinish" );
+	hfinishedConsoleResolvedObjectsFinishSignal = CreateOrConnectEvent( "ConsoleResolvedObjectsFinish" );
 
 	if (hfinishedConsoleInstructionTransferSignal == NULL) {
 		std::cerr << "Failed to create hfinishedConsoleInstructionTransferSignal: " << GetLastError() << std::endl;
@@ -41,8 +41,8 @@ GraphicsLink::GraphicsLink()
 		return;
 	}
 
-	CreateOrOpenMemoryMap(graphicsOutputFileName, hOutputBufferHandle, outputMessageBuffer);
-	CreateOrOpenMemoryMap(consoleOutputFileName, hInputBufferHandle, inputMessageBuffer);
+	CreateOrOpenMemoryMap( graphicsOutputFileName, hOutputBufferHandle, outputMessageBuffer );
+	CreateOrOpenMemoryMap( consoleOutputFileName, hInputBufferHandle, inputMessageBuffer );
 
 	// start simulated irq listening
 	futureInstructionsReceivedListener = triggerListenerInstructionsReceivedGpioIrqAsync();
@@ -53,30 +53,30 @@ GraphicsLink::~GraphicsLink()
 {
 	linkStopSignal = true;
 
-	SetEvent(hfinishedConsoleInstructionTransferSignal); // Unblock any waiting
+	SetEvent( hfinishedConsoleInstructionTransferSignal ); // Unblock any waiting
 	if (futureInstructionsReceivedListener.valid())
 		futureInstructionsReceivedListener.wait(); // Ensure the task completes before destruction
 
-	SetEvent(hfinishedConsoleResolvedObjectsFinishSignal); // Unblock any waiting
+	SetEvent( hfinishedConsoleResolvedObjectsFinishSignal ); // Unblock any waiting
 	if (futureConsoleObjectsResolvedListener.valid())
 		futureConsoleObjectsResolvedListener.wait(); // Ensure the task completes before destruction
 
-	if (outputMessageBuffer != NULL) UnmapViewOfFile(outputMessageBuffer);
-	if (inputMessageBuffer != NULL) UnmapViewOfFile(inputMessageBuffer);
+	if (outputMessageBuffer != NULL) UnmapViewOfFile( outputMessageBuffer );
+	if (inputMessageBuffer != NULL) UnmapViewOfFile( inputMessageBuffer );
 
-	if (hOutputBufferHandle != NULL) CloseHandle(hOutputBufferHandle);
-	if (hInputBufferHandle != NULL) CloseHandle(hInputBufferHandle);
+	if (hOutputBufferHandle != NULL) CloseHandle( hOutputBufferHandle );
+	if (hInputBufferHandle != NULL) CloseHandle( hInputBufferHandle );
 
-	if (hfinishedConsoleInstructionTransferSignal != NULL) CloseHandle(hfinishedConsoleInstructionTransferSignal);
-	if (hfinishedConsoleResolvedObjectsFinishSignal != NULL) CloseHandle(hfinishedConsoleResolvedObjectsFinishSignal);
+	if (hfinishedConsoleInstructionTransferSignal != NULL) CloseHandle( hfinishedConsoleInstructionTransferSignal );
+	if (hfinishedConsoleResolvedObjectsFinishSignal != NULL) CloseHandle( hfinishedConsoleResolvedObjectsFinishSignal );
 
-	if (hGraphicsFinishedProcessingSignal != NULL) CloseHandle(hGraphicsFinishedProcessingSignal);
-	if (hGraphicsResolvedObjectSendFinishSignal != NULL) CloseHandle(hGraphicsResolvedObjectSendFinishSignal);
+	if (hGraphicsFinishedProcessingSignal != NULL) CloseHandle( hGraphicsFinishedProcessingSignal );
+	if (hGraphicsResolvedObjectSendFinishSignal != NULL) CloseHandle( hGraphicsResolvedObjectSendFinishSignal );
 
 	delete[] packedInstructions;
 }
 
-void GraphicsLink::PackInstruction(char functionCode, const char* data, size_t length)
+void GraphicsLink::PackInstruction( char functionCode, const char* data, size_t length )
 {
 	if (currentPosition + length + 2 > GRAPHICS_BUFFER_LENGTH) { // Check buffer overflow (+1 for function code, +1 for EOF code)
 		std::cerr << "Buffer overflow prevented." << std::endl;
@@ -87,7 +87,7 @@ void GraphicsLink::PackInstruction(char functionCode, const char* data, size_t l
 	packedInstructions[currentPosition++] = functionCode;
 
 	// Write the data to the buffer
-	memcpy(packedInstructions + currentPosition, data, length);
+	memcpy( packedInstructions + currentPosition, data, length );
 	currentPosition += length;
 }
 
@@ -102,7 +102,7 @@ void GraphicsLink::SendResolvedGraphicsObjects() {
 	packedInstructions[currentPosition] = +GfxCommand::End;
 
 	// On spi implementation, start DMA transfer
-	memcpy(outputMessageBuffer, packedInstructions, currentPosition);
+	memcpy( outputMessageBuffer, packedInstructions, currentPosition );
 	currentPosition = 0;
 
 	// trigger simulated irq (starts a background task or thread)
@@ -118,7 +118,7 @@ void GraphicsLink::AwaitConsoleInstructionsReceivedSignal() // blocking
 {
 	while (true) {
 		{
-			std::lock_guard<std::mutex> lock(mtxInstructionsReceived);
+			std::lock_guard<std::mutex> lock( mtxInstructionsReceived );
 			if (isInstructionsReceived) {
 				isInstructionsReceived = false;
 				break;
@@ -132,7 +132,7 @@ void GraphicsLink::AwaitConsoleFinishedResolvingObjectsSignal()
 {
 	while (true) {
 		{
-			std::lock_guard<std::mutex> lock(mtxConsoleObjectResolve);
+			std::lock_guard<std::mutex> lock( mtxConsoleObjectResolve );
 			if (isConsoleObjectResolveComplete) {
 				isConsoleObjectResolveComplete = false;
 				break;
@@ -149,10 +149,10 @@ void GraphicsLink::SignalGraphicsFinishedProcessing()
 
 ///  PRIVATE
 
-HANDLE GraphicsLink::CreateOrConnectEvent(const char* eventName) {
-	HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, eventName);
+HANDLE GraphicsLink::CreateOrConnectEvent( const char* eventName ) {
+	HANDLE hEvent = CreateEventA( NULL, FALSE, FALSE, eventName );
 	if (hEvent == NULL && GetLastError() == ERROR_ALREADY_EXISTS) {
-		hEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, eventName);
+		hEvent = OpenEventA( EVENT_ALL_ACCESS, FALSE, eventName );
 	}
 
 	if (hEvent == NULL) {
@@ -160,13 +160,13 @@ HANDLE GraphicsLink::CreateOrConnectEvent(const char* eventName) {
 	}
 	return hEvent;
 }
-void GraphicsLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOut, char* bufferOut) {
+void GraphicsLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOut, char* bufferOut ) {
 	// Try to open existing memory-mapped file
-	handleOut = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, mapName);
+	handleOut = OpenFileMappingA( FILE_MAP_ALL_ACCESS, FALSE, mapName );
 	if (handleOut == NULL) {
 		// If it doesn't exist, create a new one
 		std::cout << "No existing memory map found, creating a new one." << std::endl;
-		handleOut = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, static_cast<DWORD>(GRAPHICS_BUFFER_LENGTH), mapName);
+		handleOut = CreateFileMappingA( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, static_cast<DWORD>(GRAPHICS_BUFFER_LENGTH), mapName );
 		if (handleOut == NULL) {
 			std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
 		}
@@ -176,7 +176,7 @@ void GraphicsLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOu
 	}
 
 	if (handleOut != NULL) {
-		bufferOut = static_cast<char*>(MapViewOfFile(handleOut, FILE_MAP_ALL_ACCESS, 0, 0, GRAPHICS_BUFFER_LENGTH));
+		bufferOut = static_cast<char*>(MapViewOfFile( handleOut, FILE_MAP_ALL_ACCESS, 0, 0, GRAPHICS_BUFFER_LENGTH ));
 		if (bufferOut == NULL) {
 			std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
 		}
@@ -184,7 +184,7 @@ void GraphicsLink::CreateOrOpenMemoryMap(const LPCSTR& mapName, HANDLE& handleOu
 	if (bufferOut == NULL) {
 		std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
 		if (handleOut != NULL) {
-			CloseHandle(handleOut);
+			CloseHandle( handleOut );
 			return;
 		}
 	}
@@ -200,13 +200,13 @@ void GraphicsLink::irqHandlerOnObjectsTransferFinish() {
 
 void GraphicsLink::irqHandlerOnInstructionsReceivedSignal()
 {
-	std::lock_guard<std::mutex> lock(mtxInstructionsReceived);
+	std::lock_guard<std::mutex> lock( mtxInstructionsReceived );
 	isInstructionsReceived = true;
 }
 
 void GraphicsLink::irqHandlerOnConsoleResolvedFinishedSignal()
 {
-	std::lock_guard<std::mutex> lock(mtxConsoleObjectResolve);
+	std::lock_guard<std::mutex> lock( mtxConsoleObjectResolve );
 	isConsoleObjectResolveComplete = true;
 }
 
@@ -215,11 +215,11 @@ void GraphicsLink::irqHandlerOnConsoleResolvedFinishedSignal()
 
 void GraphicsLink::gpioSignalFinishedProcessingGraphics()
 {
-	SetEvent(hGraphicsFinishedProcessingSignal);
+	SetEvent( hGraphicsFinishedProcessingSignal );
 }
 void GraphicsLink::gpioSignalFinishedResolvedObjectsTransfer()
 {
-	SetEvent(hGraphicsResolvedObjectSendFinishSignal);
+	SetEvent( hGraphicsResolvedObjectSendFinishSignal );
 }
 
 
@@ -230,27 +230,27 @@ void GraphicsLink::gpioSignalFinishedResolvedObjectsTransfer()
 void GraphicsLink::triggerResolvedObjectsTransferFinishDmaIrqAsync() {
 
 	// start a task that waits for 400 microseconds
-	auto future = std::async(std::launch::async, [this]() {
+	auto future = std::async( std::launch::async, [this]() {
 		std::random_device rd;  // Non-deterministic random number generator
-		std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-		std::uniform_int_distribution<> distrib(100, 600);
+		std::mt19937 gen( rd() ); // Standard mersenne_twister_engine seeded with rd()
+		std::uniform_int_distribution<> distrib( 100, 600 );
 
-		int waitTime = distrib(gen);  // Generate a random time between 100 and 600 microseconds
-		std::this_thread::sleep_for(std::chrono::microseconds(waitTime));
+		int waitTime = distrib( gen );  // Generate a random time between 100 and 600 microseconds
+		std::this_thread::sleep_for( std::chrono::microseconds( waitTime ) );
 
 		// simulate irq triggering
 		irqHandlerOnObjectsTransferFinish();
-		});
+		} );
 }
 
 std::future<void> GraphicsLink::triggerListenerInstructionsReceivedGpioIrqAsync()
 {
 	// wait in another thread (non blocking)
-	return std::async(std::launch::async, [this]() {
+	return std::async( std::launch::async, [this]() {
 
 		while (!linkStopSignal)
 		{
-			DWORD waitResult = WaitForSingleObject(hfinishedConsoleInstructionTransferSignal, 20);
+			DWORD waitResult = WaitForSingleObject( hfinishedConsoleInstructionTransferSignal, 20 );
 
 			if (linkStopSignal)
 				break;
@@ -276,16 +276,16 @@ std::future<void> GraphicsLink::triggerListenerInstructionsReceivedGpioIrqAsync(
 				break;
 			}
 		}
-		});
+		} );
 }
 
 std::future<void> GraphicsLink::triggerListenerConsoleResolvedObjectsGpioIrqAsync()
 {
 	// wait in another thread (non blocking)
-	return std::async(std::launch::async, [this]() {
+	return std::async( std::launch::async, [this]() {
 
 		while (!linkStopSignal) {
-			DWORD waitResult = WaitForSingleObject(hfinishedConsoleResolvedObjectsFinishSignal, 20);
+			DWORD waitResult = WaitForSingleObject( hfinishedConsoleResolvedObjectsFinishSignal, 20 );
 
 			if (linkStopSignal)
 				break;
@@ -311,5 +311,5 @@ std::future<void> GraphicsLink::triggerListenerConsoleResolvedObjectsGpioIrqAsyn
 				break;
 			}
 		}
-		});
+		} );
 }

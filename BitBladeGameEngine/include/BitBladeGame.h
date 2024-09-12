@@ -23,17 +23,18 @@ public:
 
 protected:
 
-	Prefab* LoadPrefab( const char* filename );
-	GameObject* CreateInstance( const Prefab* prefab );
+	static Prefab& LoadPrefab( const char* filename );
+	static GameObject& CreateInstance( const Prefab* prefab );
 
-	virtual void GameAwake() {}
 	virtual void GameStart() {}
+	void LoadNewLevel() {}
 
 private:
-	vector<Prefab*> prefabs;
-	vector<GameObject*> gameObjects;
+	static vector<Prefab> prefabs;
+	static vector<GameObject> gameObjects;
 
-	void Tick();
+
+	static void Tick();
 };
 
 #endif // BIT_BLADE_GAME_H

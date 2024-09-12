@@ -3,32 +3,26 @@
 
 #include "BitBladeGame.h"
 
-BitBladeGame::~BitBladeGame()
-{
-	for (auto* prefab : prefabs) {
-		delete prefab;
-	}
-	for (auto* gameObject : gameObjects) {
-		delete gameObject;
-	}
+// Define the static members
+vector<Prefab> BitBladeGame::prefabs;
+vector<GameObject> BitBladeGame::gameObjects;
+
+BitBladeGame::~BitBladeGame() { }
+
+Prefab& BitBladeGame::LoadPrefab( const char* filename ) {
+	prefabs.emplace_back( filename );
+	return prefabs.back();
 }
 
-
-Prefab* BitBladeGame::LoadPrefab(const char* filename) {
-	Prefab* prefab = new Prefab();
-	prefabs.push_back(prefab);
-	return prefab;
-}
-
-GameObject* BitBladeGame::CreateInstance(const Prefab* prefab) {
-	GameObject* gameObject = new GameObject();
-	gameObjects.push_back(gameObject);
-	return gameObject;
+GameObject& BitBladeGame::CreateInstance( const Prefab* prefab ) {
+	// Create a GameObject and add it to the vector
+	gameObjects.emplace_back( *prefab );
+	return gameObjects.back();
 }
 
 
 void BitBladeGame::Tick() {
-	for (auto* gameObject : gameObjects) {
-		gameObject->Tick();
+	for (auto& gameObject : gameObjects) {
+		gameObject.Tick();
 	}
 }

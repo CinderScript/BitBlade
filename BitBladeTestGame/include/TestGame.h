@@ -12,12 +12,11 @@ public:
 	TestGame();
 	~TestGame() override;
 
-	void GameAwake() override;
 	void GameStart() override;
 
 private:
-	Prefab* backgroundPrefab;
-	Prefab* heroPrefab;
+	const Prefab* backgroundPrefab;
+	const Prefab* heroPrefab;
 
 	GameObject* background;
 	GameObject* hero;

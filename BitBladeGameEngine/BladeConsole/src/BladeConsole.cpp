@@ -39,6 +39,8 @@ console::BladeConsole::BladeConsole( BitBladeGame& myGame ) : game( myGame )
 {
 	//// STARTUP SEQUENCE
 	link.WaitForGraphicsStartupEvent();
+
+	game.GameStart();
 }
 
 console::BladeConsole::~BladeConsole() {}
@@ -47,12 +49,12 @@ console::BladeConsole::~BladeConsole() {}
 void console::BladeConsole::StartConsole()
 {
 	// perform first game tick
-	game.GameAwake(); // tick 1
+	game.Tick(); // tick 1
 
 	link.SendGraphicsInstructions(); // irq when finished
 	// dma irq sends finish sending event
 
-	game.GameStart(); // tick 2
+	game.Tick(); // tick 2
 
 	link.WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
 

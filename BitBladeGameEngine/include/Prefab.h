@@ -7,11 +7,11 @@
 
 class Prefab {
 public:
-	Prefab();
+	Prefab( const char* filename );
 	~Prefab();
 
 private:
-
+	const char* filename;
 };
 
 #endif // PREFAB_H

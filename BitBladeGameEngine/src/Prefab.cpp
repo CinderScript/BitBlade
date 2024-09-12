@@ -3,7 +3,7 @@
 
 #include "Prefab.h"
 
-Prefab::Prefab()
+Prefab::Prefab( const char* filename ) : filename( filename )
 {
 }
 
