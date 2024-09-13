@@ -4,7 +4,7 @@
 #ifndef CONSOLE_LINK_H
 #define CONSOLE_LINK_H
 
-#include "BladeLinkCommon.h"
+#include "BitBladeCommon.h"
 
 
 class BladeConsole; // Forward declaration
@@ -20,7 +20,7 @@ public:
   ConsoleLink();
   ~ConsoleLink();
 
-  void PackInstruction( char functionCode, const char* data, size_t length );
+  void PackInstruction( char functionCode, const char* data, uint16_t length );
   const char* GetReceivedResolvedObjectsInstructions();
   bool HasReceivedResolvedObjects();
 
@@ -38,7 +38,7 @@ private:
   char* packedInstructions;  // double buffer for sending graphics update
   char* outputMessageBuffer; // given packed instructions when finished
   char* inputMessageBuffer;  // resolved objects received
-  size_t currentPosition;    // Position tracker for writing to the buffer
+  uint16_t currentPosition;    // Position tracker for writing to the buffer
 
   // memory mapped files
   HANDLE hOutputBufferHandle;

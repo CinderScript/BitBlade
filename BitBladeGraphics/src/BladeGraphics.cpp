@@ -3,12 +3,15 @@
 
 #include "BladeGraphics.h"
 #include "GraphicsLink.h"
-#include "GfxCommand.h"
-#include "BladeLinkCommon.h"
+#include "BitBladeCommon.h"
 
 #include <iostream>
 
 using std::string;
+
+using bladeLinkCommon::GfxCommand;
+using bladeLinkCommon::readMessageBuffer;
+using bladeLinkCommon::toGfxCommand;
 
 BladeGraphics::BladeGraphics()
 {
@@ -84,7 +87,7 @@ void BladeGraphics::UpdateGraphics()
 
 void BladeGraphics::ProcessGraphics()
 {
-	size_t pos = 0;
+	uint16_t pos = 0;
 	const char* buffer = link.GetGraphicsInstructions();
 
 	GfxCommand cmd;
@@ -98,14 +101,17 @@ void BladeGraphics::ProcessGraphics()
 		{
 			uint16_t x, y;
 			uint32_t spriteAddress;
-			readFromBuffer( buffer, x, pos );
-			readFromBuffer( buffer, y, pos );
-			readFromBuffer( buffer, spriteAddress, pos );
+			readMessageBuffer( buffer, x, pos );
+			readMessageBuffer( buffer, y, pos );
+			readMessageBuffer( buffer, spriteAddress, pos );
 
 			std::cout << "x: " << x << "y: " << y << "address: " << spriteAddress << "\n";
 
 			break;
 		}
+
+		default:
+			break;
 		}
 	}
 }

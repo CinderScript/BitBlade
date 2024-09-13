@@ -31,7 +31,6 @@
  // continue ...
 
 #include "BladeConsole.h"
-#include "BladeLinkCommon.h"
 
 #include <iostream>
 

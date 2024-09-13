@@ -11,9 +11,12 @@
 #include <thread> // For std::this_thread::sleep_for
 
 #include "ConsoleLink.h"
-#include "GfxCommand.h"
+#include "BitBladeCommon.h"
 
- ///  PUBLIC
+
+using bladeLinkCommon::MESSAGE_BUFFER_LENGTH;
+
+///  PUBLIC
 
 ConsoleLink::ConsoleLink()
 	: linkStopSignal( false ),
@@ -24,7 +27,7 @@ ConsoleLink::ConsoleLink()
 	// isGraphicsReady:
 	// we want isGraphicsReady = true, because the first time
 
-	packedInstructions = new char[GRAPHICS_BUFFER_LENGTH]();
+	packedInstructions = new char[MESSAGE_BUFFER_LENGTH]();
 
 	hfinishedConsoleInstructionTransferSignal = CreateOrConnectEvent( "BitBladeConsoleUpdateSendFinish" );
 	hGraphicsFinishedProcessingSignal = CreateOrConnectEvent( "BitBladeGraphicsProcessingFinished" );
@@ -95,21 +98,10 @@ ConsoleLink::~ConsoleLink()
 	delete[] packedInstructions;
 }
 
-void ConsoleLink::PackInstruction( char functionCode, const char* data, size_t length )
+void ConsoleLink::PackInstruction( char functionCode, const char* data, uint16_t length )
 {
-	if (currentPosition + length + 2 > GRAPHICS_BUFFER_LENGTH)
-	{ // Check buffer overflow (+1 for
-	  // function code, +1 for EOF code)
-		std::cerr << "Buffer overflow prevented." << std::endl;
-		return;
-	}
-
-	// Write the function code to the buffer
-	packedInstructions[currentPosition++] = functionCode;
-
-	// Write the data to the buffer
-	memcpy( packedInstructions + currentPosition, data, length );
-	currentPosition += length;
+	bladeLinkCommon::packGfxInstruction(
+		packedInstructions, functionCode, data, length, currentPosition );
 }
 const char* ConsoleLink::GetReceivedResolvedObjectsInstructions()
 {
@@ -130,7 +122,7 @@ void ConsoleLink::SendGraphicsInstructions()
 	}
 
 	// add EOF code
-	packedInstructions[currentPosition] = +GfxCommand::End;
+	packedInstructions[currentPosition] = +bladeLinkCommon::GfxCommand::End;
 
 	// On spi implementation, start DMA transfer
 	memcpy( outputMessageBuffer, packedInstructions, currentPosition );
@@ -223,7 +215,7 @@ void ConsoleLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOu
 		// If it doesn't exist, create a new one
 		std::cout << "No existing memory map found, creating a new one." << std::endl;
 		handleOut = CreateFileMappingA( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0,
-			static_cast<DWORD>(GRAPHICS_BUFFER_LENGTH), mapName );
+			static_cast<DWORD>(MESSAGE_BUFFER_LENGTH), mapName );
 		if (handleOut == NULL)
 		{
 			std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
@@ -236,7 +228,7 @@ void ConsoleLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOu
 
 	if (handleOut != NULL)
 	{
-		bufferOut = static_cast<char*>(MapViewOfFile( handleOut, FILE_MAP_ALL_ACCESS, 0, 0, GRAPHICS_BUFFER_LENGTH ));
+		bufferOut = static_cast<char*>(MapViewOfFile( handleOut, FILE_MAP_ALL_ACCESS, 0, 0, MESSAGE_BUFFER_LENGTH ));
 
 		if (bufferOut == NULL)
 		{
