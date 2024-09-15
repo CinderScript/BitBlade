@@ -13,7 +13,7 @@ using std::cout;
 int main()
 {
 	TestGame myGame;
-	bitBlade::RunGame( myGame );
+	game::RunGame( myGame );
 
 	cout << "\n"
 		<< "Console Done" << "\n";

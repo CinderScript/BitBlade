@@ -8,24 +8,26 @@
 #include "Sprite.h"
 #include "Vector2.h"
 
-class BitBladeGame;
+namespace game {
+	class BitBladeGame;
 
-class GameObject {
-public:
-	// required for BitBladeGame create a new GameObject
-	friend class BitBladeGame;
+	class GameObject {
+	public:
+		// required for BitBladeGame create a new GameObject
+		friend class BitBladeGame;
 
-	GameObject( const ImageSource* sprite );
-	~GameObject();
+		GameObject( const ImageSource* sprite );
+		~GameObject();
 
-	Vector2 Position() const { return position; }
-	void SetPosition( const Vector2& Position ) { position = Position; }
+		Vector2 Position() const { return position; }
+		void SetPosition( const Vector2& Position ) { position = Position; }
 
-private:
-	Sprite sprite;
-	Vector2 position;
+	private:
+		Sprite sprite;
+		Vector2 position;
 
-	void update();
-};
+		void update();
+	};
+}
 
 #endif // GAME_OBJECT_H

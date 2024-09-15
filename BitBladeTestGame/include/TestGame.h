@@ -7,7 +7,7 @@
 #include "BitBladeGame.h"
 #include "ImageSource.h"
 
-class TestGame : public BitBladeGame {
+class TestGame : public game::BitBladeGame {
 public:
 	friend class console::BladeConsole;
 
@@ -17,11 +17,11 @@ public:
 	void GameStart() override;
 
 private:
-	const ImageSource* backgroundImage;
-	const ImageSource* heroImage;
+	const game::ImageSource* backgroundImage;
+	const game::ImageSource* heroImage;
 
-	GameObject* background;
-	GameObject* hero;
+	game::GameObject* background;
+	game::GameObject* hero;
 };
 
 #endif // TEST_GAME_H

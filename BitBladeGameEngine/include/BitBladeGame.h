@@ -15,32 +15,35 @@ namespace console {
 	class BladeConsole;
 }
 
-class BitBladeGame {
-public:
-	// BladeConsole calls the update() function
-	// BladeConsole calls the setConsoleLink() function
-	friend class console::BladeConsole;
+namespace game {
 
-	virtual ~BitBladeGame();
+	class BitBladeGame {
+	public:
+		// BladeConsole calls the update() function
+		// BladeConsole calls the setConsoleLink() function
+		friend class console::BladeConsole;
 
-protected:
+		virtual ~BitBladeGame();
 
-	static ImageSource* LoadImageSource( const char* filename );
-	static GameObject* CreateInstance( const ImageSource* imageSource );
+	protected:
 
-	virtual void GameStart() {}
-	void LoadNewLevel() {}
+		static ImageSource* LoadImageSource( const char* filename );
+		static GameObject* CreateInstance( const ImageSource* imageSource );
 
-private:
-	static vector<ImageSource> imageSources;
-	static vector<GameObject> gameObjects;
-	static char nextPackedCommandTemp[gameConfig::PACKED_COMMAND_MAX_SIZE];
+		virtual void GameStart() {}
+		void LoadNewLevel() {}
 
-	static void update();
+	private:
+		static vector<ImageSource> imageSources;
+		static vector<GameObject> gameObjects;
+		static char nextPackedCommandTemp[gameConfig::PACKED_COMMAND_MAX_SIZE];
 
-	static ConsoleLink* consoleLink;
-	static void setConsoleLink( ConsoleLink& link );
-	void packPrefab();
-};
+		static void update();
+
+		static ConsoleLink* consoleLink;
+		static void setConsoleLink( ConsoleLink& link );
+		void packPrefab();
+	};
+}
 
 #endif // BIT_BLADE_GAME_H

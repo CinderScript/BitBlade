@@ -36,9 +36,9 @@
 
 namespace console {
 
-	BladeConsole::BladeConsole( BitBladeGame& myGame ) : link(), game( myGame )
+	BladeConsole::BladeConsole( game::BitBladeGame& myGame ) : link(), game( myGame )
 	{
-		BitBladeGame::setConsoleLink( link ); // so the game can pack messages
+		game::BitBladeGame::setConsoleLink( link ); // so the game can pack messages
 
 		link.WaitForGraphicsStartupEvent();
 	}
@@ -56,6 +56,8 @@ namespace console {
 		link.SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event
 
+		system( "pause" );
+
 		game.update(); // tick 2
 
 		link.WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
@@ -71,6 +73,8 @@ namespace console {
 			resolveGraphicsObjects();
 			link.SignalObjectsResolvedComplete();
 		}
+
+		system( "pause" );
 
 		game.update(); // tick
 

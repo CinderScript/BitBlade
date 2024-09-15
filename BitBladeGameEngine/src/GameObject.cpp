@@ -3,16 +3,18 @@
 
 #include "GameObject.h"
 
-GameObject::GameObject( const ImageSource* imageSource )
-	: sprite( imageSource ), position()
-{
-}
+namespace game {
+	GameObject::GameObject( const ImageSource* imageSource )
+		: sprite( imageSource ), position()
+	{
+	}
 
-GameObject::~GameObject()
-{
-}
+	GameObject::~GameObject()
+	{
+	}
 
 
-void GameObject::update()
-{
+	void GameObject::update()
+	{
+	}
 }

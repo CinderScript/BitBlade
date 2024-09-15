@@ -12,7 +12,7 @@ namespace console {
 
 	class BladeConsole {
 	public:
-		BladeConsole( BitBladeGame& myGame );
+		BladeConsole( game::BitBladeGame& myGame );
 		~BladeConsole();
 
 		void Start();
@@ -20,7 +20,7 @@ namespace console {
 
 	private:
 		ConsoleLink link;
-		BitBladeGame& game;
+		game::BitBladeGame& game;
 
 		void resolveGraphicsObjects();
 	};

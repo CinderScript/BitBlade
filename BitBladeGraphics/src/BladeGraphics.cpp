@@ -78,10 +78,7 @@ void BladeGraphics::UpdateGraphics()
 	link.SignalGraphicsFinishedProcessing();
 
 	link.SendResolvedGraphicsObjects(); // triggers irq on finish
-	// dma irq sends finish sending event
-
-
-	system( "pause" );
+	// dma irq sends finish sending event	
 }
 
 

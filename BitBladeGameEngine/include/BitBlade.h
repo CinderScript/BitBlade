@@ -8,7 +8,7 @@
 #include "BitBladeGame.h"
 
 
-namespace bitBlade {
+namespace game {
 
 	void RunGame( BitBladeGame& myGame ) {
 
