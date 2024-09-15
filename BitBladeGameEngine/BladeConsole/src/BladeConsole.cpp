@@ -34,59 +34,64 @@
 
 #include <iostream>
 
-console::BladeConsole::BladeConsole( BitBladeGame& myGame ) : game( myGame )
-{
-	//// STARTUP SEQUENCE
-	link.WaitForGraphicsStartupEvent();
+namespace console {
 
-	game.GameStart();
-}
-
-console::BladeConsole::~BladeConsole() {}
-
-
-void console::BladeConsole::StartConsole()
-{
-	// perform first game tick
-	game.Tick(); // tick 1
-
-	link.SendGraphicsInstructions(); // irq when finished
-	// dma irq sends finish sending event
-
-	game.Tick(); // tick 2
-
-	link.WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
-
-	link.SendGraphicsInstructions(); // send update 2
-}
-
-void console::BladeConsole::UpdateConsole()
-{
-	// try to resolve objects from previous tick before calculating graphics
-	if (link.HasReceivedResolvedObjects())
+	BladeConsole::BladeConsole( BitBladeGame& myGame ) : link(), game( myGame )
 	{
-		ResolveGraphicsObjects();
-		link.SignalObjectsResolvedComplete();
+		BitBladeGame::setConsoleLink( link ); // so the game can pack messages
+
+		link.WaitForGraphicsStartupEvent();
 	}
 
-	game.Tick(); // tick
+	BladeConsole::~BladeConsole() {}
 
-	// wait for objects to resolve from tick before last so graphics can stop waiting
-	if (link.HasReceivedResolvedObjects())
+
+	void BladeConsole::Start()
 	{
-		link.WaitForResolvedObjectsReceived();
-		ResolveGraphicsObjects();
-		link.SignalObjectsResolvedComplete();
+		game.GameStart();	// loads starting resources for game (like a level / imageSources)
+
+		// perform first game tick
+		game.update(); // tick 1
+
+		link.SendGraphicsInstructions(); // irq when finished
+		// dma irq sends finish sending event
+
+		game.update(); // tick 2
+
+		link.WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
+
+		link.SendGraphicsInstructions(); // send update 2
 	}
 
-	// blocks until: graphics gets frame before last -> graphics finishes, console resolves objects -> sends resolved event
-	link.WaitForGraphicsReadySignal();
+	void BladeConsole::Update()
+	{
+		// try to resolve objects from previous tick before calculating graphics
+		if (link.HasReceivedResolvedObjects())
+		{
+			resolveGraphicsObjects();
+			link.SignalObjectsResolvedComplete();
+		}
 
-	link.SendGraphicsInstructions(); // irq when finished
-	// dma irq sends finish sending event
-}
+		game.update(); // tick
 
-void console::BladeConsole::ResolveGraphicsObjects()
-{
-	const char* message = link.GetReceivedResolvedObjectsInstructions();
+		// wait for objects to resolve from tick before last so graphics can stop waiting
+		if (link.HasReceivedResolvedObjects())
+		{
+			link.WaitForResolvedObjectsReceived();
+			resolveGraphicsObjects();
+			link.SignalObjectsResolvedComplete();
+		}
+
+		// blocks until: graphics gets frame before last -> graphics finishes, console resolves objects -> sends resolved event
+		link.WaitForGraphicsReadySignal();
+
+		link.SendGraphicsInstructions(); // irq when finished
+		// dma irq sends finish sending event
+	}
+
+
+	void BladeConsole::resolveGraphicsObjects()
+	{
+		const char* message = link.GetReceivedResolvedObjectsInstructions();
+	}
 }

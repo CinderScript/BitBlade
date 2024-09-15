@@ -12,18 +12,21 @@
 
 namespace gameConfig
 {
-	static constexpr int MAX_PREFABS = 100;
+	static constexpr int MAX_IMAGE_RESOURCES = 100;
 	static constexpr int MAX_GAME_OBJECTS = 300;
+
+	// Max number of bytes any single packed command can be
+	static constexpr int PACKED_COMMAND_MAX_SIZE = 200;
 }
 
-namespace bladeLinkCommon
+namespace gfxLink
 {
 	static constexpr int MESSAGE_BUFFER_LENGTH = 1000;
 
 	enum class GfxCommand : uint8_t {
 
 		End = 0,						// end of the graphics instructions
-		CreateMasterSprite = 1,
+		CreateImageData = 1,
 		CreateSpriteInstance = 2,
 
 		DeleteMasterSprite = 3,
@@ -50,7 +53,7 @@ namespace bladeLinkCommon
 	}
 
 	inline void packGfxInstruction(
-		char* buffer, char functionCode, const char* data, size_t length, uint16_t& posOut )
+		char* buffer, GfxCommand functionCode, const char* data, size_t length, uint16_t& posOut )
 	{
 		if (posOut + length + 2 > MESSAGE_BUFFER_LENGTH)
 		{
@@ -60,7 +63,7 @@ namespace bladeLinkCommon
 		}
 
 		// Write the function code to the buffer
-		buffer[posOut++] = functionCode;
+		buffer[posOut++] = +functionCode;
 
 		// Write the data to the buffer
 		memcpy( buffer + posOut, data, length );

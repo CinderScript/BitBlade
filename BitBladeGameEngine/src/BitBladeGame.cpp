@@ -2,27 +2,45 @@
 */
 
 #include "BitBladeGame.h"
+#include "BitBladeCommon.h"
 
 // Define the static members
-vector<Prefab> BitBladeGame::prefabs;
+vector<ImageSource> BitBladeGame::imageSources;
 vector<GameObject> BitBladeGame::gameObjects;
+char BitBladeGame::nextPackedCommandTemp[gameConfig::PACKED_COMMAND_MAX_SIZE];
+ConsoleLink* BitBladeGame::consoleLink;
+
 
 BitBladeGame::~BitBladeGame() { }
 
-Prefab& BitBladeGame::LoadPrefab( const char* filename ) {
-	prefabs.emplace_back( filename );
-	return prefabs.back();
+ImageSource* BitBladeGame::LoadImageSource( const char* filename ) {
+
+	ImageSource image( filename, imageSources.size() );
+	imageSources.push_back( std::move( image ) );
+
+	uint16_t length = image.Pack_CreateImageData( nextPackedCommandTemp );
+
+	// pack into the ConsoleLink buffer
+	consoleLink->PackInstruction(
+		gfxLink::GfxCommand::CreateImageData,
+		nextPackedCommandTemp,
+		length );
+
+	return &imageSources.back();
 }
 
-GameObject& BitBladeGame::CreateInstance( const Prefab* prefab ) {
-	// Create a GameObject and add it to the vector
-	gameObjects.emplace_back( *prefab );
-	return gameObjects.back();
+GameObject* BitBladeGame::CreateInstance( const ImageSource* image ) {
+	return &gameObjects.emplace_back( image );
 }
 
 
-void BitBladeGame::Tick() {
+void BitBladeGame::update() {
 	for (auto& gameObject : gameObjects) {
-		gameObject.Tick();
+		gameObject.update();
 	}
+}
+
+void BitBladeGame::setConsoleLink( ConsoleLink& link )
+{
+	BitBladeGame::consoleLink = &link;
 }

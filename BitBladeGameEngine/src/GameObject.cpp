@@ -3,7 +3,8 @@
 
 #include "GameObject.h"
 
-GameObject::GameObject( const Prefab& prefab ) : prefab( prefab )
+GameObject::GameObject( const ImageSource* imageSource )
+	: sprite( imageSource ), position()
 {
 }
 
@@ -11,6 +12,7 @@ GameObject::~GameObject()
 {
 }
 
-void GameObject::Tick()
+
+void GameObject::update()
 {
 }

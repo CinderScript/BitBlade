@@ -13,8 +13,8 @@
 #include "GraphicsLink.h"
 #include "BitBladeCommon.h"
 
-using bladeLinkCommon::GfxCommand;
-using bladeLinkCommon::MESSAGE_BUFFER_LENGTH;
+using gfxLink::GfxCommand;
+using gfxLink::MESSAGE_BUFFER_LENGTH;
 
 GraphicsLink::GraphicsLink()
 	: isInstructionsReceived( false ),
@@ -83,7 +83,7 @@ GraphicsLink::~GraphicsLink()
 
 void GraphicsLink::PackInstruction( char functionCode, const char* data, uint16_t length )
 {
-	bladeLinkCommon::packGfxInstruction(
+	gfxLink::packGfxInstruction(
 		packedInstructions, functionCode, data, length, currentPosition );
 }
 

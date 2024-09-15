@@ -5,8 +5,9 @@ project(BitBladeGameEngine)
 # Add the source files for the console
 set(SOURCES
     "src/BitBladeGame.cpp"
-    "src/Prefab.cpp"
+    "src/ImageSource.cpp"
     "src/GameObject.cpp"
+    "src/Sprite.cpp"
 
     "BladeConsole/src/BladeConsole.cpp"
     "BladeConsole/src/windows/ConsoleLink.cpp"

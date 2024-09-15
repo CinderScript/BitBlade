@@ -7,9 +7,6 @@
 #include "ConsoleLink.h"
 #include "BitBladeGame.h"
 
-#include <memory>  // for smart pointers
-
-using std::unique_ptr;
 
 namespace console {
 
@@ -18,14 +15,14 @@ namespace console {
 		BladeConsole( BitBladeGame& myGame );
 		~BladeConsole();
 
-		void StartConsole();
-		void UpdateConsole();
+		void Start();
+		void Update();
 
 	private:
 		ConsoleLink link;
 		BitBladeGame& game;
 
-		void ResolveGraphicsObjects();
+		void resolveGraphicsObjects();
 	};
 
 }

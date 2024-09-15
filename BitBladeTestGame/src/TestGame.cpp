@@ -7,11 +7,11 @@
 
 TestGame::TestGame()
 {
-	backgroundPrefab = &LoadPrefab( "background.bmp" );
-	heroPrefab = &LoadPrefab( "hero.bmp" );
+	backgroundImage = LoadImageSource( "background.bmp" );
+	heroImage = LoadImageSource( "hero.bmp" );
 
-	background = &CreateInstance( backgroundPrefab );
-	hero = &CreateInstance( heroPrefab );
+	background = CreateInstance( backgroundImage );
+	hero = CreateInstance( heroImage );
 }
 
 TestGame::~TestGame() {}

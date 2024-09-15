@@ -20,7 +20,7 @@ public:
   ConsoleLink();
   ~ConsoleLink();
 
-  void PackInstruction( char functionCode, const char* data, uint16_t length );
+  void PackInstruction( gfxLink::GfxCommand functionCode, const char* data, uint16_t length );
   const char* GetReceivedResolvedObjectsInstructions();
   bool HasReceivedResolvedObjects();
 

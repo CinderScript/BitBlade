@@ -14,7 +14,8 @@
 #include "BitBladeCommon.h"
 
 
-using bladeLinkCommon::MESSAGE_BUFFER_LENGTH;
+using gfxLink::MESSAGE_BUFFER_LENGTH;
+using gfxLink::GfxCommand;
 
 ///  PUBLIC
 
@@ -98,10 +99,11 @@ ConsoleLink::~ConsoleLink()
 	delete[] packedInstructions;
 }
 
-void ConsoleLink::PackInstruction( char functionCode, const char* data, uint16_t length )
+void ConsoleLink::PackInstruction(
+	gfxLink::GfxCommand functionCode, const char* appendData, uint16_t length )
 {
-	bladeLinkCommon::packGfxInstruction(
-		packedInstructions, functionCode, data, length, currentPosition );
+	gfxLink::packGfxInstruction(
+		packedInstructions, functionCode, appendData, length, currentPosition );
 }
 const char* ConsoleLink::GetReceivedResolvedObjectsInstructions()
 {
@@ -122,7 +124,7 @@ void ConsoleLink::SendGraphicsInstructions()
 	}
 
 	// add EOF code
-	packedInstructions[currentPosition] = +bladeLinkCommon::GfxCommand::End;
+	packedInstructions[currentPosition] = +gfxLink::GfxCommand::End;
 
 	// On spi implementation, start DMA transfer
 	memcpy( outputMessageBuffer, packedInstructions, currentPosition );
@@ -183,7 +185,7 @@ void ConsoleLink::WaitForResolvedObjectsReceived()
 void ConsoleLink::WaitForGraphicsStartupEvent()
 {
 	// this event is not yet in use - reusing it for a startup signal
-	triggerListenerResolvedObjectsReceivedGpioIrqAsync();
+	WaitForResolvedObjectsReceived();
 }
 
 ///  PRIVATE

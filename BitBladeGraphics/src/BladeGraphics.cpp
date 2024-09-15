@@ -9,9 +9,9 @@
 
 using std::string;
 
-using bladeLinkCommon::GfxCommand;
-using bladeLinkCommon::readMessageBuffer;
-using bladeLinkCommon::toGfxCommand;
+using gfxLink::GfxCommand;
+using gfxLink::readMessageBuffer;
+using gfxLink::toGfxCommand;
 
 BladeGraphics::BladeGraphics()
 {
@@ -97,7 +97,7 @@ void BladeGraphics::ProcessGraphics()
 		cmd = toGfxCommand( buffer[pos++] );
 
 		switch (cmd) {
-		case GfxCommand::CreateMasterSprite:
+		case GfxCommand::CreateImageData:
 		{
 			uint16_t x, y;
 			uint32_t spriteAddress;
