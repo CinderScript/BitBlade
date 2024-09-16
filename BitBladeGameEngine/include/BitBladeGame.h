@@ -36,7 +36,7 @@ namespace game {
 	private:
 		static vector<ImageSource> imageSources;
 		static vector<GameObject> gameObjects;
-		static char nextPackedCommandTemp[gameConfig::PACKED_COMMAND_MAX_SIZE];
+		static char nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
 
 		static void update();
 

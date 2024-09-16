@@ -7,7 +7,7 @@
 namespace game {// Define the static members
 	vector<ImageSource> BitBladeGame::imageSources;
 	vector<GameObject> BitBladeGame::gameObjects;
-	char BitBladeGame::nextPackedCommandTemp[gameConfig::PACKED_COMMAND_MAX_SIZE];
+	char BitBladeGame::nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
 	ConsoleLink* BitBladeGame::consoleLink;
 
 

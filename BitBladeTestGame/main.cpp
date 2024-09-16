@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <vector>
 
-#include "BitBlade.h"
+#include "BladeRun.h"
 #include "TestGame.h"
 
 // #include <memory>  // for smart pointers

@@ -16,12 +16,12 @@ namespace gameConfig
 	static constexpr int MAX_GAME_OBJECTS = 300;
 
 	// Max number of bytes any single packed command can be
-	static constexpr int PACKED_COMMAND_MAX_SIZE = 200;
 }
 
 namespace gfxLink
 {
 	static constexpr int MESSAGE_BUFFER_LENGTH = 1000;
+	static constexpr int PACKED_COMMAND_MAX_SIZE = 200;
 
 	enum class GfxCommand : uint8_t {
 
@@ -50,6 +50,14 @@ namespace gfxLink
 	{
 		memcpy( &valueOut, buffer + posOut, sizeof( T ) );
 		posOut += sizeof( T );
+	}
+
+	inline void readMessageBufferString( const char* buffer, char* valueOut, uint16_t& posOut )
+	{
+		size_t strLen = strlen( buffer + posOut );
+		strcpy( valueOut, buffer + posOut );
+
+		posOut += strLen + 1; // Update position to point after the null terminator
 	}
 
 	inline void packGfxInstruction(

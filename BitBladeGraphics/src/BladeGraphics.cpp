@@ -1,27 +1,6 @@
 /* BladeGraphics.cpp
 */
 
-#include "BladeGraphics.h"
-#include "GraphicsLink.h"
-#include "BitBladeCommon.h"
-
-#include <iostream>
-
-using std::string;
-
-using gfxLink::GfxCommand;
-using gfxLink::readMessageBuffer;
-using gfxLink::toGfxCommand;
-
-BladeGraphics::BladeGraphics()
-{
-	// STARTUP SEQUENCE
-	link.SendGraphicsStartupEvent();
-}
-
-BladeGraphics::~BladeGraphics() {}
-
-
 //			CONSOLE									GRAPHICS
 // START:
 // TICK graphics 1
@@ -49,6 +28,27 @@ BladeGraphics::~BladeGraphics() {}
 //		cont. resolve B processing				// send result: C	
 // send update: 4								
 // continue ...
+
+#include "BladeGraphics.h"
+#include "GraphicsLink.h"
+#include "BitBladeCommon.h"
+
+#include <iostream>
+
+using std::string;
+
+using gfxLink::GfxCommand;
+using gfxLink::readMessageBuffer;
+using gfxLink::readMessageBufferString;
+using gfxLink::toGfxCommand;
+
+BladeGraphics::BladeGraphics()
+{
+	// STARTUP SEQUENCE
+	link.SendGraphicsStartupEvent();
+}
+
+BladeGraphics::~BladeGraphics() {}
 
 
 void BladeGraphics::StartGraphics()
@@ -94,19 +94,37 @@ void BladeGraphics::ProcessGraphics()
 		cmd = toGfxCommand( buffer[pos++] );
 
 		switch (cmd) {
+
 		case GfxCommand::CreateImageData:
 		{
-			uint16_t x, y;
-			uint32_t spriteAddress;
-			readMessageBuffer( buffer, x, pos );
-			readMessageBuffer( buffer, y, pos );
-			readMessageBuffer( buffer, spriteAddress, pos );
+			uint16_t imageDataID;
+			char filename[gfxLink::PACKED_COMMAND_MAX_SIZE];
 
-			std::cout << "x: " << x << "y: " << y << "address: " << spriteAddress << "\n";
+			readMessageBuffer( buffer, imageDataID, pos );
+			readMessageBufferString( buffer, filename, pos );
+
+			std::cout << "Create Image Data: " << imageDataID << ",  \'" << filename << "\'\n";
 
 			break;
 		}
+		case GfxCommand::CreateSpriteInstance:
+		{
+			uint8_t isImageDataResolved;
+			uint16_t imageDataID;
+			uint16_t spriteID;
+			uint32_t spriteAddress;
+			uint16_t x, y;
+			readMessageBuffer( buffer, isImageDataResolved, pos );
+			readMessageBuffer( buffer, imageDataID, pos );
+			readMessageBuffer( buffer, spriteID, pos );
+			readMessageBuffer( buffer, spriteAddress, pos );
+			readMessageBuffer( buffer, x, pos );
+			readMessageBuffer( buffer, y, pos );
 
+			std::cout << "Sprite Instanced: " << spriteID << "(" << x << "," << y << ")" << "\n";
+
+			break;
+		}
 		default:
 			break;
 		}
