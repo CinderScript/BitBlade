@@ -37,7 +37,7 @@
 
 using std::string;
 
-using gfxLink::GfxCommand;
+using gfxLink::GfxCode;
 using gfxLink::readMessageBuffer;
 using gfxLink::readMessageBufferString;
 using gfxLink::toGfxCommand;
@@ -51,27 +51,32 @@ BladeGraphics::BladeGraphics()
 BladeGraphics::~BladeGraphics() {}
 
 
-void BladeGraphics::StartGraphics()
+bool BladeGraphics::FirstUpdate()
 {
 	link.AwaitConsoleInstructionsReceivedSignal();
 
-	ProcessGraphics();
-
+	if (!ProcessGfxInstructions()) {
+		return false;
+	}
 	// Console has no resolved objects yet (don't wait for signal)
 
 	link.SignalGraphicsFinishedProcessing();
 
 	link.SendResolvedGraphicsObjects(); // triggers irq on finish
 	// dma irq sends finish sending event
+
+	return true;
 }
 
-void BladeGraphics::UpdateGraphics()
+bool BladeGraphics::Update()
 {
 	// this dma interrupt signals console after resolved objects send finishes
 
 	link.AwaitConsoleInstructionsReceivedSignal();
 
-	ProcessGraphics();
+	if (!ProcessGfxInstructions()) {
+		return false;
+	}
 
 	link.AwaitConsoleFinishedResolvingObjectsSignal();
 
@@ -79,35 +84,35 @@ void BladeGraphics::UpdateGraphics()
 
 	link.SendResolvedGraphicsObjects(); // triggers irq on finish
 	// dma irq sends finish sending event	
+
+	return true;
 }
 
 
-void BladeGraphics::ProcessGraphics()
+bool BladeGraphics::ProcessGfxInstructions()
 {
 	uint16_t pos = 0;
 	const char* buffer = link.GetGraphicsInstructions();
 
-	GfxCommand cmd;
+	GfxCode cmd;
 
-	while (buffer[pos] != +GfxCommand::End)
+	while (buffer[pos] != +GfxCode::EndMessage)
 	{
 		cmd = toGfxCommand( buffer[pos++] );
 
 		switch (cmd) {
 
-		case GfxCommand::CreateImageData:
+		case GfxCode::CreateImageData:
 		{
 			uint16_t imageDataID;
 			char filename[gfxLink::PACKED_COMMAND_MAX_SIZE];
-
 			readMessageBuffer( buffer, imageDataID, pos );
 			readMessageBufferString( buffer, filename, pos );
 
 			std::cout << "Create Image Data: " << imageDataID << ",  \'" << filename << "\'\n";
-
 			break;
 		}
-		case GfxCommand::CreateSpriteInstance:
+		case GfxCode::CreateSpriteInstance:
 		{
 			uint8_t isImageDataResolved;
 			uint16_t imageDataID;
@@ -122,11 +127,21 @@ void BladeGraphics::ProcessGraphics()
 			readMessageBuffer( buffer, y, pos );
 
 			std::cout << "Sprite Instanced: " << spriteID << "(" << x << "," << y << ")" << "\n";
-
 			break;
+		}
+		case GfxCode::StopGraphics:
+		{
+			char gameTitle[gfxLink::PACKED_COMMAND_MAX_SIZE];
+			readMessageBufferString( buffer, gameTitle, pos );
+			std::cout << "Game Stopped: " << gameTitle << "\'\n";
+
+			return false;
 		}
 		default:
+			std::cout << "Did not receive a valid GfxCode\n";
 			break;
 		}
+
 	}
+	return true;
 }

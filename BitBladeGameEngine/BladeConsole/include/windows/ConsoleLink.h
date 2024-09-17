@@ -20,7 +20,7 @@ public:
   ConsoleLink();
   ~ConsoleLink();
 
-  void PackInstruction( gfxLink::GfxCommand functionCode, const char* data, uint16_t length );
+  void PackInstruction( gfxLink::GfxCode functionCode, const char appendData[], uint16_t length );
   const char* GetReceivedResolvedObjectsInstructions();
   bool HasReceivedResolvedObjects();
 
@@ -31,18 +31,18 @@ public:
   void WaitForGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
 
 private:
-  static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
   static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
+  static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
 
   // buffers
   char* packedInstructions;  // double buffer for sending graphics update
-  char* outputMessageBuffer; // given packed instructions when finished
-  char* inputMessageBuffer;  // resolved objects received
+  char* consoleOutputBuffer; // given packed instructions when finished
+  char* graphicsOutputBuffer;  // resolved objects received
   uint16_t currentPosition;    // Position tracker for writing to the buffer
 
   // memory mapped files
-  HANDLE hOutputBufferHandle;
-  HANDLE hInputBufferHandle;
+  HANDLE hConsoleOutputBuffer;
+  HANDLE hGraphicsOutputBuffer;
 
   // events
   HANDLE hfinishedConsoleInstructionTransferSignal; // sent by console gpio
@@ -61,7 +61,7 @@ private:
   std::atomic<bool> linkStopSignal;
 
   HANDLE CreateOrConnectEvent( LPCSTR eventName );
-  void CreateOrOpenMemoryMap( const LPCSTR& test, HANDLE& handleOut, char* bufferOut );
+  void CreateOrOpenMemoryMap( const LPCSTR& test, HANDLE& handleOut, char*& bufferOut );
 
   void irqHandlerOnConsoleTransferFinish();
   void irqHandlerOnResolvedObjectsReceived();

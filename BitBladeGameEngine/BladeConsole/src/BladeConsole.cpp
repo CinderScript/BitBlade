@@ -36,36 +36,41 @@
 
 namespace console {
 
-	BladeConsole::BladeConsole( game::BitBladeGame& myGame ) : link(), game( myGame )
+	BladeConsole::BladeConsole() : link(), game()
 	{
 		game::BitBladeGame::setConsoleLink( link ); // so the game can pack messages
-
 		link.WaitForGraphicsStartupEvent();
 	}
 
 	BladeConsole::~BladeConsole() {}
 
-
-	void BladeConsole::Start()
+	bool BladeConsole::FirstUpdate()
 	{
-		game.GameStart();	// loads starting resources for game (like a level / imageSources)
-
 		// perform first game tick
-		game.update(); // tick 1
+		bool shouldContinue = game->update();
 
 		link.SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event
 
+		// allow Graphics to receive last code if quitting
+		if (!shouldContinue) {
+			return false;								/* * * EARLY OUT * * */
+		}
+
 		system( "pause" );
 
-		game.update(); // tick 2
+		// tick 2
+		shouldContinue = game->update();
+
 
 		link.WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
 
 		link.SendGraphicsInstructions(); // send update 2
+
+		return shouldContinue;
 	}
 
-	void BladeConsole::Update()
+	bool BladeConsole::Update()
 	{
 		// try to resolve objects from previous tick before calculating graphics
 		if (link.HasReceivedResolvedObjects())
@@ -76,7 +81,7 @@ namespace console {
 
 		system( "pause" );
 
-		game.update(); // tick
+		bool shouldContinue = game->update();
 
 		// wait for objects to resolve from tick before last so graphics can stop waiting
 		if (link.HasReceivedResolvedObjects())
@@ -91,6 +96,9 @@ namespace console {
 
 		link.SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event
+
+		// allow Graphics to receive last code if quitting
+		return shouldContinue;
 	}
 
 

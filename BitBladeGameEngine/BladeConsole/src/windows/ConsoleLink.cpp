@@ -15,7 +15,7 @@
 
 
 using gfxLink::MESSAGE_BUFFER_LENGTH;
-using gfxLink::GfxCommand;
+using gfxLink::GfxCode;
 
 ///  PUBLIC
 
@@ -56,8 +56,8 @@ ConsoleLink::ConsoleLink()
 		return;
 	}
 
-	CreateOrOpenMemoryMap( graphicsOutputFileName, hOutputBufferHandle, inputMessageBuffer );
-	CreateOrOpenMemoryMap( consoleOutputFileName, hInputBufferHandle, outputMessageBuffer );
+	CreateOrOpenMemoryMap( graphicsOutputFileName, hGraphicsOutputBuffer, graphicsOutputBuffer );
+	CreateOrOpenMemoryMap( consoleOutputFileName, hConsoleOutputBuffer, consoleOutputBuffer );
 
 	// start simulated irq listening
 	futureGraphicsReadyListener = triggerListenerGraphicsReadyGpioIrqAsync();
@@ -66,6 +66,9 @@ ConsoleLink::ConsoleLink()
 
 ConsoleLink::~ConsoleLink()
 {
+
+	/* * * Stop waiting for any signals * * */
+
 	linkStopSignal = true;
 
 	SetEvent( hGraphicsFinishedProcessingSignal ); // Unblock any waiting
@@ -76,38 +79,40 @@ ConsoleLink::~ConsoleLink()
 	if (futureResolvedObjectsListener.valid())
 		futureResolvedObjectsListener.wait(); // Ensure the task completes before destruction
 
-	if (outputMessageBuffer != NULL)
-		UnmapViewOfFile( outputMessageBuffer );
-	if (inputMessageBuffer != NULL)
-		UnmapViewOfFile( inputMessageBuffer );
+	/* * * let graphics close all handles * * */
 
-	if (hOutputBufferHandle != NULL)
-		CloseHandle( hOutputBufferHandle );
-	if (hInputBufferHandle != NULL)
-		CloseHandle( hInputBufferHandle );
+	// if (consoleOutputBuffer != NULL)
+	// 	UnmapViewOfFile( consoleOutputBuffer );
+	// if (graphicsOutputBuffer != NULL)
+	// 	UnmapViewOfFile( graphicsOutputBuffer );
 
-	if (hfinishedConsoleInstructionTransferSignal != NULL)
-		CloseHandle( hfinishedConsoleInstructionTransferSignal );
-	if (hfinishedProcessingResolvedObjectsSignal != NULL)
-		CloseHandle( hfinishedProcessingResolvedObjectsSignal );
+	// if (hConsoleOutputBuffer != NULL)
+	// 	CloseHandle( hConsoleOutputBuffer );
+	// if (hGraphicsOutputBuffer != NULL)
+	// 	CloseHandle( hGraphicsOutputBuffer );
 
-	if (hGraphicsFinishedProcessingSignal != NULL)
-		CloseHandle( hGraphicsFinishedProcessingSignal );
-	if (hGraphicsResolvedObjectSendFinishSignal != NULL)
-		CloseHandle( hGraphicsResolvedObjectSendFinishSignal );
+	// if (hfinishedConsoleInstructionTransferSignal != NULL)
+	// 	CloseHandle( hfinishedConsoleInstructionTransferSignal );
+	// if (hfinishedProcessingResolvedObjectsSignal != NULL)
+	// 	CloseHandle( hfinishedProcessingResolvedObjectsSignal );
+
+	// if (hGraphicsFinishedProcessingSignal != NULL)
+	// 	CloseHandle( hGraphicsFinishedProcessingSignal );
+	// if (hGraphicsResolvedObjectSendFinishSignal != NULL)
+	// 	CloseHandle( hGraphicsResolvedObjectSendFinishSignal );
 
 	delete[] packedInstructions;
 }
 
 void ConsoleLink::PackInstruction(
-	gfxLink::GfxCommand functionCode, const char* appendData, uint16_t length )
+	gfxLink::GfxCode functionCode, const char appendData[], uint16_t length )
 {
 	gfxLink::packGfxInstruction(
 		packedInstructions, functionCode, appendData, length, currentPosition );
 }
 const char* ConsoleLink::GetReceivedResolvedObjectsInstructions()
 {
-	return inputMessageBuffer;
+	return graphicsOutputBuffer;
 }
 
 bool ConsoleLink::HasReceivedResolvedObjects()
@@ -124,10 +129,10 @@ void ConsoleLink::SendGraphicsInstructions()
 	}
 
 	// add EOF code
-	packedInstructions[currentPosition] = +gfxLink::GfxCommand::End;
+	packedInstructions[currentPosition] = +gfxLink::GfxCode::EndMessage;
 
 	// On spi implementation, start DMA transfer
-	memcpy( outputMessageBuffer, packedInstructions, currentPosition );
+	memcpy( consoleOutputBuffer, packedInstructions, currentPosition );
 	currentPosition = 0;
 
 	// trigger simulated irq (starts a background task or thread)
@@ -208,7 +213,7 @@ HANDLE ConsoleLink::CreateOrConnectEvent( const char* eventName )
 	}
 	return hEvent;
 }
-void ConsoleLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOut, char* bufferOut )
+void ConsoleLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOut, char*& bufferOut )
 {
 	// Try to open existing memory-mapped file
 	handleOut = OpenFileMappingA( FILE_MAP_ALL_ACCESS, FALSE, mapName );
@@ -237,12 +242,13 @@ void ConsoleLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOu
 			std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
 		}
 	}
-	if (bufferOut == NULL)
+	else
 	{
 		std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
 		if (handleOut != NULL)
 		{
 			CloseHandle( handleOut );
+			handleOut = NULL;  // Prevent using an invalid handle
 			return;
 		}
 	}

@@ -25,20 +25,24 @@ namespace game {
 
 		virtual ~BitBladeGame();
 
-	protected:
-
-		static ImageSource* LoadImageSource( const char* filename );
-		static GameObject* CreateInstance( const ImageSource* imageSource );
-
-		virtual void GameStart() {}
+		virtual const char* GetGameTitle() = 0;
+		virtual void GameStart() {};
 		void LoadNewLevel() {}
+
+	protected:
+		void QuitGame();
+
+		ImageSource* LoadImageSource( const char* filename );
+		GameObject* CreateInstance( const ImageSource* imageSource );
+
 
 	private:
 		static vector<ImageSource> imageSources;
 		static vector<GameObject> gameObjects;
+		static bool isGameRunning;
 		static char nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
 
-		static void update();
+		static bool update();
 
 		static ConsoleLink* consoleLink;
 		static void setConsoleLink( ConsoleLink& link );

@@ -11,13 +11,13 @@ public:
 	BladeGraphics();
 	~BladeGraphics();
 
-	void StartGraphics();
-	void UpdateGraphics();
+	bool FirstUpdate();
+	bool Update();
 
 
 private:
 	GraphicsLink link;
-	void ProcessGraphics();
+	bool ProcessGfxInstructions();
 };
 
 #endif // BLADE_GRAPHICS_H

@@ -7,11 +7,26 @@
 namespace game {// Define the static members
 	vector<ImageSource> BitBladeGame::imageSources;
 	vector<GameObject> BitBladeGame::gameObjects;
-	char BitBladeGame::nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
 	ConsoleLink* BitBladeGame::consoleLink;
+	char BitBladeGame::nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
+	bool BitBladeGame::isGameRunning = true;
 
 
 	BitBladeGame::~BitBladeGame() { }
+
+	void BitBladeGame::QuitGame()
+	{
+		BitBladeGame::isGameRunning = false;
+
+		strcpy( nextPackedCommandTemp, GetGameTitle() );
+		uint16_t length = strlen( GetGameTitle() ) + 1;
+
+		// let the BladeGraphics know we are stopping
+		consoleLink->PackInstruction(
+			gfxLink::GfxCode::StopGraphics,
+			nextPackedCommandTemp,
+			length );
+	}
 
 	ImageSource* BitBladeGame::LoadImageSource( const char* filename ) {
 
@@ -22,7 +37,7 @@ namespace game {// Define the static members
 
 		// pack into the ConsoleLink buffer
 		consoleLink->PackInstruction(
-			gfxLink::GfxCommand::CreateImageData,
+			gfxLink::GfxCode::CreateImageData,
 			nextPackedCommandTemp,
 			length );
 
@@ -34,10 +49,12 @@ namespace game {// Define the static members
 	}
 
 
-	void BitBladeGame::update() {
+	bool BitBladeGame::update() {
 		for (auto& gameObject : gameObjects) {
 			gameObject.update();
 		}
+
+		return isGameRunning;
 	}
 
 	void BitBladeGame::setConsoleLink( ConsoleLink& link )

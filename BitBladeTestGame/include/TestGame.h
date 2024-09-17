@@ -14,6 +14,7 @@ public:
 	TestGame();
 	~TestGame() override;
 
+	const char* GetGameTitle() override;
 	void GameStart() override;
 
 private:

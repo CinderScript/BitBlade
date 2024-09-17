@@ -15,7 +15,7 @@ public:
 	GraphicsLink();
 	~GraphicsLink();
 
-	void PackInstruction( gfxLink::GfxCommand functionCode, const char* data, uint16_t length );
+	void PackInstruction( gfxLink::GfxCode functionCode, const char* data, uint16_t length );
 	const char* GetGraphicsInstructions();
 
 	void SendGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
@@ -31,13 +31,13 @@ private:
 
 	// buffers
 	char* packedInstructions;	// double buffer for sending graphics update
-	char* outputMessageBuffer;	// given packed instructions when finished
-	char* inputMessageBuffer;	// resolved objects received
+	char* graphicsOutputBuffer;	// given packed instructions when finished
+	char* consoleOutputBuffer;	// resolved objects received
 	uint16_t currentPosition;		// Position tracker for writing to the buffer
 
 	// memory mapped files
-	HANDLE hOutputBufferHandle;
-	HANDLE hInputBufferHandle;
+	HANDLE hGraphicsOutputBuffer;
+	HANDLE hConsoleOutputBuffer;
 
 	// events
 	HANDLE hfinishedConsoleInstructionTransferSignal;	// sent by console gpio (catch)
@@ -56,7 +56,7 @@ private:
 	std::atomic<bool> linkStopSignal;
 
 	HANDLE CreateOrConnectEvent( const char* eventName );
-	void CreateOrOpenMemoryMap( const LPCSTR& test, HANDLE& handleOut, char* bufferOut );
+	void CreateOrOpenMemoryMap( const LPCSTR& test, HANDLE& handleOut, char*& bufferOut );
 
 	void irqHandlerOnObjectsTransferFinish();
 	void irqHandlerOnInstructionsReceivedSignal();

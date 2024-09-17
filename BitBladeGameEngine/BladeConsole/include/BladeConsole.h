@@ -11,19 +11,32 @@
 namespace console {
 
 	class BladeConsole {
+
 	public:
-		BladeConsole( game::BitBladeGame& myGame );
+		BladeConsole();
+
 		~BladeConsole();
 
-		void Start();
-		void Update();
+		template<typename T>
+		void StartGame()
+		{
+			static_assert(std::is_base_of<game::BitBladeGame, T>::value, "T must derive from BitBladeGame");
+			game = std::make_unique<T>();
+			game->GameStart();
+		}
+
+		bool FirstUpdate();
+		bool Update();
 
 	private:
 		ConsoleLink link;
-		game::BitBladeGame& game;
+		std::unique_ptr<game::BitBladeGame> game;
 
 		void resolveGraphicsObjects();
 	};
+
+
+
 
 }
 

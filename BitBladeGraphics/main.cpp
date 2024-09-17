@@ -20,22 +20,22 @@
 using std::cout;
 
 
-size_t LoadMasterSprite(BladeGraphicsProcessor& bladeGraphics, const std::string& imageName)
+size_t LoadMasterSprite( BladeGraphicsProcessor& bladeGraphics, const std::string& imageName )
 {
 
-	ImageData* imageData = ImageLoader::LoadImageData(imageName);
+	ImageData* imageData = ImageLoader::LoadImageData( imageName );
 
-	size_t imageIndex = bladeGraphics.AddMasterSprite(imageData);
+	size_t imageIndex = bladeGraphics.AddMasterSprite( imageData );
 
 	return imageIndex;
 }
 
 
-void DisplayImageTest(BladeGraphicsProcessor& bladeGraphics)
+void DisplayImageTest( BladeGraphicsProcessor& bladeGraphics )
 {
-	size_t masterID = LoadMasterSprite(bladeGraphics, "SunsetBackground.bmp");
+	size_t masterID = LoadMasterSprite( bladeGraphics, "SunsetBackground.bmp" );
 
-	SpriteInstance* sprite = bladeGraphics.AddSpriteInstance(masterID);
+	SpriteInstance* sprite = bladeGraphics.AddSpriteInstance( masterID );
 
 	bladeGraphics.DisplayGraphics();
 }
@@ -45,14 +45,18 @@ int main()
 #ifdef _WIN32
 #ifdef _DEBUG
 	// Set debug heap flags to track memory allocations and detect leaks
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 #endif
+
+	cout << "\n\n";
 
 	BladeGraphics graphics;
 
-	while (true) {
-		graphics.UpdateGraphics();
+	bool shouldContinue = graphics.FirstUpdate();
+
+	while (shouldContinue) {
+		shouldContinue = graphics.Update();
 	}
 
 	cout << "\n" << "Graphics Done" << "\n";

@@ -23,26 +23,28 @@ namespace gfxLink
 	static constexpr int MESSAGE_BUFFER_LENGTH = 1000;
 	static constexpr int PACKED_COMMAND_MAX_SIZE = 200;
 
-	enum class GfxCommand : uint8_t {
+	enum class GfxCode : uint8_t {
 
-		End = 0,						// end of the graphics instructions
+		EndMessage = 0,						// end of the graphics instructions buffer
 		CreateImageData = 1,
 		CreateSpriteInstance = 2,
 
 		DeleteMasterSprite = 3,
 		DeleteSpriteInstance = 4,
 
-		MovePosition = 3
+		MovePosition = 3,
+
+		StopGraphics = 121					// program end
 	};
 
-	// Operator to automatically convert GfxCommand to uint8_t
-	constexpr uint8_t operator+( GfxCommand cmd ) {
+	// Operator to automatically convert GfxCode to uint8_t
+	constexpr uint8_t operator+( GfxCode cmd ) {
 		return static_cast<uint8_t>(cmd);
 	}
 
-	// Operator to automatically convert uint8_t to GfxCommand
-	constexpr GfxCommand toGfxCommand( uint8_t cmd ) {
-		return static_cast<GfxCommand>(cmd);
+	// Operator to automatically convert uint8_t to GfxCode
+	constexpr GfxCode toGfxCommand( uint8_t cmd ) {
+		return static_cast<GfxCode>(cmd);
 	}
 
 	template<typename T>
@@ -61,7 +63,7 @@ namespace gfxLink
 	}
 
 	inline void packGfxInstruction(
-		char* buffer, GfxCommand functionCode, const char* data, size_t length, uint16_t& posOut )
+		char* buffer, GfxCode functionCode, const char* data, size_t length, uint16_t& posOut )
 	{
 		if (posOut + length + 2 > MESSAGE_BUFFER_LENGTH)
 		{

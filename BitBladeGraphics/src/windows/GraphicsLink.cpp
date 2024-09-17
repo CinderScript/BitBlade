@@ -13,7 +13,7 @@
 #include "GraphicsLink.h"
 #include "BitBladeCommon.h"
 
-using gfxLink::GfxCommand;
+using gfxLink::GfxCode;
 using gfxLink::MESSAGE_BUFFER_LENGTH;
 
 GraphicsLink::GraphicsLink()
@@ -46,8 +46,8 @@ GraphicsLink::GraphicsLink()
 		return;
 	}
 
-	CreateOrOpenMemoryMap( graphicsOutputFileName, hOutputBufferHandle, outputMessageBuffer );
-	CreateOrOpenMemoryMap( consoleOutputFileName, hInputBufferHandle, inputMessageBuffer );
+	CreateOrOpenMemoryMap( graphicsOutputFileName, hGraphicsOutputBuffer, graphicsOutputBuffer );
+	CreateOrOpenMemoryMap( consoleOutputFileName, hConsoleOutputBuffer, consoleOutputBuffer );
 
 	// start simulated irq listening
 	futureInstructionsReceivedListener = triggerListenerInstructionsReceivedGpioIrqAsync();
@@ -66,11 +66,11 @@ GraphicsLink::~GraphicsLink()
 	if (futureConsoleObjectsResolvedListener.valid())
 		futureConsoleObjectsResolvedListener.wait(); // Ensure the task completes before destruction
 
-	if (outputMessageBuffer != NULL) UnmapViewOfFile( outputMessageBuffer );
-	if (inputMessageBuffer != NULL) UnmapViewOfFile( inputMessageBuffer );
+	if (graphicsOutputBuffer != NULL) UnmapViewOfFile( graphicsOutputBuffer );
+	if (consoleOutputBuffer != NULL) UnmapViewOfFile( consoleOutputBuffer );
 
-	if (hOutputBufferHandle != NULL) CloseHandle( hOutputBufferHandle );
-	if (hInputBufferHandle != NULL) CloseHandle( hInputBufferHandle );
+	if (hGraphicsOutputBuffer != NULL) CloseHandle( hGraphicsOutputBuffer );
+	if (hConsoleOutputBuffer != NULL) CloseHandle( hConsoleOutputBuffer );
 
 	if (hfinishedConsoleInstructionTransferSignal != NULL) CloseHandle( hfinishedConsoleInstructionTransferSignal );
 	if (hfinishedConsoleResolvedObjectsFinishSignal != NULL) CloseHandle( hfinishedConsoleResolvedObjectsFinishSignal );
@@ -81,7 +81,7 @@ GraphicsLink::~GraphicsLink()
 	delete[] packedInstructions;
 }
 
-void GraphicsLink::PackInstruction( gfxLink::GfxCommand functionCode, const char* data, uint16_t length )
+void GraphicsLink::PackInstruction( gfxLink::GfxCode functionCode, const char* data, uint16_t length )
 {
 	gfxLink::packGfxInstruction(
 		packedInstructions, functionCode, data, length, currentPosition );
@@ -89,16 +89,16 @@ void GraphicsLink::PackInstruction( gfxLink::GfxCommand functionCode, const char
 
 const char* GraphicsLink::GetGraphicsInstructions()
 {
-	return inputMessageBuffer;
+	return consoleOutputBuffer;
 }
 
 void GraphicsLink::SendResolvedGraphicsObjects() {
 
 	// add EOF code
-	packedInstructions[currentPosition] = +GfxCommand::End;
+	packedInstructions[currentPosition] = +GfxCode::EndMessage;
 
 	// On spi implementation, start DMA transfer
-	memcpy( outputMessageBuffer, packedInstructions, currentPosition );
+	memcpy( graphicsOutputBuffer, packedInstructions, currentPosition );
 	currentPosition = 0;
 
 	// trigger simulated irq (starts a background task or thread)
@@ -156,31 +156,42 @@ HANDLE GraphicsLink::CreateOrConnectEvent( const char* eventName ) {
 	}
 	return hEvent;
 }
-void GraphicsLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOut, char* bufferOut ) {
+void GraphicsLink::CreateOrOpenMemoryMap( const LPCSTR& mapName, HANDLE& handleOut, char*& bufferOut )
+{
 	// Try to open existing memory-mapped file
 	handleOut = OpenFileMappingA( FILE_MAP_ALL_ACCESS, FALSE, mapName );
-	if (handleOut == NULL) {
+	if (handleOut == NULL)
+	{
 		// If it doesn't exist, create a new one
 		std::cout << "No existing memory map found, creating a new one." << std::endl;
-		handleOut = CreateFileMappingA( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, static_cast<DWORD>(MESSAGE_BUFFER_LENGTH), mapName );
-		if (handleOut == NULL) {
+		handleOut = CreateFileMappingA( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0,
+			static_cast<DWORD>(MESSAGE_BUFFER_LENGTH), mapName );
+		if (handleOut == NULL)
+		{
 			std::cerr << "Could not create file mapping object: " << GetLastError() << std::endl;
 		}
 	}
-	else {
+	else
+	{
 		std::cout << "Opened existing memory map:" << mapName << std::endl;
 	}
 
-	if (handleOut != NULL) {
+	if (handleOut != NULL)
+	{
 		bufferOut = static_cast<char*>(MapViewOfFile( handleOut, FILE_MAP_ALL_ACCESS, 0, 0, MESSAGE_BUFFER_LENGTH ));
-		if (bufferOut == NULL) {
+
+		if (bufferOut == NULL)
+		{
 			std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
 		}
 	}
-	if (bufferOut == NULL) {
+	else
+	{
 		std::cerr << "Could not map view of file: " << GetLastError() << std::endl;
-		if (handleOut != NULL) {
+		if (handleOut != NULL)
+		{
 			CloseHandle( handleOut );
+			handleOut = NULL;  // Prevent using an invalid handle
 			return;
 		}
 	}

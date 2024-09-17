@@ -20,6 +20,7 @@ namespace game {
 	{
 		uint16_t pos = 0;
 
+		// copy the ID to the instruction message
 		memcpy( dataOut + pos, &masterIndex, sizeof( uint16_t ) );
 		pos += sizeof( uint16_t );
 
