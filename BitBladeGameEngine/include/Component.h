@@ -1,17 +1,30 @@
+/* Component.h
+*/
+
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "GameObject.h"
+#include "PoolObject.h"
+
+#include <cstdint>
 
 namespace game {
-	class Component {
+
+	class GameObject; // forward declaration
+
+	class Component : public PoolObject
+	{
 	public:
 		virtual ~Component() {}
 
-		virtual void Update();
+		virtual void Update() {}
+
+	protected:
+		Component( GameObject* gameObject ) : gameObject( gameObject ) {}
 
 	private:
 		GameObject* gameObject;
+
 	};
 }
 

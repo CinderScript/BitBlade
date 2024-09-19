@@ -4,16 +4,18 @@
 #ifndef IMAGE_SOURCE_H 
 #define IMAGE_SOURCE_H
 
-#include "ConsoleLink.h"
+#include "PoolObject.h"
 #include "Vector2.h"
 
 namespace game {
+	template<typename T>
+	class DataPool;
 	class BitBladeGame;
 
-	class ImageSource {
+	class ImageSource : public PoolObject {
 	public:
-		// required for BitBladeGame to create a new ImageSource
-		friend class BitBladeGame;
+		friend struct DataPool<ImageSource>;
+		friend class BitBladeGame;				// needs Pack functions
 
 		~ImageSource();
 
@@ -32,11 +34,9 @@ namespace game {
 		// BladeGraphics will use the index given by BitBladeGame to the object pool
 		// as an ID until it can be resolved by saving BladeGraphic's address for this resource.
 		uint8_t isResolved;
-		uint16_t masterIndex;
 		void* bladeGraphicsAddress;
 
-		ImageSource( const char* filename, uint16_t index );
-
+		ImageSource( const char* filename );
 		uint16_t Pack_CreateImageData( char* dataOut );
 	};
 }

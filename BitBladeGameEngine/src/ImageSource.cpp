@@ -12,16 +12,19 @@ namespace game {
 
 	/* --------------------------------- PRIVATE -------------------------------- */
 
-	ImageSource::ImageSource( const char* filename, uint16_t index )
-		: filename( filename ), pivot(), scale(), isResolved( 0 ),
-		masterIndex( index ), bladeGraphicsAddress( nullptr ) {}
+	ImageSource::ImageSource( const char* filename )
+		: filename( filename ),
+		pivot(),
+		scale(),
+		isResolved( 0 ),
+		bladeGraphicsAddress( nullptr ) {}
 
 	uint16_t ImageSource::Pack_CreateImageData( char* dataOut )
 	{
 		uint16_t pos = 0;
 
 		// copy the ID to the instruction message
-		memcpy( dataOut + pos, &masterIndex, sizeof( uint16_t ) );
+		memcpy( dataOut + pos, &objectID, sizeof( uint16_t ) );
 		pos += sizeof( uint16_t );
 
 		// Copy the filename ensuring it is null-terminated

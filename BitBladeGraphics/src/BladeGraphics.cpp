@@ -109,7 +109,7 @@ bool BladeGraphics::ProcessGfxInstructions()
 			readMessageBuffer( buffer, imageDataID, pos );
 			readMessageBufferString( buffer, filename, pos );
 
-			std::cout << "Create Image Data: " << imageDataID << ",  \'" << filename << "\'\n";
+			std::cout << "Create Image Data: " << imageDataID << ",  '" << filename << "'\n";
 			break;
 		}
 		case GfxCode::CreateSpriteInstance:
@@ -133,7 +133,7 @@ bool BladeGraphics::ProcessGfxInstructions()
 		{
 			char gameTitle[gfxLink::PACKED_COMMAND_MAX_SIZE];
 			readMessageBufferString( buffer, gameTitle, pos );
-			std::cout << "Game Stopped: " << gameTitle << "\'\n";
+			std::cout << "Game Stopped: " << gameTitle << "\n";
 
 			return false;
 		}

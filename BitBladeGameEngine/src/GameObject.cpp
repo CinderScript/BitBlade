@@ -4,9 +4,11 @@
 #include "GameObject.h"
 
 namespace game {
-	GameObject::GameObject( const ImageSource* imageSource )
-		: sprite( imageSource ), position()
+	GameObject::GameObject( BitBladeGame* game, const ImageSource* imageSource )
+		: game( game ), position()
 	{
+		sprite = nullptr;
+		game = nullptr;
 	}
 
 	GameObject::~GameObject()

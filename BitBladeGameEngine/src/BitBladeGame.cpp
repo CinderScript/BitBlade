@@ -4,13 +4,21 @@
 #include "BitBladeGame.h"
 #include "BitBladeCommon.h"
 
+#include "ImageSource.h"
+#include "GameObject.h"
+
+#include "BladeConsole.h"
+
 namespace game {// Define the static members
-	vector<ImageSource> BitBladeGame::imageSources;
-	vector<GameObject> BitBladeGame::gameObjects;
-	ConsoleLink* BitBladeGame::consoleLink;
+
+	console::ConsoleLink* BitBladeGame::consoleLink;
 	char BitBladeGame::nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
 	bool BitBladeGame::isGameRunning = true;
 
+	BitBladeGame::BitBladeGame() : imgPool( 50 ), objPool( 300 ) {
+
+		componentPool.InitializeCapacity<Sprite>( 200 );
+	}
 
 	BitBladeGame::~BitBladeGame() { }
 
@@ -30,10 +38,8 @@ namespace game {// Define the static members
 
 	ImageSource* BitBladeGame::LoadImageSource( const char* filename ) {
 
-		ImageSource image( filename, imageSources.size() );
-		imageSources.push_back( std::move( image ) );
-
-		uint16_t length = image.Pack_CreateImageData( nextPackedCommandTemp );
+		ImageSource* image = imgPool.Add( filename );
+		uint16_t length = image->Pack_CreateImageData( nextPackedCommandTemp );
 
 		// pack into the ConsoleLink buffer
 		consoleLink->PackInstruction(
@@ -41,23 +47,26 @@ namespace game {// Define the static members
 			nextPackedCommandTemp,
 			length );
 
-		return &imageSources.back();
+		return image;
 	}
 
 	GameObject* BitBladeGame::CreateInstance( const ImageSource* image ) {
-		return &gameObjects.emplace_back( image );
+
+		GameObject* obj = objPool.Add( this, image );
+
+		return obj;
 	}
 
 
 	bool BitBladeGame::update() {
-		for (auto& gameObject : gameObjects) {
-			gameObject.update();
-		}
+		// for (auto& gameObject : gameObjects) {
+		// 	gameObject.update();
+		// }
 
 		return isGameRunning;
 	}
 
-	void BitBladeGame::setConsoleLink( ConsoleLink& link )
+	void BitBladeGame::setConsoleLink( console::ConsoleLink& link )
 	{
 		BitBladeGame::consoleLink = &link;
 	}

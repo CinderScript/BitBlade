@@ -2,16 +2,17 @@
 */
 
 #include "TestGame.h"
+#include "GameObject.h"
 
 #include <iostream>
 
 TestGame::TestGame()
 {
 	backgroundImage = LoadImageSource( "background.bmp" );
-	// heroImage = LoadImageSource( "hero.bmp" );
+	heroImage = LoadImageSource( "hero.bmp" );
 
-	// background = CreateInstance( backgroundImage );
-	// hero = CreateInstance( heroImage );
+	background = CreateInstance( backgroundImage );
+	hero = CreateInstance( heroImage );
 }
 
 TestGame::~TestGame() {}

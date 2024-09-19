@@ -6,75 +6,75 @@
 
 #include "BitBladeCommon.h"
 
-
-class BladeConsole; // Forward declaration
-
 #include <Windows.h>
 #include <atomic>
 #include <future>
 #include <mutex>
 
-class ConsoleLink
-{
-public:
-  ConsoleLink();
-  ~ConsoleLink();
+namespace console {
 
-  void PackInstruction( gfxLink::GfxCode functionCode, const char appendData[], uint16_t length );
-  const char* GetReceivedResolvedObjectsInstructions();
-  bool HasReceivedResolvedObjects();
+  class ConsoleLink
+  {
+  public:
+    ConsoleLink();
+    ~ConsoleLink();
 
-  void SendGraphicsInstructions();
-  void SignalObjectsResolvedComplete();
-  void WaitForGraphicsReadySignal();
-  void WaitForResolvedObjectsReceived();
-  void WaitForGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
+    void PackInstruction( gfxLink::GfxCode functionCode, const char appendData[], uint16_t length );
+    const char* GetReceivedResolvedObjectsInstructions();
+    bool HasReceivedResolvedObjects();
 
-private:
-  static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
-  static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
+    void SendGraphicsInstructions();
+    void SignalObjectsResolvedComplete();
+    void WaitForGraphicsReadySignal();
+    void WaitForResolvedObjectsReceived();
+    void WaitForGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
 
-  // buffers
-  char* packedInstructions;  // double buffer for sending graphics update
-  char* consoleOutputBuffer; // given packed instructions when finished
-  char* graphicsOutputBuffer;  // resolved objects received
-  uint16_t currentPosition;    // Position tracker for writing to the buffer
+  private:
+    static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
+    static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
 
-  // memory mapped files
-  HANDLE hConsoleOutputBuffer;
-  HANDLE hGraphicsOutputBuffer;
+    // buffers
+    char* packedInstructions;  // double buffer for sending graphics update
+    char* consoleOutputBuffer; // given packed instructions when finished
+    char* graphicsOutputBuffer;  // resolved objects received
+    uint16_t currentPosition;    // Position tracker for writing to the buffer
 
-  // events
-  HANDLE hfinishedConsoleInstructionTransferSignal; // sent by console gpio
-  HANDLE hfinishedProcessingResolvedObjectsSignal;  // sent by console gpio
-  HANDLE hGraphicsFinishedProcessingSignal;         // sent by graphics gpio (catch)
-  HANDLE hGraphicsResolvedObjectSendFinishSignal;   // sent by graphics gpio (catch)
+    // memory mapped files
+    HANDLE hConsoleOutputBuffer;
+    HANDLE hGraphicsOutputBuffer;
 
-  bool isGraphicsReady;
-  std::mutex mutexIsGraphicsReady;
-  std::future<void> futureGraphicsReadyListener;
+    // events
+    HANDLE hfinishedConsoleInstructionTransferSignal; // sent by console gpio
+    HANDLE hfinishedProcessingResolvedObjectsSignal;  // sent by console gpio
+    HANDLE hGraphicsFinishedProcessingSignal;         // sent by graphics gpio (catch)
+    HANDLE hGraphicsResolvedObjectSendFinishSignal;   // sent by graphics gpio (catch)
 
-  bool isResolvedObjectsReceived;
-  std::mutex mutexResolvedObjectsReceived;
-  std::future<void> futureResolvedObjectsListener;
+    bool isGraphicsReady;
+    std::mutex mutexIsGraphicsReady;
+    std::future<void> futureGraphicsReadyListener;
 
-  std::atomic<bool> linkStopSignal;
+    bool isResolvedObjectsReceived;
+    std::mutex mutexResolvedObjectsReceived;
+    std::future<void> futureResolvedObjectsListener;
 
-  HANDLE CreateOrConnectEvent( LPCSTR eventName );
-  void CreateOrOpenMemoryMap( const LPCSTR& test, HANDLE& handleOut, char*& bufferOut );
+    std::atomic<bool> linkStopSignal;
 
-  void irqHandlerOnConsoleTransferFinish();
-  void irqHandlerOnResolvedObjectsReceived();
-  void irqHandlerOnGraphicsReady();
+    HANDLE CreateOrConnectEvent( LPCSTR eventName );
+    void CreateOrOpenMemoryMap( const LPCSTR& test, HANDLE& handleOut, char*& bufferOut );
 
-  // simulated irq triggering
-  // listen or start in another thread to simulate non blocking irq signalling
-  void triggerConsoleTransferFinishDmaIrqAsync();                         // simulate triggering irq handler
-  std::future<void> triggerListenerResolvedObjectsReceivedGpioIrqAsync(); // simulate triggering irq handler
-  std::future<void> triggerListenerGraphicsReadyGpioIrqAsync();           // simulate triggering irq handler
+    void irqHandlerOnConsoleTransferFinish();
+    void irqHandlerOnResolvedObjectsReceived();
+    void irqHandlerOnGraphicsReady();
 
-  void gpioSignalFinishedProcessingResolvedObjects(); // Graphics result resolved
-  void gpioSignalFinishedConsoleTransfer();
-};
+    // simulated irq triggering
+    // listen or start in another thread to simulate non blocking irq signalling
+    void triggerConsoleTransferFinishDmaIrqAsync();                         // simulate triggering irq handler
+    std::future<void> triggerListenerResolvedObjectsReceivedGpioIrqAsync(); // simulate triggering irq handler
+    std::future<void> triggerListenerGraphicsReadyGpioIrqAsync();           // simulate triggering irq handler
+
+    void gpioSignalFinishedProcessingResolvedObjects(); // Graphics result resolved
+    void gpioSignalFinishedConsoleTransfer();
+  };
+}
 
 #endif // CONSOLE_LINK_H

@@ -3,10 +3,11 @@
 */
 
 
-
 namespace game {
+
 	Sprite::Sprite( const ImageSource* imageSource )
-		: image( imageSource ),
+		: Component( nullptr ),
+		image( imageSource ),
 		pivot( imageSource->Pivot() ),
 		scale( imageSource->Scale() ) {}
 
