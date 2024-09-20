@@ -4,7 +4,7 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "PoolObject.h"
+#include "DataPoolMember.h"
 
 #include <cstdint>
 
@@ -12,7 +12,7 @@ namespace game {
 
 	class GameObject; // forward declaration
 
-	class Component : public PoolObject
+	class Component : public DataPoolMember
 	{
 	public:
 		virtual ~Component() {}

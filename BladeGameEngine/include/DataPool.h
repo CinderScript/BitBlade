@@ -4,7 +4,7 @@
 #ifndef DATA_POOL_H
 #define DATA_POOL_H
 
-#include "PoolObject.h" // Include PoolObject to ensure T derives from it
+#include "DataPoolMember.h" // Include PoolObject to ensure T derives from it
 #include <vector>
 #include <cassert>
 #include <cstdint>
@@ -106,7 +106,7 @@ namespace game {
 			return pos;
 
 
-			// !!! INSTEAD - JUST GET THE ID FROM THE PoolObject!
+			// !!! INSTEAD - JUST GET THE ID FROM THE DataPoolMember!
 		}
 	};
 

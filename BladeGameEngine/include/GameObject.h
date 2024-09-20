@@ -4,6 +4,7 @@
 #ifndef GAME_OBJECT_H 
 #define GAME_OBJECT_H
 
+#include "DataPoolMember.h"
 #include "ImageSource.h"
 #include "Vector2.h"
 
@@ -16,7 +17,7 @@ namespace game {
 	class Component;
 	class Sprite;
 
-	class GameObject : public PoolObject {
+	class GameObject : public DataPoolMember {
 
 	public:
 		friend struct DataPool<GameObject>;

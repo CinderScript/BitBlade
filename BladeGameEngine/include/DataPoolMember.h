@@ -1,8 +1,8 @@
-/* PoolObject.h
+/* DataPoolMember.h
 */
 
-#ifndef POOL_OBJECT_H
-#define POOL_OBJECT_H
+#ifndef DATA_POOL_MEMBER_H
+#define DATA_POOL_MEMBER_H
 
 #include <cstdint>
 
@@ -10,11 +10,11 @@ namespace game {
 
 	class DataCluster;
 
-	class PoolObject {
+	class DataPoolMember {
 	public:
 		friend class DataCluster;
 
-		virtual ~PoolObject() = default;
+		virtual ~DataPoolMember() = default;
 
 		uint16_t PoolID() const { return poolID; }
 		uint16_t ObjectID() const { return objectID; }
@@ -32,4 +32,4 @@ namespace game {
 }
 
 
-#endif // POOL_OBJECT_H
+#endif // DATA_POOL_MEMBER_H

@@ -4,7 +4,7 @@
 #ifndef DATA_CLUSTER_H
 #define DATA_CLUSTER_H
 
-#include "PoolObject.h"
+#include "DataPoolMember.h"
 #include "DataPool.h"
 
 #include <cstdint>
@@ -30,7 +30,7 @@ namespace game {
 
 		template<typename T, typename... Args>
 		T* Add( Args&&... args ) {
-			static_assert(std::is_base_of<PoolObject, T>::value, "T must be a PoolObject");
+			static_assert(std::is_base_of<DataPoolMember, T>::value, "T must be a DataPoolMember");
 
 			// Get or create the pool for type T
 			uint16_t poolID;
@@ -46,7 +46,7 @@ namespace game {
 			return obj;
 		}
 
-		void Remove( PoolObject* obj ) {
+		void Remove( DataPoolMember* obj ) {
 			uint16_t poolID = obj->PoolID();
 			uint16_t objID = obj->ObjectID();
 

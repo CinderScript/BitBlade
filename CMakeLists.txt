@@ -6,11 +6,21 @@ project ("BitBlade")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Include the Common directory
-include_directories(
-	"Common/include" 
-)
 
-add_subdirectory(BitBladeGameEngine)
-add_subdirectory(BitBladeGraphics)
-add_subdirectory(BitBladeTestGame)
+# Enable testing
+enable_testing()
+
+# Option to build tests
+option(BUILD_TESTS "Build tests on Debug" ON)
+
+add_subdirectory(Common)
+add_subdirectory(BladeGameEngine)
+add_subdirectory(BladeGraphics)
+
+add_subdirectory(BladeTestGame)
+
+# Conditionally add tests
+if(BUILD_TESTS AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
+    enable_testing()
+    add_subdirectory(tests)
+endif()

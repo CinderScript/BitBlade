@@ -4,7 +4,7 @@
 #ifndef IMAGE_SOURCE_H 
 #define IMAGE_SOURCE_H
 
-#include "PoolObject.h"
+#include "DataPoolMember.h"
 #include "Vector2.h"
 
 namespace game {
@@ -12,7 +12,7 @@ namespace game {
 	class DataPool;
 	class BitBladeGame;
 
-	class ImageSource : public PoolObject {
+	class ImageSource : public DataPoolMember {
 	public:
 		friend struct DataPool<ImageSource>;
 		friend class BitBladeGame;				// needs Pack functions

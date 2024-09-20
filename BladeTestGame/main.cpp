@@ -5,6 +5,7 @@
 
 #include "BladeStart.h"
 #include "TestGame.h"
+#include "BladeConsole.h"
 
 // #include <memory>  // for smart pointers
 
