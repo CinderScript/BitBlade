@@ -52,4 +52,4 @@ No license at this time.
 ---
 
 
-Copyright [2024] [Gregory Maynard]
+Copyright 2024 - Gregory Maynard
