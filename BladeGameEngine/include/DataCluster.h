@@ -6,6 +6,7 @@
 
 #include "DataPoolMember.h"
 #include "DataPool.h"
+#include "BitBladeCommon.h"
 
 #include <cstdint>
 #include <vector>
@@ -21,9 +22,6 @@ namespace game {
 	class DataCluster {
 
 	public:
-		/// @brief If a pool type has not been initialized before adding elements,
-		///			This default capacity will be used for this pool.
-		static constexpr uint16_t DEFAULT_POOL_CAPACITY = 200;
 
 		DataCluster() : nextPoolID( 0 ) {}
 		~DataCluster() {}
@@ -39,11 +37,14 @@ namespace game {
 			// Add the object to the pool
 			T* obj = pool.Add( std::forward<Args>( args )... );
 
-			// Set the identification of the Pool member
-			uint16_t objID = pool.GetObjID( obj );
-			obj->SetIdentification( poolID, objID );
-
-			return obj;
+			if (obj == nullptr)
+				return nullptr;
+			else {
+				// Set the identification of the Pool member
+				uint16_t objID = pool.GetObjID( obj );
+				obj->SetIdentification( poolID, objID );
+				return obj;
+			}
 		}
 
 		void Remove( DataPoolMember* obj ) {
@@ -59,15 +60,11 @@ namespace game {
 		}
 
 		template<typename T>
-		DataPool<T>& GetPool() {
-			return GetOrCreatePool<T>();
-		}
-
-		template<typename T>
 		void SortInsertionOrder() {
 			DataPool<T>& pool = GetOrCreatePool<T>();
 			pool.SortInsertionOrder();
 		}
+
 		// Sorts all pools in the cluster
 		void SortInsertionOrder() {
 			for (auto& poolPtr : pools) {
@@ -77,10 +74,69 @@ namespace game {
 		}
 
 		template<typename T>
-		void InitializeCapacity( uint16_t capacity ) {
-			uint16_t trash;
-			GetOrCreatePool<T>( trash, capacity );
+		int32_t PoolCount() const {
+			return typeToPoolIndex.size();
 		}
+
+		template<typename T>
+		int32_t GetPoolID() const {
+			auto typeIndex = std::type_index( typeid(T) );
+			auto it = typeToPoolIndex.find( typeIndex );
+
+			if (it != typeToPoolIndex.end()) {
+				return it->second;
+			}
+			else {
+				return -1;
+			}
+		}
+
+		template<typename T>
+		const DataPool<T>* GetPool() const
+		{
+			uint32_t poolID = GetPoolID<T>();
+			if (poolID != -1) {
+				return static_cast<DataPool<T>*>(pools[poolID].get());
+			}
+			else {
+				return nullptr;
+			}
+		}
+
+		template<typename T>
+		bool DoesPoolExist() const {
+			auto typeIndex = std::type_index( typeid(T) );
+			return typeToPoolIndex.count( typeIndex ) != 0;
+		}
+
+		/// @brief If a pool has not already been added, creates the pool with the reserved 
+		///			capacity. If the pool already exists (through previous reserve or add) then
+		///			does nothing.
+		/// @tparam T - Data Type the pool holds
+		/// @param capacity - Max capacity of the pool
+		/// @return The reserved pool, otherwise nullptr
+		template<typename T>
+		const DataPool<T>* ReservePool( uint16_t capacity )
+		{
+			auto typeIndex = std::type_index( typeid(T) );
+
+			// Check if pool already exists
+			if (typeToPoolIndex.find( typeIndex ) != typeToPoolIndex.end()) {
+				return nullptr; // Pool already exists
+			}
+
+			uint16_t poolID = nextPoolID++;
+			typeToPoolIndex[typeIndex] = poolID;
+
+			// Create the new pool
+			pools.resize( poolID + 1 );
+			auto pool = std::make_unique<DataPool<T>>( capacity );
+			pools[poolID] = std::move( pool );
+
+			DataPool<T>* poolPtr = static_cast<DataPool<T>*>(pools[poolID].get());
+			return poolPtr; // Return the newly created pool
+		}
+
 
 	private:
 
@@ -89,7 +145,10 @@ namespace game {
 		uint16_t nextPoolID = 0;
 
 		template<typename T>
-		DataPool<T>& GetOrCreatePool( uint16_t& out_PoolID, uint16_t capacity = DEFAULT_POOL_CAPACITY ) {
+		DataPool<T>& GetOrCreatePool(
+			uint16_t& out_PoolID,
+			uint16_t capacity = gameConfig::DATA_CLUSTER_DEFAULT_POOL_CAPACITY )
+		{
 			auto typeIndex = std::type_index( typeid(T) );
 			auto it = typeToPoolIndex.find( typeIndex );
 

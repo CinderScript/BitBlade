@@ -20,17 +20,17 @@ namespace game {
 
 	template<typename T>
 	struct DataPool : IPool {
-		uint16_t capacity;
 
-		uint16_t poolID;
-		alignas(alignof(T)) char* buffer;  						// Raw memory buffer
-		bool* occupied;						                    // Occupancy flags
-		std::vector<uint16_t> freeIndices;                      // Indices of free slots
+		// Delete copy constructor and copy assignment operator
+		DataPool( const DataPool& ) = delete;
+		DataPool& operator=( const DataPool& ) = delete;
 
-		DataPool( size_t cap = 100 ) : capacity( cap )
+		DataPool( size_t cap = 100 ) : capacity( cap ), count( 0 )
 		{
 			// Initialize buffer in memory
-			buffer = static_cast<char*>(::operator new[]( capacity * sizeof( T ), std::align_val_t( alignof(T) ) ));
+			//buffer = static_cast<char*>(::operator new[]( capacity * sizeof( T ), std::align_val_t( alignof(T) ) ));
+			buffer = static_cast<char*>(::operator new[]( capacity * sizeof( T ) ));
+
 			occupied = new bool[capacity];
 
 			freeIndices.reserve( capacity );
@@ -54,24 +54,30 @@ namespace game {
 				}
 			}
 
-			delete occupied;
+			// Deallocate the buffer and occupied array
+			//::operator delete[]( buffer, std::align_val_t( alignof(T) ) );
+			::operator delete[]( buffer );
+			delete[] occupied;
 		}
 
 		template<typename... Args>
 		T* Add( Args&&... args ) {
-			assert( !freeIndices.empty() && "No more space in the pool." );
+			//if (count < capacity)
+			if (!freeIndices.empty())
+			{
+				uint16_t pos = freeIndices.back();
+				freeIndices.pop_back();
 
-			uint16_t pos = freeIndices.back();
-			freeIndices.pop_back();
+				// Construct object in place using placement new
+				T* obj = new (buffer + pos * sizeof( T )) T( std::forward<Args>( args )... );
+				occupied[pos] = true;
 
-			// Construct object in place using placement new
-			T* obj = new (buffer + pos * sizeof( T )) T( std::forward<Args>( args )... );
-			occupied[pos] = true;
-
-			// Set identification
-			obj->SetIdentification( poolID, pos );
-
-			return obj;
+				count++;
+				return obj;
+			}
+			else {
+				return nullptr;
+			}
 		}
 
 		void Remove( uint16_t index ) override {
@@ -85,6 +91,7 @@ namespace game {
 			// Mark as free
 			occupied[index] = false;
 			freeIndices.push_back( index );
+			count--;
 		}
 
 		void SortInsertionOrder() override {
@@ -104,10 +111,20 @@ namespace game {
 			uint16_t pos = static_cast<uint16_t>((objAddress - baseAddress) / sizeof( T ));
 			assert( pos < capacity && "Invalid object pointer." );
 			return pos;
-
-
-			// !!! INSTEAD - JUST GET THE ID FROM THE DataPoolMember!
 		}
+
+		uint16_t Capacity() const { return capacity; }
+		uint16_t Count() const { return count; }
+		const std::vector<uint16_t>& GetFreeIndices() const { return freeIndices; }
+		const bool* GetOccupationList() const { return occupied; }
+
+	private:
+		const uint16_t capacity;
+		uint16_t count;
+		alignas(alignof(T)) char* buffer;  						// Raw memory buffer
+		bool* occupied;						                    // Occupancy flags
+		std::vector<uint16_t> freeIndices;                      // Indices of free slots
+
 	};
 
 } // End of namespace game

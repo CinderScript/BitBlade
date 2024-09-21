@@ -17,7 +17,7 @@ namespace game {
 	class Component;
 	class Sprite;
 
-	class GameObject : public DataPoolMember {
+	class alignas(32) GameObject : public DataPoolMember {
 
 	public:
 		friend struct DataPool<GameObject>;
@@ -35,6 +35,8 @@ namespace game {
 		Vector2 position;
 		Sprite* sprite;
 		BitBladeGame* game;
+		GameObject* parent;
+		std::vector<GameObject*> children;
 		std::vector<Component*> components;
 
 		GameObject( BitBladeGame* game, const ImageSource* imageSource );

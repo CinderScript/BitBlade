@@ -17,7 +17,7 @@ namespace game {// Define the static members
 
 	BitBladeGame::BitBladeGame() : imgPool( 50 ), objPool( 300 ) {
 
-		componentPool.InitializeCapacity<Sprite>( 200 );
+		componentPool.ReservePool<Sprite>( 200 );
 	}
 
 	BitBladeGame::~BitBladeGame() { }

@@ -15,7 +15,9 @@ namespace gameConfig
 	static constexpr int MAX_IMAGE_RESOURCES = 100;
 	static constexpr int MAX_GAME_OBJECTS = 300;
 
-	// Max number of bytes any single packed command can be
+	/// @brief If a pool type has not been initialized before adding elements,
+	///			This default capacity will be used for this pool.
+	static constexpr uint16_t DATA_CLUSTER_DEFAULT_POOL_CAPACITY = 200;
 }
 
 namespace gfxLink
