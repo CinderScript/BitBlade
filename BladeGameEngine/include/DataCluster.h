@@ -73,7 +73,6 @@ namespace game {
 			}
 		}
 
-		template<typename T>
 		int32_t PoolCount() const {
 			return typeToPoolIndex.size();
 		}

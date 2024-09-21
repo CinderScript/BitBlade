@@ -88,6 +88,18 @@ TEST_F( DataClusterTest, DoesPoolExist ) {
 	EXPECT_FALSE( cluster.DoesPoolExist<Tree>() );
 }
 
+TEST_F( DataClusterTest, PoolCount ) {
+	cluster.Add<Flower>( "Daisy", Color::Red );
+	cluster.Add<Dog>( "Rover" );
+	cluster.Add<Tree>( "Maple" );
+
+	EXPECT_EQ( cluster.PoolCount(), 3 );
+
+	cluster.Add<Plant>( "Big Plant" );
+	cluster.Add<Organism>( "Unknown" );
+
+	EXPECT_EQ( cluster.PoolCount(), 5 );
+}
 
 TEST_F( DataClusterTest, Polymorphism ) {
 	cluster.Add<Flower>( "Daisy", Color::Red );
