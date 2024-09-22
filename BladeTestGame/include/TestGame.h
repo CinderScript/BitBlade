@@ -5,17 +5,17 @@
 #define TEST_GAME_H
 
 #include "BitBladeGame.h"
+#include "IGfxMessageLink.h"
 #include "ImageSource.h"
 
 class TestGame : public game::BitBladeGame {
 public:
-	friend class console::BladeConsole;
 
-	TestGame();
+	TestGame( IGfxMessageLink* link );
 	~TestGame() override;
 
 	const char* GetGameTitle() override;
-	void GameStart() override;
+	void InitializeGame() override;
 
 private:
 	const game::ImageSource* backgroundImage;

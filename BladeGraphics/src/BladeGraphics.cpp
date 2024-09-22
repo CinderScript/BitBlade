@@ -31,7 +31,7 @@
 
 #include "BladeGraphics.h"
 #include "GraphicsLink.h"
-#include "BitBladeCommon.h"
+#include "GfxLinkCommon.h"
 
 #include <iostream>
 
@@ -105,7 +105,7 @@ bool BladeGraphics::ProcessGfxInstructions()
 		case GfxCode::CreateImageData:
 		{
 			uint16_t imageDataID;
-			char filename[gfxLink::PACKED_COMMAND_MAX_SIZE];
+			char filename[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
 			readMessageBuffer( buffer, imageDataID, pos );
 			readMessageBufferString( buffer, filename, pos );
 
@@ -131,7 +131,7 @@ bool BladeGraphics::ProcessGfxInstructions()
 		}
 		case GfxCode::StopGraphics:
 		{
-			char gameTitle[gfxLink::PACKED_COMMAND_MAX_SIZE];
+			char gameTitle[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
 			readMessageBufferString( buffer, gameTitle, pos );
 			std::cout << "Game Stopped: " << gameTitle << "\n";
 

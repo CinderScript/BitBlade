@@ -6,7 +6,7 @@
 
 #include "DataPoolMember.h"
 #include "DataPool.h"
-#include "BitBladeCommon.h"
+#include "BladeConfig.h"
 
 #include <cstdint>
 #include <vector>

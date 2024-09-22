@@ -14,7 +14,8 @@ namespace game {
 	template<typename T>
 	void StartGame() {
 
-		static_assert(std::is_base_of<BitBladeGame, T>::value, "T must derive from BitBladeGame");
+		static_assert(std::is_base_of<IGfxMessageProducer, T>::value,
+			"T must derive from BitBladeGame, or IGfxMessageProducer");
 
 		console::BladeConsole console;
 

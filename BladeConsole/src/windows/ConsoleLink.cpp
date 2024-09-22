@@ -10,11 +10,12 @@
 #include <string>
 #include <thread> // For std::this_thread::sleep_for
 
+#include "GfxLinkCommon.h"
+#include "BladeConfig.h"
 #include "ConsoleLink.h"
-#include "BitBladeCommon.h"
 
 
-using gfxLink::MESSAGE_BUFFER_LENGTH;
+using gfxLinkConfig::MESSAGE_BUFFER_LENGTH;
 using gfxLink::GfxCode;
 
 ///  PUBLIC

@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include "DataPool.h"
 #include "DataCluster.h"
-#include "BitBladeCommon.h"
 #include "DataPoolTypes_test.h"
 
 using game::DataCluster;

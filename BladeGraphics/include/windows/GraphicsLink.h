@@ -4,7 +4,8 @@
 #ifndef GRAPHICS_LINK_H
 #define GRAPHICS_LINK_H
 
-#include "BitBladeCommon.h"
+#include "GfxLinkCommon.h"
+
 #include <Windows.h>
 #include <mutex>
 #include <atomic>

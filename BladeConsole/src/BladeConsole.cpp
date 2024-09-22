@@ -13,16 +13,16 @@
  // send update: 2									// send result: A
 
  // UPDATE:											// UPDATE:
- // (interrupt, resolve, event) result A	<-------	// (interrupt, event) send A finish
+ // (interrupt, resolve, event) result A	<------ // (interrupt, event) send A finish
  // (interrupt, event) send 2 finished	-------> 	// (await signal) console send 2 finish
  // TICK graphics 3									// graphics PROCSSES tick 2
- // 		cont. resolve A processing		------->	// (await signal) result A resolved (will usually resolve before tick finishes)
+ // 		cont. resolve A processing	------> 		// (await signal) result A resolved (will usually resolve before tick finishes)
  // (await signal) for graphics finish	<------- 	// (signal) graphics process finished: 2
  //		cont. resolve A processing					// send result: B
  // send update: 3
 
- // (interrupt, resolve, event) result B	<-------	// (interrupt, event) send B finish
- // (interrupt, event) send 3 finished	-------> 	// (await signal) console send 3 finish
+ // (interrupt, resolve, event) result B <-------	// (interrupt, event) send B finish
+ // (interrupt, event) send 3 finished	 -------> 	// (await signal) console send 3 finish
  // TICK graphics 4									// graphics PROCSSES tick 3
  //		cont. resolve B processing		------->	// (await signal) result B resolved
  // (await signal) for graphics finish	<------- 	// (signal) graphics process finished: 3
@@ -36,10 +36,11 @@
 
 namespace console {
 
-	BladeConsole::BladeConsole() : link(), game()
+	BladeConsole::BladeConsole()
+		: link( std::make_unique<ConsoleLink>() ),
+		game( nullptr )
 	{
-		game::BitBladeGame::setConsoleLink( link ); // so the game can pack messages
-		link.WaitForGraphicsStartupEvent();
+		link->WaitForGraphicsStartupEvent();
 	}
 
 	BladeConsole::~BladeConsole() {}
@@ -49,7 +50,7 @@ namespace console {
 		// perform first game tick
 		bool shouldContinue = game->update();
 
-		link.SendGraphicsInstructions(); // irq when finished
+		link->SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event
 
 		// allow Graphics to receive last code if quitting
@@ -63,9 +64,9 @@ namespace console {
 		shouldContinue = game->update();
 
 
-		link.WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
+		link->WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
 
-		link.SendGraphicsInstructions(); // send update 2
+		link->SendGraphicsInstructions(); // send update 2
 
 		return shouldContinue;
 	}
@@ -73,10 +74,10 @@ namespace console {
 	bool BladeConsole::Update()
 	{
 		// try to resolve objects from previous tick before calculating graphics
-		if (link.HasReceivedResolvedObjects())
+		if (link->HasReceivedResolvedObjects())
 		{
 			resolveGraphicsObjects();
-			link.SignalObjectsResolvedComplete();
+			link->SignalObjectsResolvedComplete();
 		}
 
 		system( "pause" );
@@ -84,17 +85,17 @@ namespace console {
 		bool shouldContinue = game->update();
 
 		// wait for objects to resolve from tick before last so graphics can stop waiting
-		if (link.HasReceivedResolvedObjects())
+		if (link->HasReceivedResolvedObjects())
 		{
-			link.WaitForResolvedObjectsReceived();
+			link->WaitForResolvedObjectsReceived();
 			resolveGraphicsObjects();
-			link.SignalObjectsResolvedComplete();
+			link->SignalObjectsResolvedComplete();
 		}
 
 		// blocks until: graphics gets frame before last -> graphics finishes, console resolves objects -> sends resolved event
-		link.WaitForGraphicsReadySignal();
+		link->WaitForGraphicsReadySignal();
 
-		link.SendGraphicsInstructions(); // irq when finished
+		link->SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event
 
 		// allow Graphics to receive last code if quitting
@@ -104,6 +105,6 @@ namespace console {
 
 	void BladeConsole::resolveGraphicsObjects()
 	{
-		const char* message = link.GetReceivedResolvedObjectsInstructions();
+		const char* message = link->GetReceivedResolvedObjectsInstructions();
 	}
 }

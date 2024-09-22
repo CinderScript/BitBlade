@@ -11,10 +11,9 @@
 #include <mutex>
 
 #include "GraphicsLink.h"
-#include "BitBladeCommon.h"
 
 using gfxLink::GfxCode;
-using gfxLink::MESSAGE_BUFFER_LENGTH;
+using gfxLinkConfig::MESSAGE_BUFFER_LENGTH;
 
 GraphicsLink::GraphicsLink()
 	: isInstructionsReceived( false ),

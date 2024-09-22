@@ -4,27 +4,16 @@
 #ifndef BIT_BLADE_COMMON_H
 #define BIT_BLADE_COMMON_H
 
+#include "BladeConfig.h"
+
 #include <iostream>
 #include <cstdint>	// uint*_t
 #include <cstddef>  // For size_t
 #include <cstring>  // For memcpy
 
 
-namespace gameConfig
-{
-	static constexpr int MAX_IMAGE_RESOURCES = 100;
-	static constexpr int MAX_GAME_OBJECTS = 300;
-
-	/// @brief If a pool type has not been initialized before adding elements,
-	///			This default capacity will be used for this pool.
-	static constexpr uint16_t DATA_CLUSTER_DEFAULT_POOL_CAPACITY = 200;
-}
-
 namespace gfxLink
 {
-	static constexpr int MESSAGE_BUFFER_LENGTH = 1000;
-	static constexpr int PACKED_COMMAND_MAX_SIZE = 200;
-
 	enum class GfxCode : uint8_t {
 
 		EndMessage = 0,						// end of the graphics instructions buffer
@@ -36,7 +25,7 @@ namespace gfxLink
 
 		MovePosition = 3,
 
-		StopGraphics = 121					// program end
+		StopGraphics = 255					// program end
 	};
 
 	// Operator to automatically convert GfxCode to uint8_t
@@ -67,7 +56,7 @@ namespace gfxLink
 	inline void packGfxInstruction(
 		char* buffer, GfxCode functionCode, const char* data, size_t length, uint16_t& posOut )
 	{
-		if (posOut + length + 2 > MESSAGE_BUFFER_LENGTH)
+		if (posOut + length + 2 > gfxLinkConfig::MESSAGE_BUFFER_LENGTH)
 		{
 			// Check buffer overflow (+1 for function code, +1 for EOF code)
 			std::cerr << "Buffer overflow prevented." << std::endl;

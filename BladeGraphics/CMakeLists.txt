@@ -1,7 +1,5 @@
 # BladeGraphics/CMakeLists.txt
 
-project(BladeGraphics)
-
 # Add the source files for the console
 set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
@@ -20,7 +18,7 @@ add_executable(BladeGraphics ${SOURCES})
 
 target_link_libraries(BladeGraphics 
     PRIVATE 
-        Common
+        BladeCommon
 
         user32 
         gdi32
@@ -28,7 +26,6 @@ target_link_libraries(BladeGraphics
 
 target_include_directories(BladeGraphics 
     PRIVATE
-        Common
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/include/windows
 )

@@ -13,7 +13,8 @@ enable_testing()
 # Option to build tests
 option(BUILD_TESTS "Build tests on Debug" ON)
 
-add_subdirectory(Common)
+add_subdirectory(BladeCommon)
+add_subdirectory(BladeConsole)
 add_subdirectory(BladeGameEngine)
 add_subdirectory(BladeGraphics)
 

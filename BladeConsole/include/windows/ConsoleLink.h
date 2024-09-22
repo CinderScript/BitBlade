@@ -4,7 +4,8 @@
 #ifndef CONSOLE_LINK_H
 #define CONSOLE_LINK_H
 
-#include "BitBladeCommon.h"
+#include "BladeConfig.h"
+#include "IGfxMessageLink.h"
 
 #include <Windows.h>
 #include <atomic>
@@ -13,7 +14,7 @@
 
 namespace console {
 
-  class ConsoleLink
+  class ConsoleLink : public IGfxMessageLink
   {
   public:
     ConsoleLink();

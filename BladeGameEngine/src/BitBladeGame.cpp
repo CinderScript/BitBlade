@@ -2,20 +2,14 @@
 */
 
 #include "BitBladeGame.h"
-#include "BitBladeCommon.h"
 
-#include "ImageSource.h"
-#include "GameObject.h"
-
-#include "BladeConsole.h"
 
 namespace game {// Define the static members
 
-	console::ConsoleLink* BitBladeGame::consoleLink;
-	char BitBladeGame::nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
-	bool BitBladeGame::isGameRunning = true;
-
-	BitBladeGame::BitBladeGame() : imgPool( 50 ), objPool( 300 ) {
+	BitBladeGame::BitBladeGame( IGfxMessageLink* link )
+		: IGfxMessageProducer( link ),
+		imgPool( 50 ),
+		objPool( 300 ) {
 
 		componentPool.ReservePool<Sprite>( 200 );
 	}
@@ -24,13 +18,13 @@ namespace game {// Define the static members
 
 	void BitBladeGame::QuitGame()
 	{
-		BitBladeGame::isGameRunning = false;
+		isGameRunning = false;
 
 		strcpy( nextPackedCommandTemp, GetGameTitle() );
 		uint16_t length = strlen( GetGameTitle() ) + 1;
 
 		// let the BladeGraphics know we are stopping
-		consoleLink->PackInstruction(
+		gfxMessageHandler->PackInstruction(
 			gfxLink::GfxCode::StopGraphics,
 			nextPackedCommandTemp,
 			length );
@@ -42,7 +36,7 @@ namespace game {// Define the static members
 		uint16_t length = image->Pack_CreateImageData( nextPackedCommandTemp );
 
 		// pack into the ConsoleLink buffer
-		consoleLink->PackInstruction(
+		gfxMessageHandler->PackInstruction(
 			gfxLink::GfxCode::CreateImageData,
 			nextPackedCommandTemp,
 			length );
@@ -64,10 +58,5 @@ namespace game {// Define the static members
 		// }
 
 		return isGameRunning;
-	}
-
-	void BitBladeGame::setConsoleLink( console::ConsoleLink& link )
-	{
-		BitBladeGame::consoleLink = &link;
 	}
 }

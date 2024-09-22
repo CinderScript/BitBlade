@@ -4,7 +4,9 @@
 #ifndef BIT_BLADE_GAME_H 
 #define BIT_BLADE_GAME_H
 
-#include "BitBladeCommon.h"
+#include "BladeConfig.h"
+#include "IGfxMessageLink.h"
+#include "IGfxMessageProducer.h"
 #include "DataCluster.h"
 #include "DataPool.h"
 #include "ImageSource.h"
@@ -14,27 +16,22 @@
 
 #include <vector>
 
-namespace console {
-	class BladeConsole;
-	class ConsoleLink;
-}
 
 namespace game {
 
-	class ImageSource;
-
-	class BitBladeGame {
+	class BitBladeGame : public IGfxMessageProducer {
 	public:
-		// BladeConsole calls the update() function
-		// BladeConsole calls the setConsoleLink() function
-		friend class console::BladeConsole;
 
-		BitBladeGame();
+		explicit BitBladeGame( IGfxMessageLink* link );
+
 		virtual ~BitBladeGame();
 
 		virtual const char* GetGameTitle() = 0;
-		virtual void GameStart() {};
+		void InitializeGame() override {};
 		void LoadNewLevel() {}
+
+
+		bool update() override;
 
 	protected:
 		void QuitGame();
@@ -53,13 +50,9 @@ namespace game {
 		DataCluster componentPool;
 
 
-		static bool isGameRunning;
-		static char nextPackedCommandTemp[gfxLink::PACKED_COMMAND_MAX_SIZE];
+		bool isGameRunning;
+		char nextPackedCommandTemp[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
 
-		static bool update();
-
-		static console::ConsoleLink* consoleLink;
-		static void setConsoleLink( console::ConsoleLink& link );
 		void packPrefab();
 	};
 }

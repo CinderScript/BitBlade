@@ -1,10 +1,4 @@
-# tests/BladeGameEngine/CMakeLists.txt
-
-project(GameEngineTest)
-
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# tests/GameEngine/CMakeLists.txt
 
 # Create a list of test sources
 file(GLOB GAME_ENGINE_TEST_SOURCES "src/*.cpp")
