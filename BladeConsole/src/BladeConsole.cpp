@@ -48,7 +48,7 @@ namespace console {
 	bool BladeConsole::FirstUpdate()
 	{
 		// perform first game tick
-		bool shouldContinue = game->update();
+		bool shouldContinue = game->internalUpdate();
 
 		link->SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event
@@ -61,7 +61,7 @@ namespace console {
 		system( "pause" );
 
 		// tick 2
-		shouldContinue = game->update();
+		shouldContinue = game->internalUpdate();
 
 
 		link->WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
@@ -82,7 +82,7 @@ namespace console {
 
 		system( "pause" );
 
-		bool shouldContinue = game->update();
+		bool shouldContinue = game->internalUpdate();
 
 		// wait for objects to resolve from tick before last so graphics can stop waiting
 		if (link->HasReceivedResolvedObjects())

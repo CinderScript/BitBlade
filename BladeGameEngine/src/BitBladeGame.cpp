@@ -44,17 +44,23 @@ namespace game {// Define the static members
 		return image;
 	}
 
-	GameObject* BitBladeGame::CreateInstance( const ImageSource* image ) {
+	GameObject* BitBladeGame::CreateInstance()
+	{
+		GameObject* obj = objPool.Add( this, nullptr );
+		topLevelObjects.push_back( obj );
+		return obj;
+	}
 
-		GameObject* obj = objPool.Add( this, image );
-
+	GameObject* BitBladeGame::CreateInstance( GameObject* parent )
+	{
+		GameObject* obj = objPool.Add( this, parent );
 		return obj;
 	}
 
 
-	bool BitBladeGame::update() {
+	bool BitBladeGame::internalUpdate() {
 		// for (auto& gameObject : gameObjects) {
-		// 	gameObject.update();
+		// 	gameObject.internalUpdate();
 		// }
 
 		return isGameRunning;

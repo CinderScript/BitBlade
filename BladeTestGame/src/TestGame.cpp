@@ -18,13 +18,13 @@ const char* TestGame::GetGameTitle()
 	return "Test Game";
 }
 
-void TestGame::InitializeGame()
+void TestGame::Initialize()
 {
 	backgroundImage = LoadImageSource( "background.bmp" );
 	heroImage = LoadImageSource( "hero.bmp" );
 
-	background = CreateInstance( backgroundImage );
-	hero = CreateInstance( heroImage );
+	background = CreateInstance();
+	hero = CreateInstance();
 
 	QuitGame();
 }

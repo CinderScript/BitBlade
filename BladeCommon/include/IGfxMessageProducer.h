@@ -7,8 +7,8 @@ class IGfxMessageProducer {
 public:
 	IGfxMessageProducer( IGfxMessageLink* link ) : gfxMessageHandler( link ) {}
 	virtual ~IGfxMessageProducer() = default;
-	virtual void InitializeGame() = 0;
-	virtual bool update() = 0;
+	virtual void Initialize() = 0;
+	virtual bool internalUpdate() = 0;
 
 protected:
 	IGfxMessageLink* gfxMessageHandler;

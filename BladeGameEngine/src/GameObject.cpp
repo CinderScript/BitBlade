@@ -4,19 +4,13 @@
 #include "GameObject.h"
 
 namespace game {
-	GameObject::GameObject( BitBladeGame* game, const ImageSource* imageSource )
-		: game( game ), position()
-	{
-		sprite = nullptr;
-		game = nullptr;
-	}
+	GameObject::GameObject( IBladeGame* game, GameObject* parent )
+		: game( game ), parent( parent ), sprite( nullptr ), position() {}
 
-	GameObject::~GameObject()
-	{
-	}
+	GameObject::~GameObject() {}
 
 
-	void GameObject::update()
+	void GameObject::internalUpdate()
 	{
 	}
 }

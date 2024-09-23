@@ -1,8 +1,8 @@
 /* BitBladeCommon.h
 */
 
-#ifndef BIT_BLADE_COMMON_H
-#define BIT_BLADE_COMMON_H
+#ifndef GFX_LINK_COMMON_H
+#define GFX_LINK_COMMON_H
 
 #include "BladeConfig.h"
 
@@ -72,4 +72,4 @@ namespace gfxLink
 	}
 }
 
-#endif // BIT_BLADE_COMMON_H
+#endif // GFX_LINK_COMMON_H

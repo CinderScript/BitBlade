@@ -15,7 +15,7 @@ public:
 	~TestGame() override;
 
 	const char* GetGameTitle() override;
-	void InitializeGame() override;
+	void Initialize() override;
 
 private:
 	const game::ImageSource* backgroundImage;
