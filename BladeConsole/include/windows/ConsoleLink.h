@@ -5,7 +5,7 @@
 #define CONSOLE_LINK_H
 
 #include "BladeConfig.h"
-#include "IGfxMessageLink.h"
+#include "IGfxMessagePacker.h"
 
 #include <Windows.h>
 #include <atomic>
@@ -14,19 +14,19 @@
 
 namespace console {
 
-  class ConsoleLink : public IGfxMessageLink
+  class ConsoleLink : public IGfxMessagePacker
   {
   public:
     ConsoleLink();
     ~ConsoleLink();
 
-    void PackInstruction( gfxLink::GfxCode functionCode, const char appendData[], uint16_t length );
+    void AddPackedInstruction( gfxLink::GfxCode functionCode, const char appendData[], uint16_t length );
     const char* GetReceivedResolvedObjectsInstructions();
     bool HasReceivedResolvedObjects();
 
     void SendGraphicsInstructions();
     void SignalObjectsResolvedComplete();
-    void WaitForGraphicsReadySignal();
+    void AwaitGraphicsReadySignal();
     void WaitForResolvedObjectsReceived();
     void WaitForGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
 

@@ -16,7 +16,7 @@ public:
 	GraphicsLink();
 	~GraphicsLink();
 
-	void PackInstruction( gfxLink::GfxCode functionCode, const char* data, uint16_t length );
+	void AddPackedInstruction( gfxLink::GfxCode functionCode, const char* data, uint16_t length );
 	const char* GetGraphicsInstructions();
 
 	void SendGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)

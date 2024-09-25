@@ -4,8 +4,7 @@
 #ifndef GAME_OBJECT_H 
 #define GAME_OBJECT_H
 
-#include "IBladeGame.h"
-#include "DataPoolMember.h"
+#include "BitBladeGame.h"
 #include "Vector2.h"
 
 #include <vector>
@@ -21,41 +20,49 @@ namespace game {
 
 	public:
 		friend struct DataPool<GameObject>;			// calls constructor
+		friend class BitBladeGame;					// calls internalUpdate
 
 		~GameObject();
 
 		Vector2 Position() const { return position; }
 		void SetPosition( const Vector2& Position ) { position = Position; }
+		void SetParent( GameObject* parent );
 
 		template<typename T, typename... Args>
-		T* AddComponent( Args&&... args )
+		T* AddComponent()
 		{
+			// General case for all other components
+			auto* comp = game->AddComponent<T>( this );
+			components.push_back( comp );
+			startComponents.push_back( comp );
+			comp->Awake();
+
 			if constexpr (std::is_same<T, Sprite>::value)
-			{
-				// Special case for Sprite with ImageSource as an argument
-				auto* sprite = game->AddComponent<Sprite>( std::forward<Args>( args )... );
-				components.push_back( sprite );
-				return sprite;
-			}
-			else
-			{
-				// General case for all other components
-				auto* comp = game->AddComponent<T>( std::forward<Args>( args )... );
-				components.push_back( comp );
-				return comp;
-			}
+				sprite = comp;
+
+			return comp;
 		}
 
+		const std::vector<GameObject*>& GetChildren() const { return children; }
+		const std::vector<Component*>& GetComponents() const { return components; }
+
+		const char* Name() const { return name; }
+
 	private:
-		IBladeGame* game;
+		BitBladeGame* game;
 		GameObject* parent;
+		const char* name;
 		Sprite* sprite;
 		Vector2 position;
 
 		std::vector<GameObject*> children;
 		std::vector<Component*> components;
+		std::vector<Component*> startComponents;
 
-		GameObject( IBladeGame* game, GameObject* parent );
+		GameObject( BitBladeGame* game );
+		GameObject( BitBladeGame* game, const char* name );
+		GameObject( BitBladeGame* game, GameObject* parent );
+		GameObject( BitBladeGame* game, GameObject* parent, const char* name );
 		void internalUpdate();
 	};
 }

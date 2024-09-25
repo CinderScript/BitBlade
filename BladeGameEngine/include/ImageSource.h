@@ -5,6 +5,7 @@
 #define IMAGE_SOURCE_H
 
 #include "DataPoolMember.h"
+#include "IGfxMessageProducer.h"
 #include "Vector2.h"
 
 namespace game {
@@ -27,6 +28,7 @@ namespace game {
 
 
 	private:
+		IGfxMessageProducer* messageSource;
 		const char* filename;
 		Vector2 pivot;
 		Vector2 scale;
@@ -36,8 +38,8 @@ namespace game {
 		uint8_t isResolved;
 		void* bladeGraphicsAddress;
 
-		ImageSource( const char* filename );
-		uint16_t Pack_CreateImageData( char* dataOut );
+		ImageSource( IGfxMessageProducer* messageSource, const char* filename );
+		uint16_t Pack_CreateImageData();
 	};
 }
 

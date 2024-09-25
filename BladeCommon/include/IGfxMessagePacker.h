@@ -6,10 +6,11 @@
 #include <cstdint>	// uint*_t
 
 
-class IGfxMessageLink {
+class IGfxMessagePacker {
 public:
-	virtual ~IGfxMessageLink() = default;
-	virtual void PackInstruction(
+	virtual ~IGfxMessagePacker() = default;
+
+	virtual void AddPackedInstruction(
 		gfxLink::GfxCode functionCode,
 		const char* data,
 		uint16_t length ) = 0;

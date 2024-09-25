@@ -107,7 +107,7 @@ namespace console {
 		delete[] packedInstructions;
 	}
 
-	void ConsoleLink::PackInstruction(
+	void ConsoleLink::AddPackedInstruction(
 		gfxLink::GfxCode functionCode, const char appendData[], uint16_t length )
 	{
 		gfxLink::packGfxInstruction(
@@ -133,9 +133,12 @@ namespace console {
 
 		// add EOF code
 		packedInstructions[currentPosition] = +gfxLink::GfxCode::EndMessage;
+		currentPosition++;
 
 		// On spi implementation, start DMA transfer
 		memcpy( consoleOutputBuffer, packedInstructions, currentPosition );
+
+		// get ready for next set of instructions in message
 		currentPosition = 0;
 
 		// trigger simulated irq (starts a background task or thread)
@@ -155,7 +158,7 @@ namespace console {
 	// BladeGraphics wont send finished signal until it receives the next
 	// instruction message, processes the message, and then receives confirmation
 	// that BladeConsole has resolved objects from previous Graphics message sent.
-	void ConsoleLink::WaitForGraphicsReadySignal() // blocking
+	void ConsoleLink::AwaitGraphicsReadySignal() // blocking
 	{
 		// graphics is ready after finished processing and
 		// receiving finishedProcessingResolvedObjectsSignal
@@ -318,7 +321,7 @@ namespace console {
 					switch (waitResult)
 					{
 					case WAIT_OBJECT_0:
-						std::cout << "Console has received resolved graphics objects." << std::endl;
+						//std::cout << "Console has received resolved graphics objects." << std::endl;
 
 						irqHandlerOnResolvedObjectsReceived();
 
@@ -328,15 +331,15 @@ namespace console {
 						// again." << std::endl;
 						break;
 					case WAIT_ABANDONED:
-						std::cerr << "The wait was abandoned, potentially due to an error in "
+						std::cerr << "\nThe wait was abandoned, potentially due to an error in "
 							"another thread."
 							<< std::endl;
 						break;
 					case WAIT_FAILED:
-						std::cerr << "Wait failed with error: " << GetLastError() << std::endl;
+						std::cerr << "\nWait failed with error: " << GetLastError() << std::endl;
 						break;
 					default:
-						std::cerr << "Unexpected wait result." << std::endl;
+						std::cerr << "\nUnexpected wait result." << std::endl;
 						break;
 					}
 				} } );
@@ -358,7 +361,7 @@ namespace console {
 					switch (waitResult)
 					{
 					case WAIT_OBJECT_0:
-						std::cout << "Graphics has finished processing the update." << std::endl;
+						//std::cout << "Graphics has finished processing the update." << std::endl;
 
 						irqHandlerOnGraphicsReady();
 

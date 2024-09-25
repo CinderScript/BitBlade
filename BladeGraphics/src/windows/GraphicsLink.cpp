@@ -80,7 +80,7 @@ GraphicsLink::~GraphicsLink()
 	delete[] packedInstructions;
 }
 
-void GraphicsLink::PackInstruction( gfxLink::GfxCode functionCode, const char* data, uint16_t length )
+void GraphicsLink::AddPackedInstruction( gfxLink::GfxCode functionCode, const char* data, uint16_t length )
 {
 	gfxLink::packGfxInstruction(
 		packedInstructions, functionCode, data, length, currentPosition );

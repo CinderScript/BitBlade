@@ -12,6 +12,9 @@ namespace game
 		template<typename T, typename... Args>
 		T* AddComponent( Args&&... args ) {
 			// Implementation in BitBladeGame.cpp
+			// BitBladeGame stores GameObject directly in DataPool, so it needs
+			// the header file. GameObject needs to use AddComponent template, so
+			// it also needs header access, so we give it access to IBladeGame
 			return nullptr; // Placeholder
 		}
 	};

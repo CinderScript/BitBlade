@@ -40,6 +40,8 @@ namespace console {
 		: link( std::make_unique<ConsoleLink>() ),
 		game( nullptr )
 	{
+		std::cout << "Console - Constructor." << "\n";
+
 		link->WaitForGraphicsStartupEvent();
 	}
 
@@ -47,24 +49,32 @@ namespace console {
 
 	bool BladeConsole::FirstUpdate()
 	{
+		std::cout << "Console - Update 1 Start." << "\n";
+
 		// perform first game tick
 		bool shouldContinue = game->internalUpdate();
 
+		std::cout << "Console - Update 1 Finish. Sending Update 1." << "\n";
+
 		link->SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event
+
 
 		// allow Graphics to receive last code if quitting
 		if (!shouldContinue) {
 			return false;								/* * * EARLY OUT * * */
 		}
 
-		system( "pause" );
+		std::cout << "Console - Update 2 Start." << "\n";
 
 		// tick 2
 		shouldContinue = game->internalUpdate();
 
+		std::cout << "Console - Update 2 Finish. Waiting for Graphics" << "\n";
 
-		link->WaitForGraphicsReadySignal(); // wait for graphics to finish reading tick 1
+		link->AwaitGraphicsReadySignal(); // wait for graphics to finish reading tick 1
+
+		std::cout << "Console - Sending update 2" << "\n";
 
 		link->SendGraphicsInstructions(); // send update 2
 
@@ -80,8 +90,6 @@ namespace console {
 			link->SignalObjectsResolvedComplete();
 		}
 
-		system( "pause" );
-
 		bool shouldContinue = game->internalUpdate();
 
 		// wait for objects to resolve from tick before last so graphics can stop waiting
@@ -93,7 +101,7 @@ namespace console {
 		}
 
 		// blocks until: graphics gets frame before last -> graphics finishes, console resolves objects -> sends resolved event
-		link->WaitForGraphicsReadySignal();
+		link->AwaitGraphicsReadySignal();
 
 		link->SendGraphicsInstructions(); // irq when finished
 		// dma irq sends finish sending event

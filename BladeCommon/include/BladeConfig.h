@@ -12,6 +12,11 @@ namespace gameConfig
 	/// @brief If a pool type has not been initialized before adding elements,
 	///			This default capacity will be used for this pool.
 	static constexpr uint16_t DATA_CLUSTER_DEFAULT_POOL_CAPACITY = 200;
+
+	/* ------------------------------ Game Objects ------------------------------ */
+	static constexpr int GAME_OBJECT_CHILD_RESERVE = 8;
+	static constexpr int GAME_OBJECT_COMPONENT_RESERVE = 5;
+
 }
 
 namespace gfxLinkConfig

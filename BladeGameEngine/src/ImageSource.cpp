@@ -2,6 +2,7 @@
 */
 
 #include "ImageSource.h"
+#include "BladeConfig.h"
 
 #include <cstring>
 namespace game {
@@ -12,25 +13,36 @@ namespace game {
 
 	/* --------------------------------- PRIVATE -------------------------------- */
 
-	ImageSource::ImageSource( const char* filename )
+	ImageSource::ImageSource( IGfxMessageProducer* messageSource, const char* filename )
 		: filename( filename ),
+		messageSource( messageSource ),
 		pivot(),
 		scale(),
 		isResolved( 0 ),
-		bladeGraphicsAddress( nullptr ) {}
+		bladeGraphicsAddress( nullptr )
+	{
+		Pack_CreateImageData();
+	}
 
-	uint16_t ImageSource::Pack_CreateImageData( char* dataOut )
+	uint16_t ImageSource::Pack_CreateImageData()
 	{
 		uint16_t pos = 0;
+		char message[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
 
 		// copy the ID to the instruction message
-		memcpy( dataOut + pos, &objectID, sizeof( uint16_t ) );
+		memcpy( message + pos, &objectID, sizeof( uint16_t ) );
 		pos += sizeof( uint16_t );
 
 		// Copy the filename ensuring it is null-terminated
-		strcpy( dataOut + pos, filename );
+		strcpy( message + pos, filename );
 		pos += std::strlen( filename ) + 1; // +1 to include the null terminator
 
-		return pos; // This returns the total number of bytes written to dataOut
+		// pack into the ConsoleLink buffer
+		messageSource->AddPackedInstruction(
+			gfxLink::GfxCode::CreateImageData,
+			message,
+			pos );
+
+		return pos; // This returns the total number of bytes written to message
 	}
 }
