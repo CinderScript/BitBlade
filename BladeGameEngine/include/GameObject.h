@@ -43,6 +43,28 @@ namespace game {
 			return comp;
 		}
 
+		template <typename T>
+		T* GetComponent() const {
+			for (auto* comp : components) {
+				if (auto* desired = dynamic_cast<T*>(comp)) {
+					return desired;
+				}
+			}
+			return nullptr;
+		}
+
+		template <typename T>
+		std::vector<T*> GetComponents() const {
+			std::vector<T*> desired;
+			for (auto* comp : components) {
+				if (auto* desired = dynamic_cast<T*>(comp)) {
+					desired.push_back( desired );
+				}
+			}
+			return desired;
+		}
+
+
 		const std::vector<GameObject*>& GetChildren() const { return children; }
 		const std::vector<Component*>& GetComponents() const { return components; }
 
