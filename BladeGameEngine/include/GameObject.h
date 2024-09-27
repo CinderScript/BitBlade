@@ -26,7 +26,9 @@ namespace game {
 
 		Vector2 Position() const { return position; }
 		void SetPosition( const Vector2& Position ) { position = Position; }
+		GameObject* Parent() const { return parent; }
 		void SetParent( GameObject* parent );
+
 
 		template<typename T, typename... Args>
 		T* AddComponent()
@@ -53,16 +55,16 @@ namespace game {
 			return nullptr;
 		}
 
-		template <typename T>
-		std::vector<T*> GetComponents() const {
-			std::vector<T*> desired;
-			for (auto* comp : components) {
-				if (auto* desired = dynamic_cast<T*>(comp)) {
-					desired.push_back( desired );
-				}
-			}
-			return desired;
-		}
+		// template <typename T>
+		// std::vector<T*> GetComponents() const {
+		// 	std::vector<T*> desired;
+		// 	for (auto* comp : components) {
+		// 		if (auto* desired = dynamic_cast<T*>(comp)) {
+		// 			desired.push_back( desired );
+		// 		}
+		// 	}
+		// 	return desired;
+		// }
 
 
 		const std::vector<GameObject*>& GetChildren() const { return children; }
@@ -72,6 +74,7 @@ namespace game {
 
 	private:
 		BitBladeGame* game;
+
 		GameObject* parent;
 		const char* name;
 		Sprite* sprite;

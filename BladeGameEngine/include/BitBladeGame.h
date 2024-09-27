@@ -25,19 +25,22 @@ namespace game {
 		explicit BitBladeGame( IGfxMessagePacker* messagePacker );
 		virtual ~BitBladeGame();
 
-		void Initialize() override = 0;
 		void LoadNewLevel() {}
 
 		virtual const char* GetGameTitle() = 0;
+
+		void Initialize() override = 0;
+		void Start() override {};
 		virtual void Update() {}
+
 		bool internalUpdate() final override;
 
 		ImageSource* LoadImageSource( const char* filename );
 
-		GameObject* CreateInstance();
-		GameObject* CreateInstance( const char* name );
-		GameObject* CreateInstance( GameObject* parent );
-		GameObject* CreateInstance( GameObject* parent, const char* name );
+		GameObject* Instantiate();
+		GameObject* Instantiate( const char* name );
+		GameObject* Instantiate( GameObject* parent );
+		GameObject* Instantiate( GameObject* parent, const char* name );
 
 		template<typename T, typename... Args>
 		T* AddComponent( Args&&... args ) {
@@ -46,6 +49,7 @@ namespace game {
 
 		void QuitGame();
 
+		const std::vector<GameObject*>& GetTopLevelObjects() const { return topLevelObjects; }
 
 	private:
 		std::vector<GameObject*> topLevelObjects;
@@ -54,7 +58,6 @@ namespace game {
 
 
 		bool isGameRunning;
-		char nextPackedCommandTemp[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
 	};
 }
 

@@ -36,21 +36,21 @@ namespace game {// Define the static members
 	}
 
 
-	GameObject* BitBladeGame::CreateInstance()
+	GameObject* BitBladeGame::Instantiate()
 	{
 		gameObjectCount++;
 		auto* obj = gameData.Add<GameObject>( this );
 		topLevelObjects.push_back( obj );
 		return obj;
 	}
-	GameObject* BitBladeGame::CreateInstance( const char* name )
+	GameObject* BitBladeGame::Instantiate( const char* name )
 	{
 		gameObjectCount++;
 		auto* obj = gameData.Add<GameObject>( this, name );
 		topLevelObjects.push_back( obj );
 		return obj;
 	}
-	GameObject* BitBladeGame::CreateInstance( GameObject* parent )
+	GameObject* BitBladeGame::Instantiate( GameObject* parent )
 	{
 		gameObjectCount++;
 		auto* obj = gameData.Add<GameObject>( this, parent );
@@ -59,7 +59,7 @@ namespace game {// Define the static members
 		}
 		return obj;
 	}
-	GameObject* BitBladeGame::CreateInstance( GameObject* parent, const char* name )
+	GameObject* BitBladeGame::Instantiate( GameObject* parent, const char* name )
 	{
 		gameObjectCount++;
 		auto* obj = gameData.Add<GameObject>( this, parent, name );

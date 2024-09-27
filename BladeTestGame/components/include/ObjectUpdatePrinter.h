@@ -9,8 +9,6 @@
 
 class ObjectUpdatePrinter : public game::Component
 {
-private:
-	/* data */
 public:
 	using Component::Component;  // Inherit the base constructor
 

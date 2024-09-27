@@ -9,6 +9,7 @@ public:
 
 	virtual ~IGfxMessageProducer() = default;
 	virtual void Initialize() = 0;
+	virtual void Start() = 0;
 	virtual bool internalUpdate() = 0;
 
 	void AddPackedInstruction(

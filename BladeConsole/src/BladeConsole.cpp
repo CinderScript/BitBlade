@@ -51,6 +51,8 @@ namespace console {
 	{
 		std::cout << "Console - Update 1 Start." << "\n";
 
+		game->Start();
+
 		// perform first game tick
 		bool shouldContinue = game->internalUpdate();
 

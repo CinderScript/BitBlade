@@ -24,11 +24,11 @@ void TestGame::Initialize()
 	backgroundImage = LoadImageSource( "background.bmp" );
 	heroImage = LoadImageSource( "hero.bmp" );
 
-	background = CreateInstance( "Background" );
-	tree = CreateInstance( background, "tree" );
-	hero = CreateInstance( "Hero" );
-	arm = CreateInstance( hero, "arm" );
-	sword = CreateInstance( "Sword" );
+	background = Instantiate( "Background" );
+	tree = Instantiate( background, "tree" );
+	hero = Instantiate( "Hero" );
+	arm = Instantiate( hero, "arm" );
+	sword = Instantiate( "Sword" );
 	sword->SetParent( arm );
 
 	background->AddComponent<ObjectUpdatePrinter>();

@@ -35,10 +35,10 @@ namespace console {
     static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
 
     // buffers
-    char* packedInstructions;  // double buffer for sending graphics update
-    char* consoleOutputBuffer; // given packed instructions when finished
-    char* graphicsOutputBuffer;  // resolved objects received
-    uint16_t currentPosition;    // Position tracker for writing to the buffer
+    char* packedInstructions;     // double buffer for sending graphics update
+    char* consoleOutputBuffer;    // given packed instructions when finished
+    char* graphicsOutputBuffer;   // resolved objects received
+    uint16_t currentPosition;     // Position tracker for writing to the buffer
 
     // memory mapped files
     HANDLE hConsoleOutputBuffer;

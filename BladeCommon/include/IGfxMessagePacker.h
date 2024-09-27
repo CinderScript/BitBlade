@@ -12,7 +12,7 @@ public:
 
 	virtual void AddPackedInstruction(
 		gfxLink::GfxCode functionCode,
-		const char* data,
+		const char appendData[],
 		uint16_t length ) = 0;
 };
 
