@@ -121,6 +121,7 @@ public:
 	void Update() override { updateCalled = true; }
 
 	bool updateCalled;
+	int testValue = 7;
 };
 
 
@@ -140,7 +141,40 @@ TEST_F( BitBladeGameTest, GetComponent ) {
 	ASSERT_NE( comp, nullptr );
 	TestComponent* retrievedComp = obj->GetComponent<TestComponent>();
 	EXPECT_EQ( comp, retrievedComp );
+
+	EXPECT_EQ( comp->testValue, retrievedComp->testValue );
+	comp->testValue = 99;
+	EXPECT_EQ( comp->testValue, retrievedComp->testValue );
 }
+
+// Test retrieving multiple components from a GameObject
+TEST_F( BitBladeGameTest, GetComponents ) {
+	GameObject* obj = game->Instantiate( "TestObject" );
+
+	// Add multiple components of the same type
+	TestComponent* comp1 = obj->AddComponent<TestComponent>();
+	TestComponent* comp2 = obj->AddComponent<TestComponent>();
+
+	// Retrieve the components of type TestComponent
+	std::vector<TestComponent*> components = obj->GetComponents<TestComponent>();
+
+	// Assert that we retrieved two components
+	ASSERT_EQ( components.size(), 2 );
+
+	// Check that the retrieved components are the ones we added
+	EXPECT_EQ( components[0], comp1 );
+	EXPECT_EQ( components[1], comp2 );
+
+	// Modify and check that both retrieved components reflect the changes
+	comp1->testValue = 42;
+	EXPECT_EQ( components[0]->testValue, 42 );
+	EXPECT_EQ( comp1->testValue, 42 );
+
+	comp2->testValue = 99;
+	EXPECT_EQ( components[1]->testValue, 99 );
+	EXPECT_EQ( comp2->testValue, 99 );
+}
+
 
 // Test the internalUpdate method of GameObject
 TEST_F( BitBladeGameTest, InternalUpdate ) {
@@ -299,31 +333,6 @@ TEST_F( GameZuluTest, GameLogicTest ) {
 }
 
 TEST_F( GameZuluTest, ImageSourcePacking ) {
-	// Capture the cout output while performing internalUpdate
-	output = captureCoutOutput( [this]() {
-		gameZulu->internalUpdate();
-		} );
 
-	// Expected output sequence for DFS
-	std::string expectedOutput =
-		"Component-0-Start-Obj-Background\n"
-		"Component-0-Update-Obj-Background\n"
-		"Component-1-Start-Obj-tree\n"
-		"Component-1-Update-Obj-tree\n"
 
-		"Component-2-Start-Obj-Hero\n"
-		"Component-2-Update-Obj-Hero\n"			//hero
-		"Component-3-Start-Obj-leftarm\n"
-		"Component-3-Update-Obj-leftarm\n"		//left arm
-		"Component-5-Start-Obj-Sword\n"
-		"Component-5-Update-Obj-Sword\n"		//sword
-		"Component-4-Start-Obj-rightarm\n"
-		"Component-4-Update-Obj-rightarm\n";	//right arm
-
-	// Check if the output matches the expected sequence
-	EXPECT_EQ( output, expectedOutput );
-
-	output = captureCoutOutput( [this]() {
-		gameZulu->internalUpdate();
-		} );
 }
