@@ -9,7 +9,7 @@
 namespace game {// Define the static members
 
 	BitBladeGame::BitBladeGame( IGfxMessagePacker* messagePacker )
-		: IGfxMessageProducer( messagePacker ), gameObjectCount( 0 )
+		: IGfxMessageProducer( messagePacker ), gameObjectCount( 0 ), shouldContinue( true )
 	{
 		/* ------------------------------------ _ ----------------------------------- */
 	   //gameData.ReservePool<Sprite>( 200 );
@@ -20,7 +20,7 @@ namespace game {// Define the static members
 
 	void BitBladeGame::QuitGame()
 	{
-		isGameRunning = false;
+		shouldContinue = false;
 
 		// let the BladeGraphics know we are stopping
 		AddPackedInstruction(
@@ -98,6 +98,6 @@ namespace game {// Define the static members
 			}
 		}
 
-		return isGameRunning;
+		return shouldContinue;
 	}
 }

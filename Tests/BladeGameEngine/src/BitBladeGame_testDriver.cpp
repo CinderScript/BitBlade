@@ -130,8 +130,8 @@ TEST_F( BitBladeGameTest, AddComponent ) {
 	TestComponent* comp = obj->AddComponent<TestComponent>();
 	ASSERT_NE( comp, nullptr );
 	EXPECT_EQ( comp->Owner(), obj );
-	EXPECT_EQ( obj->GetComponents().size(), 1 );
-	EXPECT_EQ( obj->GetComponents()[0], comp );
+	EXPECT_EQ( obj->GetComponents().size(), 2 );	// all GameObjects have Transform comp
+	EXPECT_EQ( obj->GetComponents()[1], comp );		// Transform has index  0
 }
 
 // Test retrieving a component from a GameObject

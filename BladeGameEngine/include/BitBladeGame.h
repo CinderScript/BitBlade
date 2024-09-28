@@ -57,7 +57,7 @@ namespace game {
 		uint16_t gameObjectCount;
 
 
-		bool isGameRunning;
+		bool shouldContinue;
 	};
 }
 
