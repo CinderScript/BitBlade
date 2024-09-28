@@ -5,7 +5,7 @@
 #define GAME_OBJECT_H
 
 #include "BitBladeGame.h"
-#include "Vector2.h"
+#include "Transform.h"
 
 #include <vector>
 
@@ -24,23 +24,20 @@ namespace game {
 
 		~GameObject();
 
-		Vector2 Position() const { return position; }
-		void SetPosition( const Vector2& Position ) { position = Position; }
+		Transform* GetTransform() const { return transform; }
+
 		GameObject* Parent() const { return parent; }
 		void SetParent( GameObject* parent );
 
 
 		template<typename T, typename... Args>
-		T* AddComponent()
+		T* AddComponent( Args&&... args )
 		{
 			// General case for all other components
-			auto* comp = game->AddComponent<T>( this );
+			auto* comp = game->AddComponent<T>( this, std::forward<Args>( args )... );
 			components.push_back( comp );
 			startComponents.push_back( comp );
 			comp->Awake();
-
-			if constexpr (std::is_same<T, Sprite>::value)
-				sprite = comp;
 
 			return comp;
 		}
@@ -74,11 +71,10 @@ namespace game {
 
 	private:
 		BitBladeGame* game;
-
 		GameObject* parent;
 		const char* name;
-		Sprite* sprite;
-		Vector2 position;
+
+		Transform* transform;
 
 		std::vector<GameObject*> children;
 		std::vector<Component*> components;
@@ -88,7 +84,17 @@ namespace game {
 		GameObject( BitBladeGame* game, const char* name );
 		GameObject( BitBladeGame* game, GameObject* parent );
 		GameObject( BitBladeGame* game, GameObject* parent, const char* name );
+
+		// Disable copy constructor and copy assignment operator
+		GameObject( const GameObject& ) = delete;
+		GameObject& operator=( const GameObject& ) = delete;
+
+		// Disable move constructor and move assignment operator
+		GameObject( GameObject&& ) = delete;
+		GameObject& operator=( GameObject&& ) = delete;
+
 		void internalUpdate();
+		void initialize();
 	};
 }
 

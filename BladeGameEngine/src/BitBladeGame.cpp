@@ -11,8 +11,8 @@ namespace game {// Define the static members
 	BitBladeGame::BitBladeGame( IGfxMessagePacker* messagePacker )
 		: IGfxMessageProducer( messagePacker ), gameObjectCount( 0 )
 	{
-
-		//gameData.ReservePool<Sprite>( 200 );
+		/* ------------------------------------ _ ----------------------------------- */
+	   //gameData.ReservePool<Sprite>( 200 );
 	}
 
 	BitBladeGame::~BitBladeGame() { }

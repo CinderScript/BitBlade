@@ -2,11 +2,10 @@
 /* Sprite.cpp
 */
 
-
 namespace game {
 
-	Sprite::Sprite( const ImageSource* imageSource )
-		: Component( nullptr ),
+	Sprite::Sprite( GameObject* owner, const ImageSource* imageSource )
+		: Component( owner ),
 		image( imageSource ),
 		pivot( imageSource->Pivot() ),
 		scale( imageSource->Scale() ) {}

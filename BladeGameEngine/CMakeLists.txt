@@ -6,7 +6,9 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Component.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/GameObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ImageSource.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Sprite.cpp
+    
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/src/Transform.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/src/Sprite.cpp
 )
 
 add_library(BladeGameEngine STATIC ${SOURCES})
@@ -19,5 +21,6 @@ target_link_libraries(BladeGameEngine
 target_include_directories(BladeGameEngine 
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/include
 )
 

@@ -10,42 +10,39 @@
 
 namespace game {
 	GameObject::GameObject( BitBladeGame* game )
-		: game( game ), name( "unnamed" ), parent( nullptr ), sprite( nullptr ), position()
+		: game( game ), name( "unnamed" ), parent( nullptr )
 	{
-		children.reserve( gameConfig::GAME_OBJECT_CHILD_RESERVE );
-		components.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
-		startComponents.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
+		initialize();
 	}
 	GameObject::GameObject( BitBladeGame* game, const char* name )
-		: game( game ), name( name ? name : "unnamed" ), parent( nullptr ), sprite( nullptr ), position()
+		: game( game ), name( name ? name : "unnamed" ), parent( nullptr )
 	{
-		children.reserve( gameConfig::GAME_OBJECT_CHILD_RESERVE );
-		components.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
-		startComponents.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
+		initialize();
 	}
 	GameObject::GameObject( BitBladeGame* game, GameObject* parent )
-		: game( game ), name( "unnamed" ), parent( parent ), sprite( nullptr ), position()
+		: game( game ), name( "unnamed" ), parent( parent )
 	{
-		children.reserve( gameConfig::GAME_OBJECT_CHILD_RESERVE );
-		components.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
-		startComponents.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
-
+		initialize();
 		assert( parent != nullptr );
 		parent->children.push_back( this );
 	}
 	GameObject::GameObject( BitBladeGame* game, GameObject* parent, const char* name )
-		: game( game ), name( name ? name : "unnamed" ), parent( parent ), sprite( nullptr ), position()
+		: game( game ), name( name ? name : "unnamed" ), parent( parent )
 	{
-		children.reserve( gameConfig::GAME_OBJECT_CHILD_RESERVE );
-		components.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
-		startComponents.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
-
+		initialize();
 		assert( parent != nullptr );
 		parent->children.push_back( this );
 	}
 
 	GameObject::~GameObject() {}
 
+	void GameObject::initialize() {
+		children.reserve( gameConfig::GAME_OBJECT_CHILD_RESERVE );
+		components.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
+		startComponents.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );
+
+		transform = AddComponent<Transform>();
+	}
 
 	void GameObject::SetParent( GameObject* newParent ) {
 

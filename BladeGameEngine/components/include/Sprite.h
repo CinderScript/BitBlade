@@ -19,7 +19,7 @@ namespace game {
 
 	public:
 		friend struct DataPool<Sprite>;
-		friend class BitBladeGame;				// needs Pack functions
+		friend class BitBladeGame;
 
 		Vector2 Pivot() const { return pivot; }
 		void SetPivot( const Vector2& Pivot ) { pivot = Pivot; }
@@ -32,7 +32,7 @@ namespace game {
 		Vector2 pivot;
 		Vector2 scale;
 
-		Sprite( const ImageSource* imageSource );
+		Sprite( GameObject* owner, const ImageSource* imageSource );
 	};
 }
 
