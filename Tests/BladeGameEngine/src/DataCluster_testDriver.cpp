@@ -28,9 +28,13 @@ TEST_F( DataClusterTest, AddPool ) {
 	cluster.Add<Flower>( "Daisy" );
 	cluster.Add<Dog>( "Rover" );
 
-	EXPECT_TRUE( cluster.DoesPoolExist<Flower>() );
-	EXPECT_TRUE( cluster.DoesPoolExist<Dog>() );
-	EXPECT_FALSE( cluster.DoesPoolExist<Tree>() );
+	bool doesFlowerExist = cluster.DoesPoolExist<Flower>();
+	bool doesDogExist = cluster.DoesPoolExist<Dog>();
+	bool doesTreeExist = cluster.DoesPoolExist<Tree>();
+
+	EXPECT_TRUE( doesFlowerExist );
+	EXPECT_TRUE( doesDogExist );
+	EXPECT_FALSE( doesTreeExist );
 }
 
 

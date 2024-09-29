@@ -5,6 +5,7 @@
 #define DATA_CLUSTER_H
 
 #include "DataPoolMember.h"
+#include "DataTypeID.h"
 #include "DataPool.h"
 #include "BladeConfig.h"
 
@@ -12,7 +13,6 @@
 #include <vector>
 #include <unordered_map>
 #include <memory>
-#include <typeindex>
 #include <cassert>
 #include <algorithm>
 #include <type_traits> // For std::is_base_of
@@ -23,7 +23,7 @@ namespace game {
 
 	public:
 
-		DataCluster() : nextPoolID( 0 ) {}
+		DataCluster() {}
 		~DataCluster() {}
 
 		template<typename T, typename... Args>
@@ -37,27 +37,29 @@ namespace game {
 			// Add the object to the pool
 			T* obj = pool.Add( std::forward<Args>( args )... );
 
+			// if there was not room for the new object
 			if (obj == nullptr)
 				return nullptr;
-			else {
-				// Set the identification of the Pool member
-				uint16_t objID = pool.GetObjID( obj );
-				obj->SetIdentification( poolID, objID );
-				return obj;
-			}
+
+			// Set the identification of the Pool member
+			uint16_t objID = pool.GetObjID( obj );
+			obj->SetIdentification( poolID, objID );
+			return obj;
 		}
 
 		void Remove( DataPoolMember* obj ) {
 			uint16_t poolID = obj->PoolID();
 			uint16_t objID = obj->ObjectID();
 
-			assert( poolID < pools.size() && "Invalid poolID." );
+			auto it = pools.find( poolID );
+			assert( it != pools.end() && "Invalid poolID." );
 
-			IPool* ipool = pools[poolID].get();
+			IPool* ipool = it->second.get();
 			ipool->Remove( objID );
 
 			obj->SetIdentification( 65535, 65535 ); // Invalidate identification
 		}
+
 
 		template<typename T>
 		void SortInsertionOrder() {
@@ -67,35 +69,29 @@ namespace game {
 
 		// Sorts all pools in the cluster
 		void SortInsertionOrder() {
-			for (auto& poolPtr : pools) {
-				IPool* ipool = poolPtr.get();
+			for (auto& pair : pools) {
+				IPool* ipool = pair.second.get();
 				ipool->SortInsertionOrder();
 			}
 		}
 
-		int32_t PoolCount() const {
-			return typeToPoolIndex.size();
+
+		uint16_t PoolCount() const {
+			return pools.size();
 		}
 
 		template<typename T>
-		int32_t GetPoolID() const {
-			auto typeIndex = std::type_index( typeid(T) );
-			auto it = typeToPoolIndex.find( typeIndex );
-
-			if (it != typeToPoolIndex.end()) {
-				return it->second;
-			}
-			else {
-				return -1;
-			}
+		uint16_t GetPoolID() const {
+			return DataTypeID<T>::GetID();
 		}
 
+
 		template<typename T>
-		const DataPool<T>* GetPool() const
-		{
-			uint32_t poolID = GetPoolID<T>();
-			if (poolID != -1) {
-				return static_cast<DataPool<T>*>(pools[poolID].get());
+		const DataPool<T>* GetPool() const {
+			uint16_t typeID = DataTypeID<T>::GetID();
+			auto it = pools.find( typeID );
+			if (it != pools.end()) {
+				return static_cast<DataPool<T>*>(it->second.get());
 			}
 			else {
 				return nullptr;
@@ -104,8 +100,8 @@ namespace game {
 
 		template<typename T>
 		bool DoesPoolExist() const {
-			auto typeIndex = std::type_index( typeid(T) );
-			return typeToPoolIndex.count( typeIndex ) != 0;
+			uint16_t typeID = DataTypeID<T>::GetID();
+			return pools.find( typeID ) != pools.end();
 		}
 
 		/// @brief If a pool has not already been added, creates the pool with the reserved 
@@ -115,60 +111,44 @@ namespace game {
 		/// @param capacity - Max capacity of the pool
 		/// @return The reserved pool, otherwise nullptr
 		template<typename T>
-		const DataPool<T>* ReservePool( uint16_t capacity )
-		{
-			auto typeIndex = std::type_index( typeid(T) );
+		const DataPool<T>* ReservePool( uint16_t capacity ) {
+			uint16_t typeID = DataTypeID<T>::GetID();
 
 			// Check if pool already exists
-			if (typeToPoolIndex.find( typeIndex ) != typeToPoolIndex.end()) {
+			if (pools.find( typeID ) != pools.end()) {
 				return nullptr; // Pool already exists
 			}
 
-			uint16_t poolID = nextPoolID++;
-			typeToPoolIndex[typeIndex] = poolID;
-
 			// Create the new pool
-			pools.resize( poolID + 1 );
-			auto pool = std::make_unique<DataPool<T>>( capacity );
-			pools[poolID] = std::move( pool );
+			pools[typeID] = std::make_unique<DataPool<T>>( capacity );
 
-			DataPool<T>* poolPtr = static_cast<DataPool<T>*>(pools[poolID].get());
+			DataPool<T>* poolPtr = static_cast<DataPool<T>*>(pools[typeID].get());
 			return poolPtr; // Return the newly created pool
 		}
 
 
-	private:
 
-		std::vector<std::unique_ptr<IPool>> pools;
-		std::unordered_map<std::type_index, uint16_t> typeToPoolIndex;
-		uint16_t nextPoolID = 0;
+	private:
+		std::unordered_map<uint16_t, std::unique_ptr<IPool>> pools;
 
 		template<typename T>
 		DataPool<T>& GetOrCreatePool(
 			uint16_t& out_PoolID,
 			uint16_t capacity = gameConfig::DATA_CLUSTER_DEFAULT_POOL_CAPACITY )
 		{
-			auto typeIndex = std::type_index( typeid(T) );
-			auto it = typeToPoolIndex.find( typeIndex );
+			uint16_t typeID = DataTypeID<T>::GetID();
+			out_PoolID = typeID;
 
-			if (it != typeToPoolIndex.end()) {
-				out_PoolID = it->second;
-			}
-			else {
-				out_PoolID = nextPoolID++;
-				typeToPoolIndex[typeIndex] = out_PoolID;
+			auto it = pools.find( typeID );
+			if (it == pools.end()) {
+				// Create a new pool for this type
+				pools[typeID] = std::make_unique<DataPool<T>>( capacity );
 			}
 
-			// if the DataPool has not been added, add it here
-			if (out_PoolID >= pools.size()) {
-				pools.resize( out_PoolID + 1 );
-				auto pool = std::make_unique<DataPool<T>>( capacity );
-				pools[out_PoolID] = std::move( pool );
-			}
-
-			DataPool<T>* poolPtr = static_cast<DataPool<T>*>(pools[out_PoolID].get());
+			DataPool<T>* poolPtr = static_cast<DataPool<T>*>(pools[typeID].get());
 			return *poolPtr;
 		}
+
 	};
 
 } // End of namespace game

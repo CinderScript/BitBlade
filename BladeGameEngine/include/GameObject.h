@@ -5,6 +5,7 @@
 #define GAME_OBJECT_H
 
 #include "BitBladeGame.h"
+#include "DataTypeID.h"
 #include "Transform.h"
 
 #include <vector>
@@ -44,9 +45,11 @@ namespace game {
 
 		template <typename T>
 		T* GetComponent() const {
+			uint32_t desiredTypeID = DataTypeID<T>::GetID();
+
 			for (auto* comp : components) {
-				if (auto* desired = dynamic_cast<T*>(comp)) {
-					return desired;
+				if (comp->PoolID() == desiredTypeID) {
+					return static_cast<T*>(comp);
 				}
 			}
 			return nullptr;
@@ -55,9 +58,11 @@ namespace game {
 		template <typename T>
 		std::vector<T*> GetComponents() const {
 			std::vector<T*> desired;
+			uint32_t desiredTypeID = DataTypeID<T>::GetID();
+
 			for (auto* comp : components) {
-				if (T* castedComp = dynamic_cast<T*>(comp)) {
-					desired.push_back( castedComp );
+				if (comp->PoolID() == desiredTypeID) {
+					desired.push_back( static_cast<T*>(comp) );
 				}
 			}
 			return desired;
