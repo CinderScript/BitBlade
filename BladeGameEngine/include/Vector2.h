@@ -24,6 +24,7 @@ namespace game {
 
 		void SetX( float x ) { this->x = x; }
 		void SetY( float y ) { this->y = y; }
+		void Set( float x, float y ) { this->x = x, this->y = y; }
 
 
 		float Length() const {
