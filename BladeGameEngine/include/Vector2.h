@@ -103,6 +103,7 @@ namespace game {
 		constexpr Vector2 operator-( const Vector2& rhs ) const {
 			return { static_cast<float>(x - rhs.x), static_cast<float>(y - rhs.y) };
 		}
+
 		// Operator overloading for vector multiplication by an integer
 		constexpr Vector2 operator*( int scalar ) const {
 			return { static_cast<float>(x * scalar), static_cast<float>(y * scalar) };
@@ -111,6 +112,7 @@ namespace game {
 		constexpr Vector2 operator*( float scalar ) const {
 			return { x * scalar, y * scalar };
 		}
+
 		// Operator overloading for vector division by a float
 		constexpr Vector2 operator/( float scalar ) const {
 			if (scalar == 0) {
@@ -216,6 +218,12 @@ namespace game {
 		}
 
 	};
+
+}
+
+template<typename T>
+inline constexpr game::Vector2 operator*( T scalar, const game::Vector2& vec ) {
+	return vec * static_cast<float>(scalar);
 }
 
 #endif // VECTOR_2_H

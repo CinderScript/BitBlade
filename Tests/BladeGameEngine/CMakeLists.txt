@@ -14,7 +14,7 @@ target_link_libraries(GameEngine_tests
 )
 
 target_include_directories(GameEngine_tests PRIVATE
-    include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 

@@ -1,17 +1,70 @@
-/* TransformComponent_testDriver.cpp*/
+// /* TransformComponent_testDriver.cpp*/
 
 
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "BitBladeGame_test.h"
 #include "GfxTestPacker_test.h"
 #include "GameObject.h"
+
+#include "DebugComponents.h"
+
+// /* -------------------------------- GAME BETA ------------------------------- */
+
+class GameTransformTest : public game::BitBladeGame
+{
+public:
+
+	using BitBladeGame::BitBladeGame;  // Inherit the base constructor
+	~GameTransformTest() {}
+
+	const char* GetGameTitle() override;
+	void Initialize() override;
+	void Update() override;
+
+	size_t totalUpdates = 3;
+	size_t updateCount = 0;
+
+	game::GameObject* hero;
+	game::GameObject* larm;
+	game::GameObject* rarm;
+	game::GameObject* sword;
+};
+
+const char* GameTransformTest::GetGameTitle() {
+	return "TestGame-Zulu\n";
+}
+
+void GameTransformTest::Initialize()
+{
+	hero = Instantiate( "Hero" );
+	larm = Instantiate( hero, "leftarm" );
+	rarm = Instantiate( hero, "rightarm" );
+	sword = Instantiate( "Sword" );
+	sword->SetParent( larm );
+
+	hero->AddComponent<DebugOnTransformChanged>();
+}
+
+void GameTransformTest::Update()
+{
+	if (updateCount == 1) {
+		hero->GetTransform()->SetPosition( 2, 3 );
+	}
+
+	if (updateCount > totalUpdates) {
+
+		QuitGame();
+	}
+
+	updateCount++;
+}
+
 
 // Tests for the Transform component
 class TransformTest : public ::testing::Test {
 protected:
-	GameBeta* game;
+	GameTransformTest* game;
 	GfxTestPacker* gfxPacker;
 	game::GameObject* gameObject;
 	game::Transform* transform;
@@ -19,7 +72,7 @@ protected:
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
 		gfxPacker = new GfxTestPacker();
-		game = new GameBeta( gfxPacker );
+		game = new GameTransformTest( gfxPacker );
 		game->totalUpdates = 3;
 		game->Initialize();
 		game->Start();
