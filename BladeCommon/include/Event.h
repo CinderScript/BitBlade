@@ -1,9 +1,9 @@
 // Event.h
-
 #ifndef EVENT_H
 #define EVENT_H
 
 #include <vector>
+#include <cassert>
 
 template<typename... Args>
 class Event {
@@ -18,22 +18,21 @@ private:
 		virtual ~DelegateBase() {}
 	};
 
-
 	/* -------------------------------- DELEGATE -------------------------------- */
 
 	template<typename T, typename... ArgsD>
 	class Delegate : public DelegateBase<ArgsD...> {
 	public:
-		typedef void (T::* MemberFunction)(ArgsD...);
+		using MemberFunction = void (T::*)(ArgsD...);
 
 		Delegate( T* instance, MemberFunction function )
 			: instance( instance ), function( function ) {}
 
-		void Invoke( ArgsD... args ) override {
+		inline void Invoke( ArgsD... args ) override {
 			(instance->*function)(args...);
 		}
 
-		bool EqualsInstanceFunction( const void* instancePtr, const void* memberFunctionPtr ) const override {
+		inline bool EqualsInstanceFunction( const void* instancePtr, const void* memberFunctionPtr ) const override {
 			return instance == static_cast<const T*>(instancePtr) &&
 				function == *reinterpret_cast<const MemberFunction*>(memberFunctionPtr);
 		}
@@ -44,18 +43,26 @@ private:
 
 	std::vector<DelegateBase<Args...>*> delegates;
 
-public:
+	// **Reentrancy Guard Flag**
+	bool isNotifying = false;
 
-	Event( int reserve ) { delegates.reserve( reserve ); }
+public:
+	Event( int reserve = 0 ) {
+		if (reserve > 0) delegates.reserve( reserve );
+	}
 
 	template<typename T>
 	bool Subscribe( T* instance, void (T::* memberFunction)(Args...) ) {
+		assert( !isNotifying && "Cannot subscribe during Invoke" );
+
 		delegates.push_back( new Delegate<T, Args...>( instance, memberFunction ) );
 		return true;
 	}
 
 	template<typename T>
 	void Unsubscribe( T* instance, void (T::* memberFunction)(Args...) ) {
+		assert( !isNotifying && "Cannot unsubscribe during Invoke" );
+
 		const void* instancePtr = static_cast<const void*>(instance);
 		const void* memberFunctionPtr = reinterpret_cast<const void*>(&memberFunction);
 
@@ -68,13 +75,20 @@ public:
 		}
 	}
 
-	void Notify( Args... args ) {
-		// Copy the list to prevent issues if delegates  
-		// subscribe or unsubscribe to this delegates list
-		auto delegatesCopy = delegates;
-		for (auto delegate : delegatesCopy) {
+	inline void Invoke( Args... args ) {
+
+		assert( !isNotifying && "Cannot Invoke the same Event within a previous Invoke" );
+
+		isNotifying = true;
+
+		// // Copy the list to prevent issues if delegates  
+		// // subscribe or unsubscribe to this delegates list
+		// auto delegatesCopy = delegates;
+		for (auto delegate : delegates) {
 			delegate->Invoke( args... );
 		}
+
+		isNotifying = false;
 	}
 
 	~Event() {

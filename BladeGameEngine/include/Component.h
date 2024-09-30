@@ -33,7 +33,7 @@ namespace game {
 		/// @brief Called right after Component is added to the GameObject.
 		virtual void Update() {}
 
-		GameObject* Owner() const { return owner; }
+		GameObject* Owner() { return owner; }
 
 
 	private:

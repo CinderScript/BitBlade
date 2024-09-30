@@ -3,10 +3,11 @@
 
 #include "Component.h"
 #include "GameObject.h"
+#include "Transform.h"
 
 #include <iostream>
 
-
+/* --------------------------- Debug Print Component -------------------------- */
 class DebugPrintComponent : public game::Component
 {
 public:
@@ -37,5 +38,32 @@ inline void DebugPrintComponent::Update()
 	std::cout << "Component-" << ObjectID() << "-Update-Obj-" << Owner()->Name() << "\n";
 }
 
+/* ------------------------- Debug On Position Changed ------------------------- */
+class DebugOnTransformChanged : public game::Component
+{
+private:
+	/* data */
+public:
+	using Component::Component;  // Inherit the base constructor
+	~DebugOnTransformChanged();
+
+	void handleEvent();
+
+	void Awake() override;
+};
+
+DebugOnTransformChanged::~DebugOnTransformChanged() {}
+
+inline void DebugOnTransformChanged::handleEvent()
+{
+	std::cout << Owner()->Name() << "'s Transform Changed. Pos: "
+		<< Owner()->GetTransform()->Position().ToString() << "\n";
+}
+
+inline void DebugOnTransformChanged::Awake()
+{
+	auto* transform = Owner()->GetComponent<game::Transform>();
+	transform->OnChanged.Subscribe( this, &DebugOnTransformChanged::handleEvent );
+}
 
 #endif // DEBUG_PRINT_COMPONENT_H

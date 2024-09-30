@@ -116,4 +116,56 @@ void GameZulu::Update()
 	updateCount++;
 }
 
+
+/* -------------------------------- GAME BETA ------------------------------- */
+
+class GameBeta : public game::BitBladeGame
+{
+public:
+
+	using BitBladeGame::BitBladeGame;  // Inherit the base constructor
+	~GameBeta() {}
+
+	const char* GetGameTitle() override;
+	void Initialize() override;
+	void Update() override;
+
+	size_t totalUpdates = 3;
+	size_t updateCount = 0;
+
+	game::GameObject* hero;
+	game::GameObject* larm;
+	game::GameObject* rarm;
+	game::GameObject* sword;
+};
+
+const char* GameBeta::GetGameTitle() {
+	return "TestGame-Zulu\n";
+}
+
+void GameBeta::Initialize()
+{
+	hero = Instantiate( "Hero" );
+	larm = Instantiate( hero, "leftarm" );
+	rarm = Instantiate( hero, "rightarm" );
+	sword = Instantiate( "Sword" );
+	sword->SetParent( larm );
+
+	hero->AddComponent<DebugOnTransformChanged>();
+}
+
+void GameBeta::Update()
+{
+	if (updateCount == 1) {
+		hero->GetTransform()->SetPosition( 2, 3 );
+	}
+
+	if (updateCount > totalUpdates) {
+
+		QuitGame();
+	}
+
+	updateCount++;
+}
+
 #endif // BIT_BLADE_GAMES_TEST_H

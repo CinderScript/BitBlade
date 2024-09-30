@@ -98,17 +98,4 @@ namespace game {
 			game->topLevelObjects.push_back( this );
 		}
 	}
-
-	void GameObject::internalUpdate()
-	{
-		for (auto* components : startComponents) {
-			components->Start();
-		}
-
-		startComponents.clear();
-
-		for (auto* component : components) {
-			component->Update();
-		}
-	}
 }

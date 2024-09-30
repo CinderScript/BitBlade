@@ -55,6 +55,7 @@ protected:
 	}
 };
 
+
 /* ---------------------------------- TESTS --------------------------------- */
 
 TEST_F( BitBladeGameTest, QuitGame ) {
@@ -332,7 +333,58 @@ TEST_F( GameZuluTest, GameLogicTest ) {
 	EXPECT_EQ( output, expectedOutput );
 }
 
-TEST_F( GameZuluTest, ImageSourcePacking ) {
 
+
+
+class GameBetaTest : public ::testing::Test {
+protected:
+	GameBeta* game;
+	GfxTestPacker* gfxPacker;
+
+	void SetUp() override {
+		// Initialize the graphics packer and game instance
+		gfxPacker = new GfxTestPacker();
+		game = new GameBeta( gfxPacker );
+		game->totalUpdates = 3;
+		game->Initialize();
+		game->Start();
+	}
+
+	void TearDown() override {
+		delete game;
+		delete gfxPacker;
+	}
+};
+
+
+TEST_F( GameBetaTest, TransformSetPosition ) {
+	// Capture the cout output while performing internalUpdate
+	game->internalUpdate();
+
+	EXPECT_EQ( game->hero->GetTransform()->Position(), game::Vector2( 0, 0 ) );
+
+	game->internalUpdate();
+
+	EXPECT_EQ( game->hero->GetTransform()->Position(), game::Vector2( 2, 3 ) );
+}
+
+TEST_F( GameBetaTest, TransformOnChangedEvent ) {
+	// Capture the cout output while performing internalUpdate
+	std::string output = captureCoutOutput( [this]() {
+		game->internalUpdate();
+		} );
+
+	std::string expectedOutput = "";
+
+	EXPECT_EQ( output, expectedOutput );
+
+	output = captureCoutOutput( [this]() {
+		game->internalUpdate();
+		} );
+
+	expectedOutput =
+		"Hero's Transform Changed. Pos: (2, 3)\n";
+
+	EXPECT_EQ( output, expectedOutput );
 
 }

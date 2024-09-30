@@ -98,8 +98,20 @@ namespace game {
 		GameObject( GameObject&& ) = delete;
 		GameObject& operator=( GameObject&& ) = delete;
 
-		void internalUpdate();
 		void initialize();
+
+		inline void internalUpdate()
+		{
+			for (auto* components : startComponents) {
+				components->Start();
+			}
+
+			startComponents.clear();
+
+			for (auto* component : components) {
+				component->Update();
+			}
+		}
 	};
 }
 

@@ -1,4 +1,4 @@
-// Event_test.cpp
+// Event_testDriver.cpp
 
 #include <gtest/gtest.h>
 #include "Event.h"
@@ -17,7 +17,19 @@ public:
 	int last_value;
 };
 
-// Test subscribing and notifying a single listener
+// Listener class for testing no-argument events
+class TestListenerNoArg {
+public:
+	TestListenerNoArg() : call_count( 0 ) {}
+
+	void OnEvent() {
+		call_count++;
+	}
+
+	int call_count;
+};
+
+// Test subscribing and invokeing a single listener
 TEST( EventTest, SingleSubscription ) {
 	Event<int> event( 10 );
 	TestListener listener;
@@ -25,8 +37,8 @@ TEST( EventTest, SingleSubscription ) {
 	// Subscribe the listener
 	event.Subscribe( &listener, &TestListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 42 );
+	// Invoke the event
+	event.Invoke( 42 );
 
 	// Verify that the listener was called
 	EXPECT_EQ( listener.call_count, 1 );
@@ -43,8 +55,8 @@ TEST( EventTest, MultipleSubscriptions ) {
 	event.Subscribe( &listener1, &TestListener::OnEvent );
 	event.Subscribe( &listener2, &TestListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 100 );
+	// Invoke the event
+	event.Invoke( 100 );
 
 	// Verify that both listeners were called
 	EXPECT_EQ( listener1.call_count, 1 );
@@ -66,8 +78,8 @@ TEST( EventTest, UnsubscribeListener ) {
 	// Unsubscribe listener1
 	event.Unsubscribe( &listener1, &TestListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 200 );
+	// Invoke the event
+	event.Invoke( 200 );
 
 	// Verify that listener1 was not called, but listener2 was
 	EXPECT_EQ( listener1.call_count, 0 );
@@ -83,8 +95,8 @@ TEST( EventTest, UnsubscribeNonSubscriber ) {
 	// Attempt to unsubscribe without subscribing first
 	event.Unsubscribe( &listener, &TestListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 300 );
+	// Invoke the event
+	event.Invoke( 300 );
 
 	// Verify that listener was not called
 	EXPECT_EQ( listener.call_count, 0 );
@@ -99,8 +111,8 @@ TEST( EventTest, SubscribeSameListenerMultipleTimes ) {
 	event.Subscribe( &listener, &TestListener::OnEvent );
 	event.Subscribe( &listener, &TestListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 400 );
+	// Invoke the event
+	event.Invoke( 400 );
 
 	// Verify that the listener was called twice
 	EXPECT_EQ( listener.call_count, 2 );
@@ -129,8 +141,8 @@ TEST( EventTest, EventWithMultipleArguments ) {
 	MultiArgListener listener;
 	event.Subscribe( &listener, &MultiArgListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 500, "test" );
+	// Invoke the event
+	event.Invoke( 500, "test" );
 
 	// Verify that the listener received the correct arguments
 	EXPECT_EQ( listener.call_count, 1 );
@@ -138,12 +150,12 @@ TEST( EventTest, EventWithMultipleArguments ) {
 	EXPECT_EQ( listener.last_str, "test" );
 }
 
-// Test notifying an event with no subscribers
-TEST( EventTest, NotifyWithNoSubscribers ) {
+// Test invokeing an event with no subscribers
+TEST( EventTest, InvokeWithNoSubscribers ) {
 	Event<int> event( 10 );
 
-	// Notify the event (should not cause any issues)
-	event.Notify( 600 );
+	// Invoke the event (should not cause any issues)
+	event.Invoke( 600 );
 }
 
 // Test subscribing and unsubscribing multiple listeners
@@ -161,8 +173,8 @@ TEST( EventTest, SubscribeUnsubscribeMultipleListeners ) {
 	// Unsubscribe listener2
 	event.Unsubscribe( &listener2, &TestListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 700 );
+	// Invoke the event
+	event.Invoke( 700 );
 
 	// Verify that listener1 and listener3 were called, but listener2 was not
 	EXPECT_EQ( listener1.call_count, 1 );
@@ -186,85 +198,14 @@ TEST( EventTest, UnsubscribeAllListeners ) {
 	event.Unsubscribe( &listener1, &TestListener::OnEvent );
 	event.Unsubscribe( &listener2, &TestListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 800 );
+	// Invoke the event
+	event.Invoke( 800 );
 
 	// Verify that neither listener was called
 	EXPECT_EQ( listener1.call_count, 0 );
 	EXPECT_EQ( listener2.call_count, 0 );
 }
 
-// Test modifying subscriptions during notification
-TEST( EventTest, ModifySubscriptionsDuringNotification ) {
-	class SelfModifyingListener {
-	public:
-		SelfModifyingListener( Event<int>& event ) : event( event ), call_count( 0 ) {}
-
-		void OnEvent( int value ) {
-			call_count++;
-			// Unsubscribe itself during notification
-			event.Unsubscribe( this, &SelfModifyingListener::OnEvent );
-		}
-
-		Event<int>& event;
-		int call_count;
-	};
-
-	Event<int> event( 10 );
-	SelfModifyingListener listener( event );
-
-	// Subscribe the listener
-	event.Subscribe( &listener, &SelfModifyingListener::OnEvent );
-
-	// Notify the event multiple times
-	event.Notify( 900 );
-	event.Notify( 900 );
-
-	// Verify that the listener was only called once
-	EXPECT_EQ( listener.call_count, 1 );
-}
-
-// Test that subscribers can subscribe new listeners during notification
-TEST( EventTest, SubscribeDuringNotification ) {
-	class DynamicSubscriber {
-	public:
-		DynamicSubscriber( Event<int>& event, TestListener& newListener )
-			: event( event ), newListener( newListener ), call_count( 0 ) {}
-
-		void OnEvent( int value ) {
-			call_count++;
-			// Subscribe a new listener during notification
-			event.Subscribe( &newListener, &TestListener::OnEvent );
-		}
-
-		Event<int>& event;
-		TestListener& newListener;
-		int call_count;
-	};
-
-	Event<int> event( 10 );
-	TestListener newListener;
-	DynamicSubscriber listener( event, newListener );
-
-	// Subscribe the dynamic subscriber
-	event.Subscribe( &listener, &DynamicSubscriber::OnEvent );
-
-	// Notify the event
-	event.Notify( 1000 );
-
-	// Verify that the dynamic subscriber was called
-	EXPECT_EQ( listener.call_count, 1 );
-
-	// The new listener should not have been called during the first notification
-	EXPECT_EQ( newListener.call_count, 0 );
-
-	// Notify the event again
-	event.Notify( 1000 );
-
-	// Verify that the new listener was now called
-	EXPECT_EQ( newListener.call_count, 1 );
-	EXPECT_EQ( newListener.last_value, 1000 );
-}
 
 // Test handling of different argument types
 TEST( EventTest, DifferentArgumentTypes ) {
@@ -290,8 +231,8 @@ TEST( EventTest, DifferentArgumentTypes ) {
 	ComplexListener listener;
 	event.Subscribe( &listener, &ComplexListener::OnEvent );
 
-	// Notify the event
-	event.Notify( 3.14f, 'A', "Hello" );
+	// Invoke the event
+	event.Invoke( 3.14f, 'A', "Hello" );
 
 	// Verify that the listener received the correct arguments
 	EXPECT_EQ( listener.call_count, 1 );
@@ -309,8 +250,8 @@ TEST( EventTest, DestructorTest ) {
 		// Subscribe the listener
 		event.Subscribe( &listener, &TestListener::OnEvent );
 
-		// Notify the event
-		event.Notify( 42 );
+		// Invoke the event
+		event.Invoke( 42 );
 
 		// Verify that the listener was called
 		EXPECT_EQ( listener.call_count, 1 );
@@ -344,10 +285,102 @@ TEST( EventTest, MultipleMemberFunctions ) {
 	event.Subscribe( &listener, &MultiMethodListener::OnEvent1 );
 	event.Subscribe( &listener, &MultiMethodListener::OnEvent2 );
 
-	// Notify the event
-	event.Notify( 123 );
+	// Invoke the event
+	event.Invoke( 123 );
 
 	// Verify that both member functions were called
 	EXPECT_EQ( listener.call_count1, 1 );
 	EXPECT_EQ( listener.call_count2, 1 );
+}
+
+
+
+// Test subscribing and invoking no-argument listeners
+TEST( EventTest, NoArguments ) {
+	// Create an Event with no parameters
+	Event<> event( 10 );
+
+	// Define a listener class for no-argument events
+	class NoArgListener {
+	public:
+		NoArgListener() : call_count( 0 ) {}
+
+		// Handler method with no parameters
+		void OnEvent() {
+			call_count++;
+		}
+
+		int call_count;
+	};
+
+	// Instantiate listeners
+	NoArgListener listener1;
+	NoArgListener listener2;
+
+	// Subscribe listeners to the event
+	event.Subscribe( &listener1, &NoArgListener::OnEvent );
+	event.Subscribe( &listener2, &NoArgListener::OnEvent );
+
+	// Invoke the event
+	event.Invoke();
+
+	// Verify that both listeners were called exactly once
+	EXPECT_EQ( listener1.call_count, 1 );
+	EXPECT_EQ( listener2.call_count, 1 );
+}
+
+// Test that subscribing during Invoke triggers an assertion
+TEST( EventTest, ModifyDuringInvoke_Subscribe ) {
+	// Define a listener class that attempts to subscribe another listener during Invoke
+	class ModifySubscribeListener {
+	public:
+		ModifySubscribeListener( Event<int>& event ) : event( event ), call_count( 0 ) {}
+
+		void OnEvent( int value ) {
+			call_count++;
+			// Attempt to subscribe itself again during Invoke, which should trigger an assertion
+			event.Subscribe( this, &ModifySubscribeListener::OnEvent );
+		}
+
+		Event<int>& event;
+		int call_count;
+	};
+
+	Event<int> event( 10 );
+	ModifySubscribeListener listener( event );
+
+	// Subscribe the listener to the event
+	event.Subscribe( &listener, &ModifySubscribeListener::OnEvent );
+
+	// Use EXPECT_DEATH to verify that subscribing during Invoke triggers an assertion
+	// The second parameter is a regex that should match the assertion message
+	EXPECT_DEATH( event.Invoke( 42 ), "Cannot subscribe during Invoke" );
+}
+
+// Test that unsubscribing during Invoke triggers an assertion
+TEST( EventTest, ModifyDuringInvoke_Unsubscribe ) {
+	// Define a listener class that attempts to unsubscribe itself during Invoke
+	class ModifyUnsubscribeListener {
+	public:
+		ModifyUnsubscribeListener( Event<int>& event ) : event( event ), call_count( 0 ) {}
+
+		void OnEvent( int value ) {
+			call_count++;
+			// Attempt to unsubscribe itself during Invoke, which should trigger an assertion
+			event.Unsubscribe( this, &ModifyUnsubscribeListener::OnEvent );
+		}
+
+		Event<int>& event;
+		int call_count;
+	};
+
+	Event<int> event( 10 );
+	ModifyUnsubscribeListener listener( event );
+
+	// Subscribe the listener to the event
+	event.Subscribe( &listener, &ModifyUnsubscribeListener::OnEvent );
+
+	// Use EXPECT_DEATH to verify that unsubscribing during Invoke triggers an assertion
+	// The second parameter is a regex that should match the assertion message
+	EXPECT_DEATH( event.Invoke( 42 ), "Cannot unsubscribe during Invoke" );
 }
