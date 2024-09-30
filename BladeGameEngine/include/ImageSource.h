@@ -11,11 +11,11 @@
 namespace game {
 	template<typename T>
 	class DataPool;
-	class BitBladeGame;
 
 	class ImageSource : public DataPoolMember {
 	public:
 		friend struct DataPool<ImageSource>;
+		friend class BitBladeGame;					// calls Pack_CreateImageData
 
 		~ImageSource();
 

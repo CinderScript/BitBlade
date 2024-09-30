@@ -21,6 +21,8 @@ namespace game {
 		friend struct DataPool<Component>;
 		friend class BitBladeGame;					// calls constructor
 
+		/// @brief DataPoolMembers are assigned a PoolID and ObjectID after construction.
+		/// @param owner  - the parent GameObject
 		Component( GameObject* owner ) : owner( owner ) {}
 		virtual ~Component() {}
 
@@ -38,7 +40,6 @@ namespace game {
 
 	private:
 		GameObject* owner;
-
 	};
 }
 

@@ -62,6 +62,7 @@ namespace game {
 
 		template<typename... Args>
 		T* Add( Args&&... args ) {
+
 			//if (count < capacity)
 			if (!freeIndices.empty())
 			{

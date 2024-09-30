@@ -32,6 +32,7 @@ namespace game {// Define the static members
 	ImageSource* BitBladeGame::LoadImageSource( const char* filename ) {
 
 		ImageSource* image = gameData.Add<ImageSource>( this, filename );
+		image->Pack_CreateImageData();
 		return image;
 	}
 

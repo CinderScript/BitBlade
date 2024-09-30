@@ -7,6 +7,7 @@
 #include "GfxTestPacker_test.h"
 #include "GameObject.h"
 #include "DebugComponents.h"
+#include "Logging.h"
 
 using game::GameObject;
 
@@ -350,17 +351,6 @@ TEST_F( BitBladeGameTest, InternalUpdate ) {
 /* ---------------------------------- ZULU ---------------------------------- */
 
 
-// Utility function to capture std::cout output
-std::string captureCoutOutput( std::function<void()> func ) {
-	std::stringstream buffer;
-	std::streambuf* prevCoutBuf = std::cout.rdbuf( buffer.rdbuf() );  // Redirect cout
-
-	func();  // Execute the function that will produce output to std::cout
-
-	std::cout.rdbuf( prevCoutBuf );  // Restore cout
-	return buffer.str();
-}
-
 class GameZuluTest : public ::testing::Test {
 protected:
 	GameZulu* gameZulu;
@@ -370,7 +360,7 @@ protected:
 	void SetUp() override {
 		gfxPacker = new GfxTestPacker();
 		gameZulu = new GameZulu( gfxPacker );
-		std::string output = captureCoutOutput( [this]() {
+		std::string output = logging::captureCoutOutput( [this]() {
 			gameZulu->Initialize();
 			} );
 
@@ -408,7 +398,7 @@ TEST_F( GameZuluTest, GameObjectHierarchy ) {
 
 TEST_F( GameZuluTest, UpdatePrecedence ) {
 	// Capture the cout output while performing internalUpdate
-	output = captureCoutOutput( [this]() {
+	output = logging::captureCoutOutput( [this]() {
 		gameZulu->internalUpdate();
 		} );
 
@@ -431,7 +421,7 @@ TEST_F( GameZuluTest, UpdatePrecedence ) {
 	// Check if the output matches the expected sequence
 	EXPECT_EQ( output, expectedOutput );
 
-	output = captureCoutOutput( [this]() {
+	output = logging::captureCoutOutput( [this]() {
 		gameZulu->internalUpdate();
 		} );
 }
@@ -450,7 +440,7 @@ TEST_F( GameZuluTest, GameLogicTest ) {
 		"Component-4-Awake-Obj-rightarm\n";		//right arm
 
 	// UPDATE 0
-	output = captureCoutOutput( [this]()
+	output = logging::captureCoutOutput( [this]()
 		{
 			gameZulu->internalUpdate();
 		} );
@@ -473,7 +463,7 @@ TEST_F( GameZuluTest, GameLogicTest ) {
 
 
 	// UPDATE 1
-	output = captureCoutOutput( [this]() {
+	output = logging::captureCoutOutput( [this]() {
 		gameZulu->internalUpdate();
 		} );
 	expectedOutput =
@@ -529,7 +519,7 @@ TEST_F( GameBetaTest, TransformSetPosition ) {
 
 TEST_F( GameBetaTest, TransformOnChangedEvent ) {
 	// Capture the cout output while performing internalUpdate
-	std::string output = captureCoutOutput( [this]() {
+	std::string output = logging::captureCoutOutput( [this]() {
 		game->internalUpdate();
 		} );
 
@@ -537,7 +527,7 @@ TEST_F( GameBetaTest, TransformOnChangedEvent ) {
 
 	EXPECT_EQ( output, expectedOutput );
 
-	output = captureCoutOutput( [this]() {
+	output = logging::captureCoutOutput( [this]() {
 		game->internalUpdate();
 		} );
 

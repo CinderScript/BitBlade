@@ -1,49 +1,79 @@
-// /* GfxPacking_testDriver.cpp*/
+/* GfxPacking_testDriver.cpp*/
 
 
-// #include <gtest/gtest.h>
-// #include <iostream>
+#include <gtest/gtest.h>
+#include <iostream>
 
-// #include "BitBladeGame_test.h"
-// #include "GfxTestPacker_test.h"
-// #include "GameObject.h"
-
-// using game::GameObject;
-
-// // class GameBetaTest : public ::testing::Test {
-// // protected:
-// // 	GameBeta* game;
-// // 	GfxTestPacker* gfxPacker;
-
-// // 	void SetUp() override {
-// // 		// Initialize the graphics packer and game instance
-// // 		gfxPacker = new GfxTestPacker();
-// // 		game = new GameBeta( gfxPacker );
-// // 		game->totalUpdates = 3;
-// // 		game->Initialize();
-// // 		game->Start();
-// // 	}
-
-// // 	void TearDown() override {
-// // 		delete game;
-// // 		delete gfxPacker;
-// // 	}
-// // };
+#include "GfxTestPacker_test.h"
+#include "GameObject.h"
+#include "GfxLinkCommon.h"
 
 
-// // Utility function to capture std::cout output
-// std::string captureCoutOutput( std::function<void()> func ) {
-// 	std::stringstream buffer;
-// 	std::streambuf* prevCoutBuf = std::cout.rdbuf( buffer.rdbuf() );  // Redirect cout
+using game::GameObject;
+using gfxLink::GfxCode;
+using gfxLink::readMessageBuffer;
+using gfxLink::readMessageBufferString;
+using gfxLink::toGfxCommand;
 
-// 	func();  // Execute the function that will produce output to std::cout
+class GfxPackingGameTest : public game::BitBladeGame
+{
+public:
+	using BitBladeGame::BitBladeGame;  // Inherit the base constructor
+	~GfxPackingGameTest() {}
 
-// 	std::cout.rdbuf( prevCoutBuf );  // Restore cout
-// 	return buffer.str();
-// }
+	const char* GetGameTitle() override { return "GfxPackingGameTest"; }
+	void Initialize() override {
+		heroImg = LoadImageSource( "Hero.bmp" );
+		swordImg = LoadImageSource( "Sword.bmp" );
+	}
+	void Update() override {
+
+	}
+
+	size_t totalUpdates = 3;
+	size_t updateCount = 0;
+
+	game::ImageSource* heroImg;
+	game::ImageSource* swordImg;
+	game::GameObject* hero;
+	game::GameObject* sword;
+};
 
 
-// // TEST_F( GameBetaTest, ImageSourcePacking ) {
+class GfxPackingTest : public ::testing::Test {
+protected:
+	GfxPackingGameTest* game;
+	GfxTestPacker* gfxPacker;
+
+	void SetUp() override {
+		// Initialize the graphics packer and game instance
+		gfxPacker = new GfxTestPacker();
+		game = new GfxPackingGameTest( gfxPacker );
+		game->totalUpdates = 3;
+	}
+
+	void TearDown() override {
+		delete game;
+		delete gfxPacker;
+	}
+};
 
 
-// // }
+TEST_F( GfxPackingTest, LoadImageSource ) {
+
+	game->Initialize();
+
+	char* buffer = gfxPacker->packedInstructions;
+	uint16_t pos;
+	GfxCode cmd;
+
+	cmd = toGfxCommand( buffer[pos++] );
+	uint16_t imageDataID;
+	char filename[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
+	readMessageBuffer( buffer, imageDataID, pos );
+	readMessageBufferString( buffer, filename, pos );
+
+	EXPECT_EQ( cmd, GfxCode::CreateImageData );
+	EXPECT_EQ( imageDataID, 0 );
+	EXPECT_STREQ( filename, "Hero.bmp" );
+}

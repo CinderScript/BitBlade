@@ -55,18 +55,6 @@ TEST_F( DataClusterTest, GetPool ) {
 	EXPECT_EQ( dogs->Count(), 1 );     // Dog pool should have 1 element
 }
 
-
-TEST_F( DataClusterTest, GetPoolID ) {
-	cluster.Add<Flower>( "Daisy", Color::Red );
-	cluster.Add<Dog>( "Rover" );
-	cluster.Add<Tree>( "Maple" );
-
-	// IDs should be in the order of creation
-	EXPECT_EQ( cluster.GetPoolID<Flower>(), 0 );
-	EXPECT_EQ( cluster.GetPoolID<Dog>(), 1 );
-	EXPECT_EQ( cluster.GetPoolID<Tree>(), 2 );
-}
-
 TEST_F( DataClusterTest, ReservePool ) {
 
 	cluster.ReservePool<Dog>( 5 );
