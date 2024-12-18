@@ -5,21 +5,19 @@
 #include "DataPoolTypes_test.h"
 
 // Test fixture for DataPool with Flower
-class DataPoolTest : public ::testing::Test {
+class GameEngine_Tools_DataPool : public ::testing::Test {
 protected:
 	game::DataPool<Flower> flowerPool;
 
-	DataPoolTest() : flowerPool( 10 ) {}
+	GameEngine_Tools_DataPool() : flowerPool( 10 ) {}
 
-	void SetUp() override {
-	}
+	void SetUp() override {}
 
-	void TearDown() override {
-	}
+	void TearDown() override {}
 };
 
 
-TEST_F( DataPoolTest, BasicAssertions ) {
+TEST_F( GameEngine_Tools_DataPool, BasicAssertions ) {
 
 	Flower* d = flowerPool.Add( "Daisy" );
 	Flower* r = flowerPool.Add( "Rose" );
@@ -50,7 +48,7 @@ TEST_F( DataPoolTest, BasicAssertions ) {
 
 
 // Test sorting insertion points
-TEST_F( DataPoolTest, IndexManagement )
+TEST_F( GameEngine_Tools_DataPool, IndexManagement )
 {
 	// fill each element
 	for (size_t i = 0; i < 10; i++)
@@ -98,13 +96,13 @@ TEST_F( DataPoolTest, IndexManagement )
 }
 
 // Additional test: Ensure proper handling of invalid removals
-TEST_F( DataPoolTest, RemoveInvalidIndex ) {
+TEST_F( GameEngine_Tools_DataPool, RemoveInvalidIndex ) {
 	EXPECT_DEATH( flowerPool.Remove( flowerPool.Capacity() + 1 ), ".*Invalid index.*" );
 	EXPECT_DEATH( flowerPool.Remove( 0 ), ".*Object at index is already free.*" );
 }
 
 // Additional test: Test with derived classes
-TEST_F( DataPoolTest, MatchingObjectRetrieval ) {
+TEST_F( GameEngine_Tools_DataPool, MatchingObjectRetrieval ) {
 	// Assuming we have Flower derived from Plant
 	game::DataPool<Flower> flowerPool;
 

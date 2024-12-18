@@ -74,6 +74,7 @@ namespace game {
 				this->y = 0;
 			}
 		}
+
 		Vector2& Normalize() {
 			float len = Length();
 			if (len != 0) {
@@ -86,6 +87,10 @@ namespace game {
 
 		constexpr float Length() const {
 			return std::sqrt( x * x + y * y );
+		}
+
+		constexpr Vector2 operator-() const {
+			return Vector2( -x, -y );
 		}
 
 		constexpr bool operator==( const Vector2& rhs ) const {
@@ -216,7 +221,6 @@ namespace game {
 		static constexpr Vector2 Reflect( const Vector2& direction, const Vector2& normal ) {
 			return direction - normal * 2.0f * Dot( direction, normal );
 		}
-
 	};
 
 }

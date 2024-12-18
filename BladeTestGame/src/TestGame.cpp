@@ -31,7 +31,7 @@ void TestGame::Initialize()
 	sword = Instantiate( "Sword" );
 	sword->SetParent( arm );
 
-	background->AddComponent<ObjectUpdatePrinter>();
+	background->AddComponent<game::Transform>();
 	tree->AddComponent<ObjectUpdatePrinter>();
 
 	hero->AddComponent<ObjectUpdatePrinter>();

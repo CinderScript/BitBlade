@@ -7,6 +7,7 @@
 #include "BitBladeGame.h"
 #include "DataTypeID.h"
 #include "Transform.h"
+#include "UniqueComponentTrait.h"
 
 #include <vector>
 
@@ -34,7 +35,13 @@ namespace game {
 		template<typename T, typename... Args>
 		T* AddComponent( Args&&... args )
 		{
-			// General case for all other components
+			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
+
+			if constexpr (IsUniqueComponent<T>::value) {
+				// Check if component already exists
+				assert( (GetComponent<T>() == nullptr) && "Attempted to add a duplicate unique component." );
+			}
+
 			auto* comp = game->AddComponent<T>( this, std::forward<Args>( args )... );
 			components.push_back( comp );
 			startComponents.push_back( comp );
@@ -43,10 +50,15 @@ namespace game {
 			return comp;
 		}
 
+		/// @brief Gets the first component of type T on this GameObject
+		/// @tparam T - Component class
+		/// @return pointer to the component of type T, else nullptr
 		template <typename T>
-		T* GetComponent() const {
-			uint32_t desiredTypeID = DataTypeID<T>::GetID();
+		T* GetComponent() const
+		{
+			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
 
+			uint32_t desiredTypeID = DataTypeID<T>::GetID();
 			for (auto* comp : components) {
 				if (comp->PoolID() == desiredTypeID) {
 					return static_cast<T*>(comp);
@@ -56,7 +68,10 @@ namespace game {
 		}
 
 		template <typename T>
-		std::vector<T*> GetComponents() const {
+		std::vector<T*> GetComponents() const
+		{
+			static_assert(std::is_base_of<Component, T>::value, "T must inherit from Component");
+
 			std::vector<T*> desired;
 			uint32_t desiredTypeID = DataTypeID<T>::GetID();
 
@@ -102,12 +117,13 @@ namespace game {
 
 		inline void internalUpdate()
 		{
+			// run Start for any components that have just been added, then remove them
 			for (auto* components : startComponents) {
 				components->Start();
 			}
-
 			startComponents.clear();
 
+			// Update all components
 			for (auto* component : components) {
 				component->Update();
 			}

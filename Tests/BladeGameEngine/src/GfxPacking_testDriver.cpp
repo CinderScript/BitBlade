@@ -40,7 +40,7 @@ public:
 };
 
 
-class GfxPackingTest : public ::testing::Test {
+class GameEngine_Tools_GfxPacking : public ::testing::Test {
 protected:
 	GfxPackingGameTest* game;
 	GfxTestPacker* gfxPacker;
@@ -59,7 +59,7 @@ protected:
 };
 
 
-TEST_F( GfxPackingTest, LoadImageSource ) {
+TEST_F( GameEngine_Tools_GfxPacking, CreateImageData ) {
 
 	game->Initialize();
 

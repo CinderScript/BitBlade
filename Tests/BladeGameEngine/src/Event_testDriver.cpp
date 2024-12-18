@@ -28,9 +28,8 @@ public:
 
 	int call_count;
 };
-
 // Test subscribing and invokeing a single listener
-TEST( EventTest, SingleSubscription ) {
+TEST( GameEngine_Tools_EventSystem, SingleSubscription ) {
 	Event<int> event( 10 );
 	TestListener listener;
 
@@ -46,7 +45,7 @@ TEST( EventTest, SingleSubscription ) {
 }
 
 // Test subscribing multiple listeners
-TEST( EventTest, MultipleSubscriptions ) {
+TEST( GameEngine_Tools_EventSystem, MultipleSubscriptions ) {
 	Event<int> event( 10 );
 	TestListener listener1;
 	TestListener listener2;
@@ -66,7 +65,7 @@ TEST( EventTest, MultipleSubscriptions ) {
 }
 
 // Test unsubscribing a listener
-TEST( EventTest, UnsubscribeListener ) {
+TEST( GameEngine_Tools_EventSystem, UnsubscribeListener ) {
 	Event<int> event( 10 );
 	TestListener listener1;
 	TestListener listener2;
@@ -88,7 +87,7 @@ TEST( EventTest, UnsubscribeListener ) {
 }
 
 // Test unsubscribing a non-subscribed listener
-TEST( EventTest, UnsubscribeNonSubscriber ) {
+TEST( GameEngine_Tools_EventSystem, UnsubscribeNonSubscriber ) {
 	Event<int> event( 10 );
 	TestListener listener;
 
@@ -103,7 +102,7 @@ TEST( EventTest, UnsubscribeNonSubscriber ) {
 }
 
 // Test subscribing the same listener multiple times
-TEST( EventTest, SubscribeSameListenerMultipleTimes ) {
+TEST( GameEngine_Tools_EventSystem, SubscribeSameListenerMultipleTimes ) {
 	Event<int> event( 10 );
 	TestListener listener;
 
@@ -120,7 +119,7 @@ TEST( EventTest, SubscribeSameListenerMultipleTimes ) {
 }
 
 // Test event with multiple arguments
-TEST( EventTest, EventWithMultipleArguments ) {
+TEST( GameEngine_Tools_EventSystem, EventWithMultipleArguments ) {
 	Event<int, const std::string&> event( 10 );
 
 	class MultiArgListener {
@@ -151,7 +150,7 @@ TEST( EventTest, EventWithMultipleArguments ) {
 }
 
 // Test invokeing an event with no subscribers
-TEST( EventTest, InvokeWithNoSubscribers ) {
+TEST( GameEngine_Tools_EventSystem, InvokeWithNoSubscribers ) {
 	Event<int> event( 10 );
 
 	// Invoke the event (should not cause any issues)
@@ -159,7 +158,7 @@ TEST( EventTest, InvokeWithNoSubscribers ) {
 }
 
 // Test subscribing and unsubscribing multiple listeners
-TEST( EventTest, SubscribeUnsubscribeMultipleListeners ) {
+TEST( GameEngine_Tools_EventSystem, SubscribeUnsubscribeMultipleListeners ) {
 	Event<int> event( 10 );
 	TestListener listener1;
 	TestListener listener2;
@@ -185,7 +184,7 @@ TEST( EventTest, SubscribeUnsubscribeMultipleListeners ) {
 }
 
 // Test unsubscribing all listeners
-TEST( EventTest, UnsubscribeAllListeners ) {
+TEST( GameEngine_Tools_EventSystem, UnsubscribeAllListeners ) {
 	Event<int> event( 10 );
 	TestListener listener1;
 	TestListener listener2;
@@ -208,7 +207,7 @@ TEST( EventTest, UnsubscribeAllListeners ) {
 
 
 // Test handling of different argument types
-TEST( EventTest, DifferentArgumentTypes ) {
+TEST( GameEngine_Tools_EventSystem, DifferentArgumentTypes ) {
 	Event<float, char, const std::string&> event( 10 );
 
 	class ComplexListener {
@@ -242,7 +241,7 @@ TEST( EventTest, DifferentArgumentTypes ) {
 }
 
 // Test that the event system cleans up properly
-TEST( EventTest, DestructorTest ) {
+TEST( GameEngine_Tools_EventSystem, DestructorTest ) {
 	{
 		Event<int> event( 10 );
 		TestListener listener;
@@ -261,7 +260,7 @@ TEST( EventTest, DestructorTest ) {
 }
 
 // Test subscribing with different member functions
-TEST( EventTest, MultipleMemberFunctions ) {
+TEST( GameEngine_Tools_EventSystem, MultipleMemberFunctions ) {
 	class MultiMethodListener {
 	public:
 		MultiMethodListener() : call_count1( 0 ), call_count2( 0 ) {}
@@ -296,7 +295,7 @@ TEST( EventTest, MultipleMemberFunctions ) {
 
 
 // Test subscribing and invoking no-argument listeners
-TEST( EventTest, NoArguments ) {
+TEST( GameEngine_Tools_EventSystem, NoArguments ) {
 	// Create an Event with no parameters
 	Event<> event( 10 );
 
@@ -330,7 +329,7 @@ TEST( EventTest, NoArguments ) {
 }
 
 // Test that subscribing during Invoke triggers an assertion
-TEST( EventTest, ModifyDuringInvoke_Subscribe ) {
+TEST( GameEngine_Tools_EventSystem, SubscirbeModifyDuringInvoke ) {
 	// Define a listener class that attempts to subscribe another listener during Invoke
 	class ModifySubscribeListener {
 	public:
@@ -358,7 +357,7 @@ TEST( EventTest, ModifyDuringInvoke_Subscribe ) {
 }
 
 // Test that unsubscribing during Invoke triggers an assertion
-TEST( EventTest, ModifyDuringInvoke_Unsubscribe ) {
+TEST( GameEngine_Tools_EventSystem, UnsubscribeModifyDuringInvoke ) {
 	// Define a listener class that attempts to unsubscribe itself during Invoke
 	class ModifyUnsubscribeListener {
 	public:

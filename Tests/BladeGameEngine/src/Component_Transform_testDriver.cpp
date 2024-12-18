@@ -11,12 +11,12 @@
 
 // /* -------------------------------- GAME BETA ------------------------------- */
 
-class GameTransformTest : public game::BitBladeGame
+class TransformTestGame : public game::BitBladeGame
 {
 public:
 
 	using BitBladeGame::BitBladeGame;  // Inherit the base constructor
-	~GameTransformTest() {}
+	~TransformTestGame() {}
 
 	const char* GetGameTitle() override;
 	void Initialize() override;
@@ -31,11 +31,11 @@ public:
 	game::GameObject* sword;
 };
 
-const char* GameTransformTest::GetGameTitle() {
+const char* TransformTestGame::GetGameTitle() {
 	return "TestGame-Zulu\n";
 }
 
-void GameTransformTest::Initialize()
+void TransformTestGame::Initialize()
 {
 	hero = Instantiate( "Hero" );
 	larm = Instantiate( hero, "leftarm" );
@@ -46,7 +46,7 @@ void GameTransformTest::Initialize()
 	hero->AddComponent<DebugOnTransformChanged>();
 }
 
-void GameTransformTest::Update()
+void TransformTestGame::Update()
 {
 	if (updateCount == 1) {
 		hero->GetTransform()->SetPosition( 2, 3 );
@@ -62,9 +62,9 @@ void GameTransformTest::Update()
 
 
 // Tests for the Transform component
-class TransformTest : public ::testing::Test {
+class GameEngine_Components_Transform : public ::testing::Test {
 protected:
-	GameTransformTest* game;
+	TransformTestGame* game;
 	GfxTestPacker* gfxPacker;
 	game::GameObject* gameObject;
 	game::Transform* transform;
@@ -72,7 +72,7 @@ protected:
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
 		gfxPacker = new GfxTestPacker();
-		game = new GameTransformTest( gfxPacker );
+		game = new TransformTestGame( gfxPacker );
 		game->totalUpdates = 3;
 		game->Initialize();
 		game->Start();
@@ -88,7 +88,7 @@ protected:
 };
 
 // Test setting and getting position
-TEST_F( TransformTest, SetGetPosition ) {
+TEST_F( GameEngine_Components_Transform, SetGetPosition ) {
 	transform->SetPosition( 5.0f, 10.0f );
 	EXPECT_EQ( transform->Position(), game::Vector2( 5.0f, 10.0f ) );
 
@@ -97,7 +97,7 @@ TEST_F( TransformTest, SetGetPosition ) {
 }
 
 // Test setting and getting rotation
-TEST_F( TransformTest, SetGetRotation ) {
+TEST_F( GameEngine_Components_Transform, SetGetRotation ) {
 	transform->SetRotation( 45.0f );
 	EXPECT_FLOAT_EQ( transform->Rotation(), 45.0f );
 
@@ -109,7 +109,7 @@ TEST_F( TransformTest, SetGetRotation ) {
 }
 
 // Test setting and getting scale
-TEST_F( TransformTest, SetGetScale ) {
+TEST_F( GameEngine_Components_Transform, SetGetScale ) {
 	transform->SetScale( game::Vector2( 1.0f, 1.0f ) );
 	EXPECT_EQ( transform->Scale(), game::Vector2( 1.0f, 1.0f ) );
 
@@ -118,7 +118,7 @@ TEST_F( TransformTest, SetGetScale ) {
 }
 
 // Test moving the transform by delta
-TEST_F( TransformTest, MoveByDelta ) {
+TEST_F( GameEngine_Components_Transform, MoveByDelta ) {
 	transform->SetPosition( 0.0f, 0.0f );
 	transform->Move( 5.0f, 5.0f );
 	EXPECT_EQ( transform->Position(), game::Vector2( 5.0f, 5.0f ) );
@@ -128,7 +128,7 @@ TEST_F( TransformTest, MoveByDelta ) {
 }
 
 // Test moving in a specific direction
-TEST_F( TransformTest, MoveInDirection ) {
+TEST_F( GameEngine_Components_Transform, MoveInDirection ) {
 	transform->SetPosition( 0.0f, 0.0f );
 	game::Vector2 direction( 1.0f, 0.0f ); // Move right
 	transform->Move( 10.0f, direction );
@@ -140,31 +140,31 @@ TEST_F( TransformTest, MoveInDirection ) {
 }
 
 // Test forward movement
-TEST_F( TransformTest, ForwardMovement ) {
+TEST_F( GameEngine_Components_Transform, ForwardMovement ) {
 	transform->SetPosition( 0.0f, 0.0f );
 	transform->SetRotation( 0.0f ); // Facing right
-	transform->Forward( 10.0f );
+	transform->MoveForward( 10.0f );
 	EXPECT_NEAR( transform->Position().X(), 10.0f, 1e-5 );
 	EXPECT_NEAR( transform->Position().Y(), 0.0f, 1e-5 );
 
 	transform->SetRotation( 90.0f ); // Facing down
-	transform->Forward( 5.0f );
+	transform->MoveForward( 5.0f );
 	EXPECT_NEAR( transform->Position().X(), 10.0f, 1e-5 );
 	EXPECT_NEAR( transform->Position().Y(), 5.0f, 1e-5 );
 
 	transform->SetRotation( 180.0f ); // Facing left
-	transform->Forward( 3.0f );
+	transform->MoveForward( 3.0f );
 	EXPECT_NEAR( transform->Position().X(), 7.0f, 1e-5 );
 	EXPECT_NEAR( transform->Position().Y(), 5.0f, 1e-5 );
 
 	transform->SetRotation( 270.0f ); // Facing up
-	transform->Forward( 2.0f );
+	transform->MoveForward( 2.0f );
 	EXPECT_NEAR( transform->Position().X(), 7.0f, 1e-5 );
 	EXPECT_NEAR( transform->Position().Y(), 3.0f, 1e-5 );
 }
 
 // Test NormalizeRotation helper function
-TEST_F( TransformTest, NormalizeRotation ) {
+TEST_F( GameEngine_Components_Transform, NormalizeRotation ) {
 	transform->SetRotation( 370.0f );
 	EXPECT_FLOAT_EQ( transform->Rotation(), 10.0f );
 
@@ -179,41 +179,41 @@ TEST_F( TransformTest, NormalizeRotation ) {
 }
 
 // Test updateForwardVector correctness
-TEST_F( TransformTest, UpdateForwardVector ) {
+TEST_F( GameEngine_Components_Transform, UpdateForwardVector ) {
 	transform->SetRotation( 0.0f );
-	EXPECT_NEAR( transform->Forward().X(), 1.0f, 1e-5 );
-	EXPECT_NEAR( transform->Forward().Y(), 0.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().X(), 1.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().Y(), 0.0f, 1e-5 );
 
 	transform->SetRotation( 90.0f );
-	EXPECT_NEAR( transform->Forward().X(), 0.0f, 1e-5 );
-	EXPECT_NEAR( transform->Forward().Y(), 1.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().X(), 0.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().Y(), 1.0f, 1e-5 );
 
 	transform->SetRotation( 180.0f );
-	EXPECT_NEAR( transform->Forward().X(), -1.0f, 1e-5 );
-	EXPECT_NEAR( transform->Forward().Y(), 0.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().X(), -1.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().Y(), 0.0f, 1e-5 );
 
 	transform->SetRotation( 270.0f );
-	EXPECT_NEAR( transform->Forward().X(), 0.0f, 1e-5 );
-	EXPECT_NEAR( transform->Forward().Y(), -1.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().X(), 0.0f, 1e-5 );
+	EXPECT_NEAR( transform->Up().Y(), -1.0f, 1e-5 );
 }
 
 // Test combining movement and rotation
-TEST_F( TransformTest, MoveAndRotateCombination ) {
+TEST_F( GameEngine_Components_Transform, MoveAndRotateCombination ) {
 	transform->SetPosition( 0.0f, 0.0f );
 	transform->SetRotation( 45.0f ); // Facing diagonal
 
-	transform->Forward( 10.0f );
+	transform->MoveForward( 10.0f );
 	EXPECT_NEAR( transform->Position().X(), 7.07107f, 1e-5 );
 	EXPECT_NEAR( transform->Position().Y(), 7.07107f, 1e-5 );
 
 	transform->Rotate( 45.0f ); // Now facing down
-	transform->Forward( 5.0f );
+	transform->MoveForward( 5.0f );
 	EXPECT_NEAR( transform->Position().X(), 7.07107f, 1e-5 );
 	EXPECT_NEAR( transform->Position().Y(), 12.07107f, 1e-5 );
 }
 
 // Test scaling
-TEST_F( TransformTest, Scaling ) {
+TEST_F( GameEngine_Components_Transform, Scaling ) {
 	transform->SetScale( game::Vector2( 1.0f, 1.0f ) );
 	EXPECT_EQ( transform->Scale(), game::Vector2( 1.0f, 1.0f ) );
 
@@ -222,9 +222,14 @@ TEST_F( TransformTest, Scaling ) {
 }
 
 // Test moving with zero length direction
-TEST_F( TransformTest, MoveWithZeroLengthDirection ) {
+TEST_F( GameEngine_Components_Transform, MoveWithZeroLengthDirection ) {
 	transform->SetPosition( 0.0f, 0.0f );
 	game::Vector2 zeroDirection( 0.0f, 0.0f );
 	transform->Move( 10.0f, zeroDirection );
 	EXPECT_EQ( transform->Position(), game::Vector2( 0.0f, 0.0f ) ); // Position should not change
+}
+
+// Make sure only one Transform can be added to a GameObject
+TEST_F( GameEngine_Components_Transform, IsUniqueComponent ) {
+	EXPECT_DEATH( game->hero->AddComponent<game::Transform>(), ".*Attempted to add a duplicate unique component.*" );
 }

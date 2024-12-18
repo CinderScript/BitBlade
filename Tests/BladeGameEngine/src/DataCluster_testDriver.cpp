@@ -9,21 +9,19 @@ using game::DataCluster;
 using game::DataPool;
 
 // Test fixture for DataPool with Flower
-class DataClusterTest : public ::testing::Test {
+class GameEngine_Tools_DataCluster : public ::testing::Test {
 protected:
 	DataCluster cluster;
 
-	DataClusterTest() {}
+	GameEngine_Tools_DataCluster() {}
 
-	void SetUp() override {
-	}
+	void SetUp() override {}
 
-	void TearDown() override {
-	}
+	void TearDown() override {}
 };
 
 
-TEST_F( DataClusterTest, AddPool ) {
+TEST_F( GameEngine_Tools_DataCluster, AddPool ) {
 
 	cluster.Add<Flower>( "Daisy" );
 	cluster.Add<Dog>( "Rover" );
@@ -38,7 +36,7 @@ TEST_F( DataClusterTest, AddPool ) {
 }
 
 
-TEST_F( DataClusterTest, GetPool ) {
+TEST_F( GameEngine_Tools_DataCluster, GetPool ) {
 	cluster.Add<Flower>( "Daisy", Color::Red );
 	cluster.Add<Flower>( "Lily", Color::Blue );
 	cluster.Add<Dog>( "Rover" );
@@ -55,7 +53,7 @@ TEST_F( DataClusterTest, GetPool ) {
 	EXPECT_EQ( dogs->Count(), 1 );     // Dog pool should have 1 element
 }
 
-TEST_F( DataClusterTest, ReservePool ) {
+TEST_F( GameEngine_Tools_DataCluster, ReservePool ) {
 
 	cluster.ReservePool<Dog>( 5 );
 
@@ -70,7 +68,7 @@ TEST_F( DataClusterTest, ReservePool ) {
 	EXPECT_EQ( secondReserve, nullptr );  // Should not allow re-reservation
 }
 
-TEST_F( DataClusterTest, DoesPoolExist ) {
+TEST_F( GameEngine_Tools_DataCluster, DoesPoolExist ) {
 	cluster.Add<Flower>( "Lily", Color::Blue );
 	cluster.Add<Dog>( "Rover" );
 
@@ -79,7 +77,7 @@ TEST_F( DataClusterTest, DoesPoolExist ) {
 	EXPECT_FALSE( cluster.DoesPoolExist<Tree>() );
 }
 
-TEST_F( DataClusterTest, PoolCount ) {
+TEST_F( GameEngine_Tools_DataCluster, PoolCount ) {
 	cluster.Add<Flower>( "Daisy", Color::Red );
 	cluster.Add<Dog>( "Rover" );
 	cluster.Add<Tree>( "Maple" );
@@ -92,7 +90,7 @@ TEST_F( DataClusterTest, PoolCount ) {
 	EXPECT_EQ( cluster.PoolCount(), 5 );
 }
 
-TEST_F( DataClusterTest, Polymorphism ) {
+TEST_F( GameEngine_Tools_DataCluster, Polymorphism ) {
 	cluster.Add<Flower>( "Daisy", Color::Red );
 	cluster.Add<Dog>( "Rover" );
 	cluster.Add<Tree>( "Maple" );
@@ -114,7 +112,7 @@ TEST_F( DataClusterTest, Polymorphism ) {
 	EXPECT_EQ( cluster.GetPool<Organism>()->Count(), 1 );
 }
 
-TEST_F( DataClusterTest, PoolCapacityLimit ) {
+TEST_F( GameEngine_Tools_DataCluster, PoolCapacityLimit ) {
 	cluster.ReservePool<Dog>( 2 );  // Reserve a pool with capacity 2
 
 	auto* dog1 = cluster.Add<Dog>( "Rover" );
@@ -128,7 +126,7 @@ TEST_F( DataClusterTest, PoolCapacityLimit ) {
 	EXPECT_EQ( dog3, nullptr );  // Pool is at capacity
 }
 
-TEST_F( DataClusterTest, RemoveObjects ) {
+TEST_F( GameEngine_Tools_DataCluster, RemoveObjects ) {
 	auto* flower1 = cluster.Add<Flower>( "Daisy", Color::Red );
 	auto* flower2 = cluster.Add<Flower>( "Lily", Color::Blue );
 
@@ -143,7 +141,7 @@ TEST_F( DataClusterTest, RemoveObjects ) {
 	EXPECT_EQ( cluster.GetPool<Flower>()->Count(), 0 );  // No objects left
 }
 
-TEST_F( DataClusterTest, InvalidPoolAccess ) {
+TEST_F( GameEngine_Tools_DataCluster, InvalidPoolAccess ) {
 	const auto* flowerPool = cluster.GetPool<Flower>();
 	EXPECT_EQ( flowerPool, nullptr );  // No pool should exist for Flower initially
 
@@ -154,7 +152,7 @@ TEST_F( DataClusterTest, InvalidPoolAccess ) {
 }
 
 
-TEST_F( DataClusterTest, StressTest ) {
+TEST_F( GameEngine_Tools_DataCluster, StressTest ) {
 	cluster.ReservePool<Dog>( 1000 );
 
 	for (int i = 0; i < 1000; ++i) {
@@ -165,7 +163,7 @@ TEST_F( DataClusterTest, StressTest ) {
 }
 
 
-TEST_F( DataClusterTest, ReuseFreedSlots ) {
+TEST_F( GameEngine_Tools_DataCluster, ReuseFreedSlots ) {
 	cluster.ReservePool<Dog>( 3 );
 
 	auto* dog1 = cluster.Add<Dog>( "Rover" );
@@ -179,7 +177,7 @@ TEST_F( DataClusterTest, ReuseFreedSlots ) {
 	EXPECT_EQ( cluster.GetPool<Dog>()->Count(), 2 );  // Still 2 dogs in the pool
 }
 
-TEST_F( DataClusterTest, RemoveInvalidObject ) {
+TEST_F( GameEngine_Tools_DataCluster, RemoveInvalidObject ) {
 	cluster.ReservePool<Dog>( 2 );
 
 	auto* dog1 = cluster.Add<Dog>( "Rover" );

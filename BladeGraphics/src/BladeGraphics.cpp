@@ -61,7 +61,7 @@ bool BladeGraphics::FirstUpdate()
 	std::cout << "Process Update 1" << "\n";
 
 	if (!ProcessGfxInstructions()) {
-		return false;
+		return false; // main stops updating BladeGraphics
 	}
 	// Console has no resolved objects yet (don't wait for signal)
 
@@ -81,26 +81,15 @@ bool BladeGraphics::Update()
 {
 	// this dma interrupt signals console after resolved objects send finishes
 
-	std::cout << "-- UPDATE 2 --" << "\n";
-	std::cout << "Await Instructions 2." << "\n";
-
 	link.AwaitConsoleInstructionsReceivedSignal();
 
-	std::cout << "Process Update 2" << "\n";
-
 	if (!ProcessGfxInstructions()) {
-		return false;
+		return false;  // main stops updating BladeGraphics
 	}
-
-	std::cout << "Await Console Finish 2." << "\n";
 
 	link.AwaitConsoleFinishedResolvingObjectsSignal();
 
-	std::cout << "Signaling Finish." << "\n";
-
 	link.SignalGraphicsFinishedProcessing();
-
-	std::cout << "Send Resolved Objects." << "\n";
 
 	link.SendResolvedGraphicsObjects(); // triggers irq on finish
 	// dma irq sends finish sending event	

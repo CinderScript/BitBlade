@@ -172,12 +172,12 @@ void GameBeta::Update()
 
 /* -------------------------------- FIXTURES -------------------------------- */
 
-class GameAlphaTest : public ::testing::Test {
+class GameEngine_BladeGame_GameAlpha : public ::testing::Test {
 protected:
 	GameAlpha* game;
 	GfxTestPacker* packer;
 
-	GameAlphaTest() {
+	GameEngine_BladeGame_GameAlpha() {
 		packer = new GfxTestPacker();
 		game = new GameAlpha( packer );
 	}
@@ -195,7 +195,7 @@ protected:
 };
 
 
-class BitBladeGameTest : public ::testing::Test {
+class GameEngine_BladeGame_BitBladeGame : public ::testing::Test {
 protected:
 	GameAlpha* game;
 	GfxTestPacker* gfxPacker;
@@ -218,7 +218,7 @@ protected:
 
 /* ---------------------------------- TESTS --------------------------------- */
 
-TEST_F( BitBladeGameTest, QuitGame ) {
+TEST_F( GameEngine_BladeGame_BitBladeGame, QuitGame ) {
 	bool shouldContinue = true;
 
 	for (size_t i = 0; i < game->totalUpdates - 1; i++)
@@ -232,7 +232,7 @@ TEST_F( BitBladeGameTest, QuitGame ) {
 	EXPECT_FALSE( shouldContinue );
 }
 
-TEST_F( BitBladeGameTest, InstantiateTopLevel ) {
+TEST_F( GameEngine_BladeGame_BitBladeGame, InstantiateTopLevel ) {
 	GameObject* obj = game->Instantiate( "TestObject" );
 	ASSERT_NE( obj, nullptr );
 	EXPECT_STREQ( obj->Name(), "TestObject" );
@@ -242,7 +242,7 @@ TEST_F( BitBladeGameTest, InstantiateTopLevel ) {
 	EXPECT_EQ( game->GetTopLevelObjects()[0], obj );
 }
 
-TEST_F( BitBladeGameTest, InstantiateChild ) {
+TEST_F( GameEngine_BladeGame_BitBladeGame, InstantiateChild ) {
 	GameObject* parent = game->Instantiate( "ParentObject" );
 	GameObject* child = game->Instantiate( parent, "ChildObject" );
 
@@ -257,7 +257,7 @@ TEST_F( BitBladeGameTest, InstantiateChild ) {
 }
 
 // Test setting a new parent for a GameObject
-TEST_F( BitBladeGameTest, SetParent ) {
+TEST_F( GameEngine_BladeGame_BitBladeGame, SetParent ) {
 	GameObject* parent1 = game->Instantiate( "Parent1" );
 	GameObject* parent2 = game->Instantiate( "Parent2" );
 	GameObject* child = game->Instantiate( parent1, "Child" );
@@ -286,72 +286,12 @@ public:
 };
 
 
-TEST_F( BitBladeGameTest, AddComponent ) {
-	GameObject* obj = game->Instantiate( "TestObject" );
-	TestComponent* comp = obj->AddComponent<TestComponent>();
-	ASSERT_NE( comp, nullptr );
-	EXPECT_EQ( comp->Owner(), obj );
-	EXPECT_EQ( obj->GetComponents().size(), 2 );	// all GameObjects have Transform comp
-	EXPECT_EQ( obj->GetComponents()[1], comp );		// Transform has index  0
-}
 
-// Test retrieving a component from a GameObject
-TEST_F( BitBladeGameTest, GetComponent ) {
-	GameObject* obj = game->Instantiate( "TestObject" );
-	TestComponent* comp = obj->AddComponent<TestComponent>();
-	ASSERT_NE( comp, nullptr );
-	TestComponent* retrievedComp = obj->GetComponent<TestComponent>();
-	EXPECT_EQ( comp, retrievedComp );
-
-	EXPECT_EQ( comp->testValue, retrievedComp->testValue );
-	comp->testValue = 99;
-	EXPECT_EQ( comp->testValue, retrievedComp->testValue );
-}
-
-// Test retrieving multiple components from a GameObject
-TEST_F( BitBladeGameTest, GetComponents ) {
-	GameObject* obj = game->Instantiate( "TestObject" );
-
-	// Add multiple components of the same type
-	TestComponent* comp1 = obj->AddComponent<TestComponent>();
-	TestComponent* comp2 = obj->AddComponent<TestComponent>();
-
-	// Retrieve the components of type TestComponent
-	std::vector<TestComponent*> components = obj->GetComponents<TestComponent>();
-
-	// Assert that we retrieved two components
-	ASSERT_EQ( components.size(), 2 );
-
-	// Check that the retrieved components are the ones we added
-	EXPECT_EQ( components[0], comp1 );
-	EXPECT_EQ( components[1], comp2 );
-
-	// Modify and check that both retrieved components reflect the changes
-	comp1->testValue = 42;
-	EXPECT_EQ( components[0]->testValue, 42 );
-	EXPECT_EQ( comp1->testValue, 42 );
-
-	comp2->testValue = 99;
-	EXPECT_EQ( components[1]->testValue, 99 );
-	EXPECT_EQ( comp2->testValue, 99 );
-}
-
-
-// Test the internalUpdate method of GameObject
-TEST_F( BitBladeGameTest, InternalUpdate ) {
-	GameObject* obj = game->Instantiate( "TestObject" );
-	TestComponent* comp = obj->AddComponent<TestComponent>();
-	comp->updateCalled = false;
-
-	game->internalUpdate();
-
-	EXPECT_TRUE( comp->updateCalled );
-}
 
 /* ---------------------------------- ZULU ---------------------------------- */
 
 
-class GameZuluTest : public ::testing::Test {
+class GameEngine_BladeGame_GameZulu : public ::testing::Test {
 protected:
 	GameZulu* gameZulu;
 	GfxTestPacker* gfxPacker;
@@ -373,7 +313,7 @@ protected:
 };
 
 // Test that Initialize creates the correct GameObjects and hierarchy
-TEST_F( GameZuluTest, GameObjectHierarchy ) {
+TEST_F( GameEngine_BladeGame_GameZulu, GameObjectHierarchy ) {
 	EXPECT_NE( gameZulu->background, nullptr );
 	EXPECT_NE( gameZulu->tree, nullptr );
 	EXPECT_NE( gameZulu->hero, nullptr );
@@ -396,7 +336,7 @@ TEST_F( GameZuluTest, GameObjectHierarchy ) {
 }
 
 
-TEST_F( GameZuluTest, UpdatePrecedence ) {
+TEST_F( GameEngine_BladeGame_GameZulu, UpdatePrecedence ) {
 	// Capture the cout output while performing internalUpdate
 	output = logging::captureCoutOutput( [this]() {
 		gameZulu->internalUpdate();
@@ -427,7 +367,7 @@ TEST_F( GameZuluTest, UpdatePrecedence ) {
 }
 
 
-TEST_F( GameZuluTest, GameLogicTest ) {
+TEST_F( GameEngine_BladeGame_GameZulu, GameLogicTest ) {
 
 	// Expected output sequence for DFS
 	std::string expectedOutput =
@@ -485,7 +425,7 @@ TEST_F( GameZuluTest, GameLogicTest ) {
 
 
 
-class GameBetaTest : public ::testing::Test {
+class GameEngine_BladeGame_GameBeta : public ::testing::Test {
 protected:
 	GameBeta* game;
 	GfxTestPacker* gfxPacker;
@@ -506,7 +446,7 @@ protected:
 };
 
 
-TEST_F( GameBetaTest, TransformSetPosition ) {
+TEST_F( GameEngine_BladeGame_GameBeta, TransformSetPosition ) {
 	// Capture the cout output while performing internalUpdate
 	game->internalUpdate();
 
@@ -517,7 +457,7 @@ TEST_F( GameBetaTest, TransformSetPosition ) {
 	EXPECT_EQ( game->hero->GetTransform()->Position(), game::Vector2( 2, 3 ) );
 }
 
-TEST_F( GameBetaTest, TransformOnChangedEvent ) {
+TEST_F( GameEngine_BladeGame_GameBeta, TransformOnChangedEvent ) {
 	// Capture the cout output while performing internalUpdate
 	std::string output = logging::captureCoutOutput( [this]() {
 		game->internalUpdate();

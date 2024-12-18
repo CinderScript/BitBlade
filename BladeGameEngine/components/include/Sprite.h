@@ -7,6 +7,7 @@
 #include "Component.h"
 #include "ImageSource.h"
 #include "Vector2.h"
+#include "UniqueComponentTrait.h"
 
 #include <cstdint>  // uint16_t
 
@@ -35,5 +36,7 @@ namespace game {
 		Sprite( GameObject* owner, const ImageSource* imageSource );
 	};
 }
+
+MAKE_COMPONENT_UNIQUE( game::Sprite );
 
 #endif // SPRITE_H
