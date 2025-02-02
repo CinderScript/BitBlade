@@ -22,7 +22,7 @@ public:
 
 	const char* GetGameTitle() override;
 	void Initialize() override;
-	void Update() override;
+	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
 	size_t updateCount = 0;
@@ -38,7 +38,7 @@ void GameAlpha::Initialize()
 
 }
 
-void GameAlpha::Update()
+void GameAlpha::GlobalUpdate()
 {
 	updateCount++;
 
@@ -60,7 +60,7 @@ public:
 
 	const char* GetGameTitle() override;
 	void Initialize() override;
-	void Update() override;
+	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
 	size_t updateCount = 0;
@@ -102,7 +102,7 @@ void GameZulu::Initialize()
 	sword->AddComponent<DebugPrintComponent>();      		//objID = 5
 }
 
-void GameZulu::Update()
+void GameZulu::GlobalUpdate()
 {
 	if (updateCount == 1) {
 		shield = Instantiate( rarm, "Shield" );
@@ -129,7 +129,7 @@ public:
 
 	const char* GetGameTitle() override;
 	void Initialize() override;
-	void Update() override;
+	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
 	size_t updateCount = 0;
@@ -155,7 +155,7 @@ void GameBeta::Initialize()
 	hero->AddComponent<DebugOnTransformChanged>();
 }
 
-void GameBeta::Update()
+void GameBeta::GlobalUpdate()
 {
 	if (updateCount == 1) {
 		hero->GetTransform()->SetPosition( 2, 3 );

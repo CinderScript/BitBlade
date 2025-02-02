@@ -15,7 +15,7 @@ namespace game {// Define the static members
 	   //gameData.ReservePool<Sprite>( 200 );
 	}
 
-	BitBladeGame::~BitBladeGame() { }
+	BitBladeGame::~BitBladeGame() {}
 
 
 	void BitBladeGame::QuitGame()
@@ -73,7 +73,7 @@ namespace game {// Define the static members
 
 	bool BitBladeGame::internalUpdate()
 	{
-		Update(); // updates user's top level update / global update.
+		GlobalUpdate(); // updates the user's game's global update
 
 		std::vector<GameObject*> stack;
 		stack.reserve( gameObjectCount ); // Reserve space to minimize reallocations
@@ -90,7 +90,7 @@ namespace game {// Define the static members
 			stack.pop_back();
 
 			// Update the current GameObject
-			current->internalUpdate();
+			current->updateComponents();
 
 			// Push children onto the stack in reverse order to maintain original order
 			const auto& children = current->GetChildren();

@@ -38,7 +38,7 @@ namespace game {
 		GameObject* Owner() { return owner; }
 
 
-	private:
+	protected:
 		GameObject* owner;
 	};
 }

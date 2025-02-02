@@ -22,7 +22,7 @@ public:
 
 	const char* GetGameTitle() override;
 	void Initialize() override;
-	void Update() override;
+	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
 	size_t updateCount = 0;
@@ -38,7 +38,7 @@ void TestGame::Initialize()
 
 }
 
-void TestGame::Update()
+void TestGame::GlobalUpdate()
 {
 	updateCount++;
 

@@ -7,8 +7,7 @@
 /* --------------------------- Debug Print Component -------------------------- */
 
 DebugPrintComponent::~DebugPrintComponent()
-{
-}
+{}
 
 void DebugPrintComponent::Awake()
 {

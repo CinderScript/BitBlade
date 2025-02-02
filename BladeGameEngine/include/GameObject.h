@@ -26,11 +26,11 @@ namespace game {
 
 		~GameObject();
 
-		Transform* GetTransform() const { return transform; }
 
 		GameObject* Parent() const { return parent; }
 		void SetParent( GameObject* parent );
 
+		Transform* GetTransform() const { return transform; }
 
 		template<typename T, typename... Args>
 		T* AddComponent( Args&&... args )
@@ -84,6 +84,7 @@ namespace game {
 		}
 
 
+		const bool HasChildren() const { return children.size() > 0; }
 		const std::vector<GameObject*>& GetChildren() const { return children; }
 		const std::vector<Component*>& GetComponents() const { return components; }
 
@@ -115,7 +116,8 @@ namespace game {
 
 		void initialize();
 
-		inline void internalUpdate()
+		inline void cleanTransform() {}
+		inline void updateComponents()
 		{
 			// run Start for any components that have just been added, then remove them
 			for (auto* components : startComponents) {

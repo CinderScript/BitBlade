@@ -20,7 +20,7 @@ public:
 
 	const char* GetGameTitle() override;
 	void Initialize() override;
-	void Update() override;
+	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
 	size_t updateCount = 0;
@@ -32,7 +32,7 @@ public:
 };
 
 const char* TransformTestGame::GetGameTitle() {
-	return "TestGame-Zulu\n";
+	return "TestGame-TransformTests\n";
 }
 
 void TransformTestGame::Initialize()
@@ -46,7 +46,7 @@ void TransformTestGame::Initialize()
 	hero->AddComponent<DebugOnTransformChanged>();
 }
 
-void TransformTestGame::Update()
+void TransformTestGame::GlobalUpdate()
 {
 	if (updateCount == 1) {
 		hero->GetTransform()->SetPosition( 2, 3 );
@@ -110,10 +110,10 @@ TEST_F( GameEngine_Components_Transform, SetGetRotation ) {
 
 // Test setting and getting scale
 TEST_F( GameEngine_Components_Transform, SetGetScale ) {
-	transform->SetScale( game::Vector2( 1.0f, 1.0f ) );
+	transform->SetGlobalScale( game::Vector2( 1.0f, 1.0f ) );
 	EXPECT_EQ( transform->Scale(), game::Vector2( 1.0f, 1.0f ) );
 
-	transform->SetScale( game::Vector2( 2.0f, 3.0f ) );
+	transform->SetGlobalScale( game::Vector2( 2.0f, 3.0f ) );
 	EXPECT_EQ( transform->Scale(), game::Vector2( 2.0f, 3.0f ) );
 }
 
@@ -214,10 +214,10 @@ TEST_F( GameEngine_Components_Transform, MoveAndRotateCombination ) {
 
 // Test scaling
 TEST_F( GameEngine_Components_Transform, Scaling ) {
-	transform->SetScale( game::Vector2( 1.0f, 1.0f ) );
+	transform->SetGlobalScale( game::Vector2( 1.0f, 1.0f ) );
 	EXPECT_EQ( transform->Scale(), game::Vector2( 1.0f, 1.0f ) );
 
-	transform->SetScale( game::Vector2( 2.0f, 0.5f ) );
+	transform->SetGlobalScale( game::Vector2( 2.0f, 0.5f ) );
 	EXPECT_EQ( transform->Scale(), game::Vector2( 2.0f, 0.5f ) );
 }
 

@@ -31,7 +31,6 @@ void TestGame::Initialize()
 	sword = Instantiate( "Sword" );
 	sword->SetParent( arm );
 
-	background->AddComponent<game::Transform>();
 	tree->AddComponent<ObjectUpdatePrinter>();
 
 	hero->AddComponent<ObjectUpdatePrinter>();
@@ -41,7 +40,7 @@ void TestGame::Initialize()
 	std::cout << "Test Game - Initialize." << "\n";
 }
 
-void TestGame::Update() {
+void TestGame::GlobalUpdate() {
 	std::cout << "\nTest Game - Update:" << updateCount << "\n";
 
 

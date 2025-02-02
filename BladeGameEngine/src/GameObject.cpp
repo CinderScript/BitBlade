@@ -36,6 +36,7 @@ namespace game {
 
 	GameObject::~GameObject() {}
 
+	/// @brief Sets up the basic GameObject with a parent, children, and transform. Invoked by the Constructor
 	void GameObject::initialize() {
 		children.reserve( gameConfig::GAME_OBJECT_CHILD_RESERVE );
 		components.reserve( gameConfig::GAME_OBJECT_COMPONENT_RESERVE );

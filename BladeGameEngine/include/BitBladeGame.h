@@ -31,7 +31,7 @@ namespace game {
 
 		void Initialize() override = 0;
 		void Start() override {};
-		virtual void Update() {}
+		virtual void GlobalUpdate() {}
 
 		bool internalUpdate() final override;
 

@@ -26,7 +26,7 @@ public:
 		heroImg = LoadImageSource( "Hero.bmp" );
 		swordImg = LoadImageSource( "Sword.bmp" );
 	}
-	void Update() override {
+	void GlobalUpdate() override {
 
 	}
 
