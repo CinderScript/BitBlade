@@ -102,34 +102,26 @@ namespace game
 
 		/* -------------------------------- POSITION -------------------------------- */
 
-		inline void SetPosition( const Vector2& newGlobalPos ) {
-			Mat2D parentGlobal = parent->GetGlobalMatrix();
-			Mat2D invParent;
-			parentGlobal.Inverse( invParent ); // We assume it’s invertible
-
-			// Build a tmp with our new global position but the same rotation, scale as before:
-			float oldRotRad = Rotation(); // or localRotation? 
-			float sx = localScale.X();
-			float sy = localScale.Y();
-			Mat2D tmp = Mat2D::FromTRS(
-				newGlobalPos.X(),
-				newGlobalPos.Y(),
-				oldRotRad,
-				sx, sy
-			);
-
-			// localMatrix = invParent * tmp
-			Mat2D::Multiply( invParent, tmp, localMatrix );
-			// then you'd decompose localMatrix into localPosition, localRotation, localScale, 
-			// or you can keep the matrix approach, etc.
-
-			// todo 
-
-			localMatrixDirty = true;
-			markChildrenDirty();
-		}
 		inline void SetPosition( float x, float y ) {
+			if (parent) {
 
+				parent->globalMatrix.InverseTransformPoint(
+					x,
+					y,
+					localMatrix.m02,
+					localMatrix.m12 );
+
+				globalMatrixDirty = true;
+				markChildrenDirty();
+			}
+			else {
+				localMatrix.m02 = x;
+				localMatrix.m12 = y;
+			}
+		}
+		inline void SetPosition( const Vector2& newGlobalPos )
+		{
+			SetPosition( newGlobalPos.X(), newGlobalPos.Y() );
 		}
 
 		inline void Move( const Vector2& posDelta )
