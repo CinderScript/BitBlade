@@ -204,7 +204,7 @@ namespace game {
 			return std::sqrt( (b.X() - a.X()) * (b.X() - a.X()) + (b.Y() - a.Y()) * (b.Y() - a.Y()) );
 		}
 
-		static constexpr Vector2 Normalize( Vector2 vector ) {
+		static constexpr Vector2 Normalized( const Vector2& vector ) {
 			float len = vector.Length();
 			if (len == 0) return { 0, 0 };  // or handle zero-length vector appropriately
 			return { static_cast<float>(vector.x / len), static_cast<float>(vector.y / len) };

@@ -60,6 +60,34 @@ namespace game
 			return Mat2D(); // Uses default constructor
 		}
 
+		/// @brief Builds a matrix from translation (tx, ty), rotation (in RADIANS), and scale (sx, sy).
+		///
+		/// Matrix layout if we do scale then rotation then translation:
+		///   [ sx*cos(r)   -sy*sin(r)   tx ]
+		///   [ sx*sin(r)    sy*cos(r)   ty ]
+		/// @param tx 
+		/// @param ty 
+		/// @param rotationRad 
+		/// @param sx 
+		/// @param sy 
+		/// @return 
+		static inline constexpr Mat2D FromTRS( float tx, float ty, float rotationRad, float sx, float sy )
+		{
+			Mat2D m;
+			float cosT = std::cos( rotationRad );
+			float sinT = std::sin( rotationRad );
+
+			m.m00 = cosT * sx;
+			m.m01 = -sinT * sy;
+			m.m02 = tx;
+
+			m.m10 = sinT * sx;
+			m.m11 = cosT * sy;
+			m.m12 = ty;
+
+			return m;
+		}
+
 		/// @brief Multiply: out = A * B  (2x3 * 2x3 matrix)
 		/// @param A 
 		/// @param B 
@@ -97,34 +125,6 @@ namespace game
 			return out;
 		}
 
-		/// @brief Builds a matrix from translation (tx, ty), rotation (in RADIANS), and scale (sx, sy).
-		///
-		/// Matrix layout if we do scale then rotation then translation:
-		///   [ sx*cos(r)   -sy*sin(r)   tx ]
-		///   [ sx*sin(r)    sy*cos(r)   ty ]
-		/// @param tx 
-		/// @param ty 
-		/// @param rotationRad 
-		/// @param sx 
-		/// @param sy 
-		/// @return 
-		static inline constexpr Mat2D FromTRS( float tx, float ty, float rotationRad, float sx, float sy )
-		{
-			Mat2D m;
-			float cosT = std::cos( rotationRad );
-			float sinT = std::sin( rotationRad );
-
-			m.m00 = cosT * sx;
-			m.m01 = -sinT * sy;
-			m.m02 = tx;
-
-			m.m10 = sinT * sx;
-			m.m11 = cosT * sy;
-			m.m12 = ty;
-
-			return m;
-		}
-
 		/// @brief Computes the inverse of this matrix (assuming it's invertible).
 		///  If it's not invertible (det = 0), we do a simple check and return an identity.
 		inline constexpr Mat2D Inverse() const
@@ -159,6 +159,26 @@ namespace game
 			inverted.m12 = -(inverted.m10 * tx + inverted.m11 * ty);
 
 			return inverted;
+		}
+
+
+		/// @brief Transforms a point (x, y) using the full 2D affine transform.
+		/// The result is stored in outX and outY.
+		/// @param x 
+		/// @param y 
+		/// @param outX 
+		/// @param outY 
+		inline constexpr void TransformPoint( float x, float y, float& outX, float& outY ) const {
+			outX = m00 * x + m01 * y + m02;
+			outY = m10 * x + m11 * y + m12;
+		}
+
+		// A convenience overload that returns a Vector2
+		inline constexpr Vector2 TransformPoint( const Vector2& point ) const {
+			return Vector2(
+				m00 * point.X() + m01 * point.Y() + m02,
+				m10 * point.X() + m11 * point.Y() + m12
+			);
 		}
 
 		/// @brief InverseTransformPoint(x, y, outX, outY)
