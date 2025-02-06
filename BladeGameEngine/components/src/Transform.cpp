@@ -15,8 +15,14 @@ namespace game
 		: Component( owner ),
 		localRotation( 0.0f ), localScale( 1.0f, 1.0f ),
 		localMatrixDirty( false ), globalMatrixDirty( false ),
-		parent( owner->Parent()->GetTransform() )
+		owner( owner ),
+		parent( nullptr )
 	{
+		// if the owning GameObject has a parent, assign the parent's transform
+		if (owner->Parent()) {
+			parent = owner->Parent()->GetTransform();
+		}
+
 		localMatrix.m02 = 0;
 		localMatrix.m12 = 0;
 		rebuildLocalMatrix();
@@ -46,7 +52,6 @@ namespace game
 
 			Transform* childTransform = currentChild->GetTransform();
 			childTransform->globalMatrixDirty = true;
-			childTransform->OnChanged.Invoke(); // optional
 
 			for (auto* grandChild : currentChild->GetChildren()) {
 				queue.push( grandChild );

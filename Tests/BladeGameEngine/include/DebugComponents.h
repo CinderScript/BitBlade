@@ -29,6 +29,8 @@ public:
 	void handleEvent();
 
 	void Awake() override;
+
+	int changeCount = 0;
 };
 
 

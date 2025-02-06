@@ -5,6 +5,8 @@
 #define TEST_GAME_H
 
 #include "BitBladeGame.h"
+#include "Transform.h"
+
 #include "IGfxMessagePacker.h"
 #include "ImageSource.h"
 
@@ -27,6 +29,10 @@ private:
 	game::GameObject* hero;
 	game::GameObject* arm;
 	game::GameObject* sword;
+
+	game::Transform* heroTransform = nullptr;
+	game::Transform* armTransform = nullptr;
+	game::Transform* swordTransform = nullptr;
 
 	size_t updateCount = 0;
 };

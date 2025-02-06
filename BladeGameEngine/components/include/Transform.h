@@ -30,8 +30,20 @@ namespace game
 
 		// The "authoritative" data global data is based on
 
+		/// @brief Returns the current local position of this Transform
+		/// @return Local Position
 		inline const Vector2 LocalPosition() const { return localMatrix.GetPosition(); }
-		inline float LocalRotation() const { return localRotation; }       // in degrees
+
+		/// @brief Returns the Local Rotation in radians of this Transform
+		/// @return Local Rotation (degrees)
+		inline float LocalRotation() const { return localRotation * RAD2DEG; }
+
+		/// @brief Returns the Local Rotation in radians of this Transform
+		/// @return Local Rotation (radians)
+		inline float LocalRotationRad() const { return localRotation; }
+
+		/// @brief Returns the local scale of this Transform
+		/// @return Local Scale
 		inline const Vector2& LocalScale() const { return localScale; }
 
 
@@ -52,16 +64,23 @@ namespace game
 			markChildrenDirty();
 		}
 
-		// Set local rotation (in degrees)
-		inline void SetLocalRotation( float rotDeg ) {
-			localRotation = rotDeg;
+		/// @brief Set the local rotation of this transform (radians)
+		/// @param newLocalRotationRadians 
+		inline void SetLocalRotationRad( float newLocalRotationRadians ) {
+			localRotation = newLocalRotationRadians;
 			localMatrixDirty = true;
 			markChildrenDirty();
 		}
 
+		/// @brief Set the local rotation of this transform (degrees)
+		/// @param nnewLocalRotationDegrees 
+		inline void SetLocalRotation( float nnewLocalRotationDegrees ) {
+			SetLocalRotationRad( nnewLocalRotationDegrees * DEG2RAD );
+		}
+
 		// Set local scale
-		inline void SetLocalScale( const Vector2& scl ) {
-			localScale = scl;
+		inline void SetLocalScale( const Vector2& newLocalScale ) {
+			localScale = newLocalScale;
 			localMatrixDirty = true;
 			markChildrenDirty();
 		}
@@ -75,26 +94,29 @@ namespace game
 		/*                             GLOBAL TRS GETTERS                             */
 		/* -------------------------------------------------------------------------- */
 
+		/// @brief The Global Position of this transform
+		/// @return 
 		inline Vector2 Position()
 		{
 			return GetGlobalMatrix().GetPosition();
 		}
 
-		/// @brief rotation of this transform
-		/// @return global rotation in Radians
+		/// @brief The Global Rotation of this transform
+		/// @return Global Rotation (degrees)
 		inline float Rotation()
-		{
-			return GetGlobalMatrix().GetRotation();
-
-		}
-
-		/// @brief rotation of this transform
-		/// @return global rotation in Degrees
-		inline float RotationDegrees()
 		{
 			return GetGlobalMatrix().GetRotationDegrees();
 		}
 
+		/// @brief The Global Rotation of this transform
+		/// @return Global Rotation (radians)
+		inline float RotationRad()
+		{
+			return GetGlobalMatrix().GetRotation();
+		}
+
+		/// @brief The global Scale of this transform
+		/// @return Scale (global)
 		inline Vector2 Scale()
 		{
 			return GetGlobalMatrix().GetScale();
@@ -103,6 +125,7 @@ namespace game
 		/* -------------------------------- POSITION -------------------------------- */
 
 		inline void SetPosition( float x, float y ) {
+
 			if (parent) {
 
 				parent->GetGlobalMatrix().InverseTransformPoint(
@@ -135,27 +158,30 @@ namespace game
 			Move( posDelta.X(), posDelta.Y() );
 		}
 
+		/// @brief Moves this transform in the given direction the given distance. The direction
+		/// Vector2 is normalized in this function.
+		/// @param distance 
+		/// @param direction 
 		inline void Move( float distance, const Vector2& direction ) {
-			// Ensure direction is normalized (avoid scaling issues)
 			Vector2 normalizedDir = Vector2::Normalized( direction );
-
-			// Compute global movement delta
 			Vector2 delta = normalizedDir * distance;
-
-			// Move using the global Move method
 			Move( delta );
 		}
 
+		/// @brief Moves this transform according to its Forward (Up) direction.
+		/// @param distance 
 		inline void MoveForward( float distance ) {
-
+			SetPosition( Position() + (Forward() * distance) );
 		}
 
 		/* -------------------------------- ROTATION -------------------------------- */
 
-		inline void SetRotation( float newGlobalRotation ) {
+		/// @brief Sets the Global Rotation of this transform
+		/// @param Global Rotation (radians) 
+		inline void SetRotationRad( float newGlobalRotation ) {
 			if (parent) {
 				// Compute local rotation by subtracting parent's global rotation
-				float parentRotation = parent->Rotation();
+				float parentRotation = parent->RotationRad();
 				localRotation = newGlobalRotation - parentRotation;
 			}
 			else {
@@ -170,23 +196,64 @@ namespace game
 			markChildrenDirty();
 		}
 
-		inline void Rotate( float newGlobalEulerAngle ) {
-
+		/// @brief Sets the Global Rotation of this transform
+		/// @param Global Rotation (degrees) 
+		inline void SetRotation( float newGlobalRotationDegrees ) {
+			SetRotationRad( newGlobalRotationDegrees * DEG2RAD );
 		}
+
+		/// @brief Rotates this transform by radians
+		/// @param newGlobalEulerAngle Rotation added (radians)
+		inline void RotateRad( float rotationDeltaRads ) {
+			SetRotationRad( RotationRad() + rotationDeltaRads );
+		}
+
+		/// @brief Rotates this transform by degrees
+		/// @param newGlobalEulerAngle Rotation added (degrees)
+		inline void Rotate( float newGlobalEulerAngle ) {
+			RotateRad( newGlobalEulerAngle * DEG2RAD );
+		}
+
 		/// @brief Rotates this Transform (globally) so that it points in the specified direction. The Direction
 		/// does not need to be normalized.
 		/// @param direction 
 		inline void SetDirection( const Vector2& newGlobalDirection ) {
-
+			Vector2 dir = Vector2::Normalized( newGlobalDirection );
+			// Calculate the desired global rotation in radians.
+			SetRotationRad( std::atan2( dir.X(), -dir.Y() ) );
 		}
-		inline void LookAt( const Vector2& targetPosition ) {
 
+		/// @brief Rotates this transform so that it faces the target position
+		/// @param targetPosition 
+		inline void LookAt( const Vector2& targetPosition ) {
+			Vector2 currentPos = Position();
+			Vector2 dir = targetPosition - currentPos;
+			if (dir.Length() > 0.0001f) { // Avoid division by zero.
+				SetDirection( dir );
+			}
 		}
 
 		/* ---------------------------------- SCALE --------------------------------- */
 
+		/// @brief Sets the Global Scale of this Transform. Modifies the local scale so that
+		/// the Parent's global scale * this local scale = the desired scale.
+		/// @param newGlobalScale 
 		inline void SetGlobalScale( const Vector2& newGlobalScale ) {
+			if (parent) {
+				Vector2 parentGlobalScale = parent->Scale();
+				// Compute the new local scale by component‐wise division.
+				// (Assuming parent's scale components are nonzero.)
+				localScale.Set( newGlobalScale.X() / parentGlobalScale.X(),
+					newGlobalScale.Y() / parentGlobalScale.Y() );
+			}
+			else {
+				localScale = newGlobalScale;
+			}
 
+			rebuildLocalMatrix();
+
+			globalMatrixDirty = true;
+			markChildrenDirty();
 		}
 
 		/* -------------------------------------------------------------------------- */
@@ -231,6 +298,9 @@ namespace game
 		/*                                 Directions                                 */
 		/* -------------------------------------------------------------------------- */
 
+		/// @brief The direction this transform is pointing. Defined by the transform's Up
+		/// direction. This value is normalized.
+		/// @return Upward vector (normalized)
 		inline Vector2 Forward() const {
 			// Transform local UP (0, -1) by the global matrix
 			Vector2 globalForward = globalMatrix.TransformPoint( Vector2::Up() );
@@ -261,6 +331,7 @@ namespace game
 
 	private:
 		Transform* parent;
+		GameObject* owner;
 
 		// Local TRS data
 		// Vector2 localPosition; compose / decompose directly from matrix (easy)

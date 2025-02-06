@@ -75,6 +75,10 @@ namespace game {// Define the static members
 	{
 		GlobalUpdate(); // updates the user's game's global update
 
+		if (!shouldContinue) {
+			return false;			// QuitGame() called in the GlobalUpdate instead of a componennt.
+		}
+
 		std::vector<GameObject*> stack;
 		stack.reserve( gameObjectCount ); // Reserve space to minimize reallocations
 

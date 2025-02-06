@@ -3,7 +3,7 @@
 # Add the source files for the console
 set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Hero.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ObjectUpdatePrinter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/TestComponents.cpp
 )  
 
 

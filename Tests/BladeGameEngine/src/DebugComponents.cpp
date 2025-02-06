@@ -30,6 +30,8 @@ DebugOnTransformChanged::~DebugOnTransformChanged() {}
 
 void DebugOnTransformChanged::handleEvent()
 {
+	changeCount++;
+
 	std::cout << Owner()->Name() << "'s Transform Changed. Pos: "
 		<< Owner()->GetTransform()->Position().ToString() << "\n";
 }

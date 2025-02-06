@@ -173,7 +173,15 @@ namespace game
 			outY = m10 * x + m11 * y + m12;
 		}
 
-		// A convenience overload that returns a Vector2
+
+		/// @param x 
+		/// @param y 
+		/// @param outX 
+		/// @param outY 
+
+		/// @brief Transforms a point (x, y) using the full 2D affine transform.
+		/// @param point 
+		/// @return The transformed point as a Vector2
 		inline constexpr Vector2 TransformPoint( const Vector2& point ) const {
 			return Vector2(
 				m00 * point.X() + m01 * point.Y() + m02,

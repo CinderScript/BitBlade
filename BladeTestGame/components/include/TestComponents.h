@@ -19,5 +19,16 @@ public:
 	void Update() override;
 };
 
+class TransformChangedPrinter : public game::Component
+{
+public:
+	using Component::Component;  // Inherit the base constructor
+
+	~TransformChangedPrinter() override = default;  // Use default destructor
+
+	void Awake() override;
+
+	void handleEvent();
+};
 
 #endif // OBJECT_UPDATE_PRINTER_H

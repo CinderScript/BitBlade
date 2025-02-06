@@ -1,3 +1,5 @@
+# TestGame/CMakeLists.txt
+
 set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/TestGame.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
@@ -5,7 +7,7 @@ set(SOURCES
 
 set(COMPONENT_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/components/src/Hero.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/components/src/ObjectUpdatePrinter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/src/TestComponents.cpp
 )
 
 add_executable(TestGame ${SOURCES} ${COMPONENT_SOURCES})

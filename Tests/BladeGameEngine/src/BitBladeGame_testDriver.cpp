@@ -152,7 +152,7 @@ void GameBeta::Initialize()
 	sword = Instantiate( "Sword" );
 	sword->SetParent( larm );
 
-	hero->AddComponent<DebugOnTransformChanged>();
+	//hero->AddComponent<DebugOnTransformChanged>();
 }
 
 void GameBeta::GlobalUpdate()
