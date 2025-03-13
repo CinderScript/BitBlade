@@ -134,22 +134,23 @@ TEST_F( GameEngine_Components_Transform, MoveInDirection ) {
 // Test forward movement
 TEST_F( GameEngine_Components_Transform, ForwardMovement ) {
 	heroTransform->SetPosition( 0.0f, 0.0f );
-	heroTransform->SetRotation( 0.0f ); // Facing right
+	heroTransform->SetRotation( 0.0f ); // Facing Up
 	heroTransform->MoveForward( 10.0f );
-	EXPECT_NEAR( heroTransform->Position().X(), 10.0f, 1e-5 );
-	EXPECT_NEAR( heroTransform->Position().Y(), 0.0f, 1e-5 );
 
-	heroTransform->SetRotation( 90.0f ); // Facing down
+	Vector2 pos = heroTransform->Position();
+	EXPECT_TRUE( pos == Vector2( 0, 10 ) );
+
+	heroTransform->SetRotation( 90.0f ); // Facing Right
 	heroTransform->MoveForward( 5.0f );
-	EXPECT_NEAR( heroTransform->Position().X(), 10.0f, 1e-5 );
-	EXPECT_NEAR( heroTransform->Position().Y(), 5.0f, 1e-5 );
+	pos = heroTransform->Position();
+	EXPECT_TRUE( pos == Vector2( 5, 10 ) );
 
-	heroTransform->SetRotation( 180.0f ); // Facing left
+	heroTransform->SetRotation( 180.0f ); // Facing Down
 	heroTransform->MoveForward( 3.0f );
-	EXPECT_NEAR( heroTransform->Position().X(), 7.0f, 1e-5 );
-	EXPECT_NEAR( heroTransform->Position().Y(), 5.0f, 1e-5 );
+	pos = heroTransform->Position();
+	EXPECT_TRUE( pos == Vector2( 5, 7 ) );
 
-	heroTransform->SetRotation( 270.0f ); // Facing up
+	heroTransform->SetRotation( 270.0f ); // Facing Left
 	heroTransform->MoveForward( 2.0f );
 	EXPECT_NEAR( heroTransform->Position().X(), 7.0f, 1e-5 );
 	EXPECT_NEAR( heroTransform->Position().Y(), 3.0f, 1e-5 );

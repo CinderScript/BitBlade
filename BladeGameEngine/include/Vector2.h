@@ -166,10 +166,10 @@ namespace game {
 		/* ---------------------------- STATIC FUNCTIONS ---------------------------- */
 
 		static constexpr Vector2 Up() {
-			return Vector2( 0, -1 );
+			return Vector2( 0, 1 );
 		}
 		static constexpr Vector2 Down() {
-			return Vector2( 0, 1 );
+			return Vector2( 0, -1 );
 		}
 		static constexpr Vector2 Right() {
 			return Vector2( 1, 0 );
