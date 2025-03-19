@@ -54,14 +54,14 @@ namespace game
 			localMatrix.m02 = pos.X();
 			localMatrix.m12 = pos.Y();
 
-			markChildrenDirty(); // child global's are dirty
+			markGlobalMatrixDirtyBFS(); // child global's are dirty
 		}
 		inline void SetLocalPosition( float x, float y ) {
 
 			localMatrix.m02 = x;
 			localMatrix.m12 = y;
 
-			markChildrenDirty();
+			markGlobalMatrixDirtyBFS();
 		}
 
 		/// @brief Set the local rotation of this transform (radians)
@@ -69,7 +69,7 @@ namespace game
 		inline void SetLocalRotationRad( float newLocalRotationRadians ) {
 			localRotation = newLocalRotationRadians;
 			localMatrixDirty = true;
-			markChildrenDirty();
+			markGlobalMatrixDirtyBFS();
 		}
 
 		/// @brief Set the local rotation of this transform (degrees)
@@ -82,12 +82,12 @@ namespace game
 		inline void SetLocalScale( const Vector2& newLocalScale ) {
 			localScale = newLocalScale;
 			localMatrixDirty = true;
-			markChildrenDirty();
+			markGlobalMatrixDirtyBFS();
 		}
 		inline void SetLocalScale( float sx, float sy ) {
 			localScale.Set( sx, sy );
 			localMatrixDirty = true;
-			markChildrenDirty();
+			markGlobalMatrixDirtyBFS();
 		}
 
 		/* -------------------------------------------------------------------------- */
@@ -140,7 +140,7 @@ namespace game
 			}
 
 			globalMatrixDirty = true;
-			markChildrenDirty();
+			markGlobalMatrixDirtyBFS();
 		}
 		inline void SetPosition( const Vector2& newGlobalPos )
 		{
@@ -193,7 +193,7 @@ namespace game
 
 			// Mark global transform as dirty (will be recalculated)
 			globalMatrixDirty = true;
-			markChildrenDirty();
+			markGlobalMatrixDirtyBFS();
 		}
 
 		/// @brief Sets the Global Rotation of this transform
@@ -253,7 +253,7 @@ namespace game
 			rebuildLocalMatrix();
 
 			globalMatrixDirty = true;
-			markChildrenDirty();
+			markGlobalMatrixDirtyBFS();
 		}
 
 		/* -------------------------------------------------------------------------- */
@@ -335,7 +335,7 @@ namespace game
 
 		// Local TRS data
 		// Vector2 localPosition; compose / decompose directly from matrix (easy)
-		float   localRotation;   // degrees
+		float   localRotation;   // radians
 		Vector2 localScale;
 
 		// local matrix (2x3)
@@ -374,8 +374,9 @@ namespace game
 			}
 		}
 
-
-		void markChildrenDirty();
+		/// @brief Marks this Transform's global matrix as dirty as well as 
+		///	all of the owning GameObject's childrens' Transforms
+		void markGlobalMatrixDirtyBFS();
 	};
 
 } // namespace game

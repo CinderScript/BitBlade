@@ -94,8 +94,11 @@ namespace game {
 		}
 
 		constexpr bool operator==( const Vector2& rhs ) const {
-			return x == rhs.x && y == rhs.y;
+			constexpr float epsilon = 1e-5f;
+			return ((x > rhs.x ? x - rhs.x : rhs.x - x) < epsilon) &&
+				((y > rhs.y ? y - rhs.y : rhs.y - y) < epsilon);
 		}
+
 		constexpr bool operator!=( const Vector2& rhs ) const {
 			return !(*this == rhs);
 		}

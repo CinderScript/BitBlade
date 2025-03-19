@@ -39,7 +39,9 @@ namespace game
 
 
 	/// @brief Marks all child positions as dirty
-	void Transform::markChildrenDirty() {
+	void Transform::markGlobalMatrixDirtyBFS() {
+
+		globalMatrixDirty = true;
 
 		std::queue<GameObject*> queue;
 		for (auto* child : owner->GetChildren()) {

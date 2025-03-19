@@ -78,10 +78,10 @@ namespace game
 			float sinT = std::sin( rotationRad );
 
 			m.m00 = cosT * sx;
-			m.m01 = -sinT * sy;
+			m.m01 = sinT * sy; // clockwise rotation
 			m.m02 = tx;
 
-			m.m10 = sinT * sx;
+			m.m10 = -sinT * sx; // clockwise rotation
 			m.m11 = cosT * sy;
 			m.m12 = ty;
 

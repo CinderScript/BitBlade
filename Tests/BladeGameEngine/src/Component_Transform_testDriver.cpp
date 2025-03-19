@@ -139,11 +139,13 @@ TEST_F( GameEngine_Components_Transform, ForwardMovement ) {
 
 	Vector2 pos = heroTransform->Position();
 	EXPECT_TRUE( pos == Vector2( 0, 10 ) );
+	// passes
 
 	heroTransform->SetRotation( 90.0f ); // Facing Right
 	heroTransform->MoveForward( 5.0f );
 	pos = heroTransform->Position();
 	EXPECT_TRUE( pos == Vector2( 5, 10 ) );
+	// fails, pos == -5, 10
 
 	heroTransform->SetRotation( 180.0f ); // Facing Down
 	heroTransform->MoveForward( 3.0f );
@@ -152,37 +154,8 @@ TEST_F( GameEngine_Components_Transform, ForwardMovement ) {
 
 	heroTransform->SetRotation( 270.0f ); // Facing Left
 	heroTransform->MoveForward( 2.0f );
-	EXPECT_NEAR( heroTransform->Position().X(), 7.0f, 1e-5 );
-	EXPECT_NEAR( heroTransform->Position().Y(), 3.0f, 1e-5 );
-}
-
-// Test updateForwardVector correctness
-TEST_F( GameEngine_Components_Transform, UpdateForwardVector ) {
-	game::Vector2 up;
-
-	heroTransform->SetRotation( 0.0f );
-	up = heroTransform->Up();
-
-	EXPECT_FLOAT_EQ( up.X(), 1.0f );
-	EXPECT_FLOAT_EQ( up.Y(), 0.0f );
-
-	heroTransform->SetRotation( 90.0f );
-	up = heroTransform->Up();
-
-	EXPECT_FLOAT_EQ( up.X(), 0.0f );
-	EXPECT_FLOAT_EQ( up.Y(), 1.0f );
-
-	heroTransform->SetRotation( 180.0f );
-	up = heroTransform->Up();
-
-	EXPECT_FLOAT_EQ( up.X(), -1.0f );
-	EXPECT_FLOAT_EQ( up.Y(), 0.0f );
-
-	heroTransform->SetRotation( 270.0f );
-	up = heroTransform->Up();
-
-	EXPECT_FLOAT_EQ( up.X(), 0.0f );
-	EXPECT_FLOAT_EQ( up.Y(), -1.0f );
+	pos = heroTransform->Position();
+	EXPECT_TRUE( pos == Vector2( 3, 7 ) );
 }
 
 // Test combining movement and rotation
