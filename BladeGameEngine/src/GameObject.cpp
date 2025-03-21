@@ -64,13 +64,16 @@ namespace game {
 		//				- make child of new parent
 		//		B. new parent is null
 		//				- do nothing
+		//
+		// Set new parent
+		// set object's transform's parent
 
-	// If the new parent is the same as the current parent, do nothing.
+		// If the new parent is the same as the current parent, do nothing.
 		if (this->parent == newParent) {
 			return;
 		}
 
-		// 1. If the current parent exists, remove this object from its children.
+		// 1. If a parent existed, remove this object from old parent's children.
 		if (this->parent != nullptr) {
 			auto& currentParentChildren = this->parent->children;
 			currentParentChildren.erase(
@@ -78,7 +81,7 @@ namespace game {
 				currentParentChildren.end()
 			);
 		}
-		// 2. If the current parent is null, this is a top-level object.
+		// 2. If the old parent was null, this was a top-level object.
 		//    Remove it from the topLevelObjects in the game.
 		else {
 			auto& topObjects = game->topLevelObjects;
@@ -88,8 +91,6 @@ namespace game {
 			);
 		}
 
-		this->parent = newParent;
-
 		// A. If the new parent exists, add this object to the new parent's children.
 		if (newParent != nullptr) {
 			newParent->children.push_back( this );
@@ -98,5 +99,9 @@ namespace game {
 		else {
 			game->topLevelObjects.push_back( this );
 		}
+
+		// Set the new parent GameObject and this GO's Transform's parent
+		this->parent = newParent;
+		transform->parent = newParent->transform; // a GO should always have a transform
 	}
 }

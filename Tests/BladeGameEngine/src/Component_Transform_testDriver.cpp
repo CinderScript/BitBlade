@@ -39,6 +39,10 @@ void TransformTestGame::Initialize()
 	arm = Instantiate( hero, "leftarm" );
 	sword = Instantiate( "Sword" );
 	sword->SetParent( arm );
+
+	if (sword->GetTransform()->Parent() == nullptr) {
+		std::cout << "Error: Sword transform parent is null!\n";
+	}
 }
 
 
@@ -195,8 +199,49 @@ TEST_F( GameEngine_Components_Transform, IsUniqueComponent ) {
 	EXPECT_DEATH( game->hero->AddComponent<game::Transform>(), ".*Attempted to add a duplicate unique component.*" );
 }
 
-// // Make sure only one Transform can be added to a GameObject
-// TEST_F( GameEngine_Components_Transform, TransformChangedEvent ) {
-// 	hero->AddComponent<DebugOnTransformChanged>();
+// Test that setting the local position updates the local translation correctly.
+TEST_F( GameEngine_Components_Transform, LocalPositionTest )
+{
+	// For a top-level object (hero), local and global positions are the same.
+	heroTransform->SetLocalPosition( 10.0f, 20.0f );
+	EXPECT_EQ( heroTransform->LocalPosition(), game::Vector2( 10.0f, 20.0f ) );
+	EXPECT_EQ( heroTransform->Position(), game::Vector2( 10.0f, 20.0f ) );
 
-// }
+	// Modify via the overload that takes a Vector2.
+	heroTransform->SetLocalPosition( game::Vector2( 15.0f, 25.0f ) );
+	EXPECT_EQ( heroTransform->LocalPosition(), game::Vector2( 15.0f, 25.0f ) );
+	EXPECT_EQ( heroTransform->Position(), game::Vector2( 15.0f, 25.0f ) );
+}
+
+// Test that child transforms combine their own local translation with their parent's global transform.
+TEST_F( GameEngine_Components_Transform, ParentChildTransformTest )
+{
+	heroTransform->SetPosition( 10.0f, 20.0f );
+	armTransform->SetLocalPosition( 5.0f, 5.0f );
+
+	// Debugging variables
+	Vector2 armLocalPos = armTransform->LocalPosition();
+	Vector2 armGlobalPos = armTransform->Position();
+
+	// Check the expected local and global positions
+	EXPECT_EQ( armLocalPos, game::Vector2( 5.0f, 5.0f ) );
+	EXPECT_EQ( armGlobalPos, game::Vector2( 15.0f, 25.0f ) );
+
+	heroTransform->SetRotation( 90.0f );
+	armGlobalPos = armTransform->Position();
+	EXPECT_EQ( armGlobalPos, game::Vector2( 15.0f, 15.0f ) );
+
+	// Debugging variables for sword
+	Vector2 swordLocalPos = swordTransform->LocalPosition();
+	Vector2 swordGlobalPos = swordTransform->Position();
+
+	swordTransform->SetLocalPosition( 2.0f, 3.0f );
+
+	// Debugging variables for sword
+	swordLocalPos = swordTransform->LocalPosition();
+	swordGlobalPos = swordTransform->Position();
+
+	// Check expected values
+	EXPECT_EQ( swordLocalPos, game::Vector2( 2.0f, 3.0f ) );
+	EXPECT_EQ( swordGlobalPos, game::Vector2( 18.0f, 13.0f ) );
+}

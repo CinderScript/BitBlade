@@ -11,9 +11,14 @@
 namespace game
 {
 
+	/// @brief Provides local and global position, rotation, and scale. 
 	class Transform : public Component
 	{
 	public:
+		// sets parent transform when GameObject sets a new parent
+		friend class GameObject;
+
+
 		Transform( GameObject* owner );
 		~Transform();
 

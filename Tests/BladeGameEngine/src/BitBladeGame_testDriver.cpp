@@ -272,6 +272,9 @@ TEST_F( GameEngine_BladeGame_BitBladeGame, SetParent ) {
 	EXPECT_EQ( parent1->GetChildren().size(), 0 );
 	EXPECT_EQ( parent2->GetChildren().size(), 1 );
 	EXPECT_EQ( parent2->GetChildren()[0], child );
+
+	// check child's transform's parent and see if it was also reparented
+	EXPECT_TRUE( parent2->GetTransform() == child->GetTransform()->Parent() );
 }
 
 class TestComponent : public game::Component {
