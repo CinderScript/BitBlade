@@ -1,4 +1,4 @@
-/* Sprite.h
+/* Texture.h
 */
 
 #ifndef SPRITE_H
@@ -16,10 +16,10 @@ namespace game {
 	class DataPool;
 	class BitBladeGame;
 
-	class Sprite : public Component {
+	class Texture : public Component {
 
 	public:
-		friend struct DataPool<Sprite>;
+		friend struct DataPool<Texture>;
 		friend class BitBladeGame;
 
 		Vector2 Pivot() const { return pivot; }
@@ -33,10 +33,10 @@ namespace game {
 		Vector2 pivot;
 		Vector2 scale;
 
-		Sprite( GameObject* owner, const ImageSource* imageSource );
+		Texture( GameObject* owner, const ImageSource* imageSource );
 	};
 }
 
-MAKE_COMPONENT_UNIQUE( game::Sprite );
+MAKE_COMPONENT_UNIQUE( game::Texture );
 
 #endif // SPRITE_H

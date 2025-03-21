@@ -16,7 +16,7 @@ namespace game {
 	class DataPool;
 	class Component;
 	class ImageSource;
-	class Sprite;
+	class Texture;
 
 	class GameObject : public DataPoolMember {
 

@@ -168,13 +168,13 @@ TEST_F( GameEngine_Components_Transform, MoveAndRotateCombination ) {
 	heroTransform->SetRotation( 45.0f ); // Facing diagonal
 
 	heroTransform->MoveForward( 10.0f );
-	EXPECT_NEAR( heroTransform->Position().X(), 7.07107f, 1e-5 );
-	EXPECT_NEAR( heroTransform->Position().Y(), 7.07107f, 1e-5 );
+	Vector2 pos = heroTransform->Position();
+	EXPECT_TRUE( pos == Vector2( 7.07107f, 7.07107f ) );
 
 	heroTransform->Rotate( 45.0f ); // Now facing down
 	heroTransform->MoveForward( 5.0f );
-	EXPECT_NEAR( heroTransform->Position().X(), 7.07107f, 1e-5 );
-	EXPECT_NEAR( heroTransform->Position().Y(), 12.07107f, 1e-5 );
+	pos = heroTransform->Position();
+	EXPECT_TRUE( pos == Vector2( 12.07107f, 7.07107f ) );
 }
 
 // Test scaling

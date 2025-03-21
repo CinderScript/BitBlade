@@ -24,7 +24,7 @@ namespace game
 
 		Transform* Parent() { return parent; }
 
-		// used by Sprite so that it is notified of a position change, that way
+		// used by Texture so that it is notified of a position change, that way
 		// every game object doesn't need to check if it has a sprite each time
 		// its position changes.
 		Event<> OnChanged;

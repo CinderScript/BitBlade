@@ -135,7 +135,7 @@ bool BladeGraphics::ProcessGfxInstructions()
 			readMessageBuffer( buffer, x, pos );
 			readMessageBuffer( buffer, y, pos );
 
-			std::cout << "Sprite Instanced: " << spriteID << "(" << x << "," << y << ")" << "\n";
+			std::cout << "Texture Instanced: " << spriteID << "(" << x << "," << y << ")" << "\n";
 			break;
 		}
 		case GfxCode::StopGraphics:

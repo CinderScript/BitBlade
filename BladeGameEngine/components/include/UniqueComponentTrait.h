@@ -26,6 +26,6 @@ namespace game {
 } // namespace game
 
 
-//MAKE_COMPONENT_UNIQUE( game::Sprite );
+//MAKE_COMPONENT_UNIQUE( game::Texture );
 
 #endif // UNIQUE_COMPONENT_TRAIT_H

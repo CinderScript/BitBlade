@@ -12,7 +12,7 @@ namespace game {// Define the static members
 		: IGfxMessageProducer( messagePacker ), gameObjectCount( 0 ), shouldContinue( true )
 	{
 		/* ------------------------------------ _ ----------------------------------- */
-	   //gameData.ReservePool<Sprite>( 200 );
+	   //gameData.ReservePool<Texture>( 200 );
 	}
 
 	BitBladeGame::~BitBladeGame() {}

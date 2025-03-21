@@ -40,7 +40,8 @@ namespace game
 		/// @brief We approximate the angle by looking at the rotated X-axis. 
 		/// @return rotation in radians
 		inline constexpr float GetRotation() const {
-			return std::atan2( m10, m00 );
+			// rotations are stored as clockwise rotations, so need to reverse this
+			return -std::atan2( m10, m00 );
 		}
 		/// @brief We approximate the angle by looking at the rotated X-axis. 
 		/// @return rotation in degrees

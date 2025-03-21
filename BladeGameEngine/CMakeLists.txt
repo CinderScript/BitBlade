@@ -8,7 +8,7 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ImageSource.cpp
     
     ${CMAKE_CURRENT_SOURCE_DIR}/components/src/Transform.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/components/src/Sprite.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/src/Texture.cpp
 )
 
 add_library(BladeGameEngine STATIC ${SOURCES})

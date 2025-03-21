@@ -1,10 +1,10 @@
-#include "Sprite.h"
-/* Sprite.cpp
+#include "Texture.h"
+/* Texture.cpp
 */
 
 namespace game {
 
-	Sprite::Sprite( GameObject* owner, const ImageSource* imageSource )
+	Texture::Texture( GameObject* owner, const ImageSource* imageSource )
 		: Component( owner ),
 		image( imageSource ),
 		pivot( imageSource->Pivot() ),
