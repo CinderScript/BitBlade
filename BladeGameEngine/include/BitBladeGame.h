@@ -29,10 +29,10 @@ namespace game {
 
 		virtual const char* GetGameTitle() = 0;
 
-		void Initialize() override = 0;
-		void Start() override {};
+		virtual void GlobalStart() {}
 		virtual void GlobalUpdate() {}
 
+		void internalInitialize() final override;
 		bool internalUpdate() final override;
 
 		ImageSource* LoadImageSource( const char* filename );

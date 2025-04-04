@@ -17,7 +17,7 @@ public:
 	~TestGame() override;
 
 	const char* GetGameTitle() override;
-	void Initialize() override;
+	void GlobalStart() override;
 	void GlobalUpdate() override;
 
 private:

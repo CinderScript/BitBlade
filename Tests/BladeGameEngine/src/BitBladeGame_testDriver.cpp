@@ -21,7 +21,7 @@ public:
 	~GameAlpha() {}
 
 	const char* GetGameTitle() override;
-	void Initialize() override;
+	void GlobalStart() override;
 	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
@@ -33,7 +33,7 @@ const char* GameAlpha::GetGameTitle() {
 	return "TestGame-Alpha\n";
 }
 
-void GameAlpha::Initialize()
+void GameAlpha::GlobalStart()
 {
 
 }
@@ -59,7 +59,7 @@ public:
 	~GameZulu() {}
 
 	const char* GetGameTitle() override;
-	void Initialize() override;
+	void GlobalStart() override;
 	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
@@ -80,7 +80,7 @@ const char* GameZulu::GetGameTitle() {
 	return "TestGame-Zulu\n";
 }
 
-void GameZulu::Initialize()
+void GameZulu::GlobalStart()
 {
 	backgroundImage = LoadImageSource( "forrest_background.bmp" );
 	treeImage = LoadImageSource( "pine_tree.bmp" );
@@ -128,7 +128,7 @@ public:
 	~GameBeta() {}
 
 	const char* GetGameTitle() override;
-	void Initialize() override;
+	void GlobalStart() override;
 	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
@@ -144,7 +144,7 @@ const char* GameBeta::GetGameTitle() {
 	return "TestGame-Zulu\n";
 }
 
-void GameBeta::Initialize()
+void GameBeta::GlobalStart()
 {
 	hero = Instantiate( "Hero" );
 	larm = Instantiate( hero, "leftarm" );
@@ -184,8 +184,7 @@ protected:
 
 	void SetUp() override {
 		game->totalUpdates = 3;
-		game->Initialize();
-		game->Start();
+		game->GlobalStart();
 	}
 
 	void TearDown() override {
@@ -205,8 +204,7 @@ protected:
 		gfxPacker = new GfxTestPacker();
 		game = new GameAlpha( gfxPacker );
 		game->totalUpdates = 3;
-		game->Initialize();
-		game->Start();
+		game->GlobalStart();
 	}
 
 	void TearDown() override {
@@ -304,7 +302,7 @@ protected:
 		gfxPacker = new GfxTestPacker();
 		gameZulu = new GameZulu( gfxPacker );
 		std::string output = logging::captureCoutOutput( [this]() {
-			gameZulu->Initialize();
+			gameZulu->GlobalStart();
 			} );
 
 	}
@@ -438,8 +436,7 @@ protected:
 		gfxPacker = new GfxTestPacker();
 		game = new GameBeta( gfxPacker );
 		game->totalUpdates = 3;
-		game->Initialize();
-		game->Start();
+		game->GlobalStart();
 	}
 
 	void TearDown() override {

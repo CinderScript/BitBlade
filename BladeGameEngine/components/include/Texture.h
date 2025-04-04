@@ -1,4 +1,10 @@
-/* Texture.h
+/** Texture.h
+ * 	Texture is a type of GameObject component that links to an ImageSource
+ *	resource. When this Texture, or Transform for this GameObject is
+ *	modified,
+ *
+ *	Texture is a type of GameObject component that links to an
+ *	ImageSource resource. When this Textue, or Transform for this GameObject
 */
 
 #ifndef SPRITE_H

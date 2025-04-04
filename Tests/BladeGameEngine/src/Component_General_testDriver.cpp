@@ -21,7 +21,7 @@ public:
 	~TestGame() {}
 
 	const char* GetGameTitle() override;
-	void Initialize() override;
+	void GlobalStart() override;
 	void GlobalUpdate() override;
 
 	size_t totalUpdates = 3;
@@ -33,7 +33,7 @@ const char* TestGame::GetGameTitle() {
 	return "TestGame-Alpha\n";
 }
 
-void TestGame::Initialize()
+void TestGame::GlobalStart()
 {
 
 }
@@ -73,8 +73,7 @@ protected:
 		gfxPacker = new GfxTestPacker();
 		game = new TestGame( gfxPacker );
 		game->totalUpdates = 3;
-		game->Initialize();
-		game->Start();
+		game->GlobalStart();
 	}
 
 	void TearDown() override {

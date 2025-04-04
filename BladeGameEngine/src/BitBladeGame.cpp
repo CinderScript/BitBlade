@@ -70,6 +70,10 @@ namespace game {// Define the static members
 		return obj;
 	}
 
+	void BitBladeGame::internalInitialize()
+	{
+		GlobalStart();
+	}
 
 	bool BitBladeGame::internalUpdate()
 	{

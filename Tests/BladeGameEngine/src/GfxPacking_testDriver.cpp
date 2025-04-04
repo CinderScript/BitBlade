@@ -22,7 +22,7 @@ public:
 	~GfxPackingGameTest() {}
 
 	const char* GetGameTitle() override { return "GfxPackingGameTest"; }
-	void Initialize() override {
+	void GlobalStart() override {
 		heroImg = LoadImageSource( "Hero.bmp" );
 		swordImg = LoadImageSource( "Sword.bmp" );
 	}
@@ -61,7 +61,7 @@ protected:
 
 TEST_F( GameEngine_Tools_GfxPacking, CreateImageData ) {
 
-	game->Initialize();
+	game->GlobalStart();
 
 	char* buffer = gfxPacker->packedInstructions;
 	uint16_t pos;

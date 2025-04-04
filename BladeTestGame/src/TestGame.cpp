@@ -21,7 +21,7 @@ const char* TestGame::GetGameTitle()
 }
 
 
-void TestGame::Initialize()
+void TestGame::GlobalStart()
 {
 	// backgroundImage = LoadImageSource( "background.bmp" );
 	heroImage = LoadImageSource( "hero.bmp" );

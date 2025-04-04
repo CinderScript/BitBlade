@@ -22,7 +22,7 @@ public:
 	~TransformTestGame() {}
 
 	const char* GetGameTitle() override;
-	void Initialize() override;
+	void GlobalStart() override;
 
 	game::GameObject* hero;
 	game::GameObject* arm;
@@ -33,7 +33,7 @@ const char* TransformTestGame::GetGameTitle() {
 	return "TestGame-TransformTests\n";
 }
 
-void TransformTestGame::Initialize()
+void TransformTestGame::GlobalStart()
 {
 	hero = Instantiate( "Hero" );
 	arm = Instantiate( hero, "leftarm" );
@@ -65,8 +65,7 @@ protected:
 		// Initialize the graphics packer and game instance
 		gfxPacker = new GfxTestPacker();
 		game = new TransformTestGame( gfxPacker );
-		game->Initialize();
-		game->Start();
+		game->GlobalStart();
 
 		hero = game->hero;
 		heroTransform = game->hero->GetTransform();

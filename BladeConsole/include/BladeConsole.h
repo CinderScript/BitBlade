@@ -27,7 +27,7 @@ namespace console {
 			game = std::make_unique<T>( link.get() );
 
 			// Start the game
-			game->Initialize();
+			game->internalInitialize();
 		}
 
 		bool FirstUpdate();

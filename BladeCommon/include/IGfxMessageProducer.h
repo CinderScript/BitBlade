@@ -8,8 +8,7 @@ public:
 	IGfxMessageProducer( IGfxMessagePacker* link ) : gfxMessagePacker( link ) {}
 
 	virtual ~IGfxMessageProducer() = default;
-	virtual void Initialize() = 0;
-	virtual void Start() = 0;
+	virtual void internalInitialize() = 0;
 	virtual bool internalUpdate() = 0;
 
 	void AddPackedInstruction(
