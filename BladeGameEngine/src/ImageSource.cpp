@@ -13,9 +13,9 @@ namespace game {
 
 	/* --------------------------------- PRIVATE -------------------------------- */
 
-	ImageSource::ImageSource( IGfxMessageProducer* messageSource, const char* filename )
+	ImageSource::ImageSource( gfxLink::IGfxMessageProducer* messageProducer, const char* filename )
 		: filename( filename ),
-		messageSource( messageSource ),
+		messageProducer( messageProducer ),
 		pivot(),
 		scale(),
 		isResolved( 0 ),
@@ -35,7 +35,7 @@ namespace game {
 		pos += std::strlen( filename ) + 1; // +1 to include the null terminator
 
 		// pack into the ConsoleLink buffer
-		messageSource->AddPackedInstruction(
+		messageProducer->AddPackedInstruction(
 			gfxLink::GfxCode::CreateImageData,
 			message,
 			pos );

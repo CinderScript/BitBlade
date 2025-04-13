@@ -8,7 +8,7 @@
 #include "GfxLinkCommon.h"
 #include "BladeConfig.h"
 
-class GfxTestPacker : public IGfxMessagePacker
+class GfxTestPacker : public gfxLink::IGfxMessagePacker
 {
 
 public:

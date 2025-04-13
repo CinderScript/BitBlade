@@ -11,22 +11,25 @@
 #define SPRITE_H
 
 #include "Component.h"
-#include "ImageSource.h"
 #include "Vector2.h"
 #include "UniqueComponentTrait.h"
 
+
 #include <cstdint>  // uint16_t
+
+namespace gfxLink {
+	class IGfxMessageProducer;
+}
 
 namespace game {
 	template<typename T>
 	class DataPool;
-	class BitBladeGame;
+	class ImageSource;
 
 	class Texture : public Component {
 
 	public:
 		friend struct DataPool<Texture>;
-		friend class BitBladeGame;
 
 		Vector2 Pivot() const { return pivot; }
 		void SetPivot( const Vector2& Pivot ) { pivot = Pivot; }
@@ -36,6 +39,7 @@ namespace game {
 
 	private:
 		const ImageSource* image;
+		const gfxLink::IGfxMessageProducer* messageProducer;
 		Vector2 pivot;
 		Vector2 scale;
 

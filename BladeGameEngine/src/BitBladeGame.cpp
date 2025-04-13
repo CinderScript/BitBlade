@@ -8,7 +8,7 @@
 
 namespace game {// Define the static members
 
-	BitBladeGame::BitBladeGame( IGfxMessagePacker* messagePacker )
+	BitBladeGame::BitBladeGame( gfxLink::IGfxMessagePacker* messagePacker )
 		: IGfxMessageProducer( messagePacker ), gameObjectCount( 0 ), shouldContinue( true )
 	{
 		/* ------------------------------------ _ ----------------------------------- */

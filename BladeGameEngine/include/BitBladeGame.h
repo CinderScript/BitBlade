@@ -17,12 +17,12 @@ namespace game {
 	class GameObject;
 	class ImageSource;
 
-	class BitBladeGame : public IGfxMessageProducer {
+	class BitBladeGame : public gfxLink::IGfxMessageProducer {
 	public:
 		// removing parent requires topLevelObjects
 		friend class GameObject;
 
-		explicit BitBladeGame( IGfxMessagePacker* messagePacker );
+		explicit BitBladeGame( gfxLink::IGfxMessagePacker* messagePacker );
 		virtual ~BitBladeGame();
 
 		void LoadNewLevel() {}

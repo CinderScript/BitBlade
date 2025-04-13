@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-TestGame::TestGame( IGfxMessagePacker* link ) : BitBladeGame( link )
+TestGame::TestGame( gfxLink::IGfxMessagePacker* link ) : BitBladeGame( link )
 {
 	std::cout << "Test Game - Constructor." << "\n";
 }

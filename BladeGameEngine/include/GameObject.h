@@ -90,6 +90,8 @@ namespace game {
 
 		const char* Name() const { return name; }
 
+		const gfxLink::IGfxMessageProducer* GetMessageProducer() const { return game; }
+
 	private:
 		BitBladeGame* game;
 		GameObject* parent;

@@ -14,7 +14,7 @@
 
 namespace console {
 
-  class ConsoleLink : public IGfxMessagePacker
+  class ConsoleLink : public gfxLink::IGfxMessagePacker
   {
   public:
     ConsoleLink();

@@ -13,7 +13,7 @@
 class TestGame : public game::BitBladeGame {
 public:
 
-	TestGame( IGfxMessagePacker* link );
+	TestGame( gfxLink::IGfxMessagePacker* link );
 	~TestGame() override;
 
 	const char* GetGameTitle() override;

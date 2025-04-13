@@ -27,7 +27,7 @@ namespace game {
 
 
 	private:
-		IGfxMessageProducer* messageSource;
+		gfxLink::IGfxMessageProducer* messageProducer;
 		const char* filename;
 		Vector2 pivot;
 		Vector2 scale;
@@ -37,7 +37,7 @@ namespace game {
 		uint8_t isResolved;
 		void* bladeGraphicsAddress;
 
-		ImageSource( IGfxMessageProducer* messageSource, const char* filename );
+		ImageSource( gfxLink::IGfxMessageProducer* messageProducer, const char* filename );
 		uint16_t Pack_CreateImageData();
 	};
 }

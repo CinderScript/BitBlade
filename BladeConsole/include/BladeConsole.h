@@ -20,7 +20,7 @@ namespace console {
 		template<typename T>
 		void StartGame()
 		{
-			static_assert(std::is_base_of<IGfxMessageProducer, T>::value,
+			static_assert(std::is_base_of<gfxLink::IGfxMessageProducer, T>::value,
 				"T must derive from BitBladeGame, or IGfxMessageProducer");
 
 			// Initialize the game pointer with an instance of T
@@ -35,7 +35,7 @@ namespace console {
 
 	private:
 		std::unique_ptr<ConsoleLink> link;
-		std::unique_ptr<IGfxMessageProducer> game;
+		std::unique_ptr<gfxLink::IGfxMessageProducer> game;
 
 		void resolveGraphicsObjects();
 	};

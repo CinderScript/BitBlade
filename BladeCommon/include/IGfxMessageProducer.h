@@ -3,27 +3,30 @@
 
 #include "IGfxMessagePacker.h"
 
-class IGfxMessageProducer {
-public:
-	IGfxMessageProducer( IGfxMessagePacker* link ) : gfxMessagePacker( link ) {}
+namespace gfxLink {
 
-	virtual ~IGfxMessageProducer() = default;
-	virtual void internalInitialize() = 0;
-	virtual bool internalUpdate() = 0;
+	class IGfxMessageProducer {
+	public:
+		IGfxMessageProducer( IGfxMessagePacker* link ) : gfxMessagePacker( link ) {}
 
-	void AddPackedInstruction(
-		gfxLink::GfxCode functionCode,
-		const char* data,
-		uint16_t length )
-	{
-		gfxMessagePacker->AddPackedInstruction(
-			functionCode,
-			data,
-			length );
-	}
+		virtual ~IGfxMessageProducer() = default;
+		virtual void internalInitialize() = 0;
+		virtual bool internalUpdate() = 0;
 
-private:
-	IGfxMessagePacker* gfxMessagePacker;
-};
+		void AddPackedInstruction(
+			gfxLink::GfxCode functionCode,
+			const char* data,
+			uint16_t length )
+		{
+			gfxMessagePacker->AddPackedInstruction(
+				functionCode,
+				data,
+				length );
+		}
+
+	private:
+		IGfxMessagePacker* gfxMessagePacker;
+	};
+}
 
 #endif // I_GFX_MESSAGE_PRODUCER_H

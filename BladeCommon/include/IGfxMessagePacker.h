@@ -5,15 +5,17 @@
 
 #include <cstdint>	// uint*_t
 
+namespace gfxLink {
 
-class IGfxMessagePacker {
-public:
-	virtual ~IGfxMessagePacker() = default;
+	class IGfxMessagePacker {
+	public:
+		virtual ~IGfxMessagePacker() = default;
 
-	virtual void AddPackedInstruction(
-		gfxLink::GfxCode functionCode,
-		const char appendData[],
-		uint16_t length ) = 0;
-};
+		virtual void AddPackedInstruction(
+			gfxLink::GfxCode functionCode,
+			const char appendData[],
+			uint16_t length ) = 0;
+	};
 
+}
 #endif // I_GFX_MESSAGE_LINK_H
