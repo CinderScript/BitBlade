@@ -15,7 +15,10 @@ namespace game {// Define the static members
 	   //gameData.ReservePool<Texture>( 200 );
 	}
 
-	BitBladeGame::~BitBladeGame() {}
+	BitBladeGame::~BitBladeGame() {
+
+		// TODO: DELETE EVERYTHING IN OBJECT POOL
+	}
 
 
 	void BitBladeGame::QuitGame()

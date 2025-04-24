@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "GfxTestPacker_test.h"
+#include "GfxTransparentPacker.h"
 #include "GameObject.h"
 #include "Vector2.h"
 
@@ -50,7 +50,7 @@ void TransformTestGame::GlobalStart()
 class GameEngine_Components_Transform : public ::testing::Test {
 protected:
 	TransformTestGame* game;
-	GfxTestPacker* gfxPacker;
+	GfxTransparentPacker* gfxPacker;
 
 	game::GameObject* hero;
 	game::Transform* heroTransform;
@@ -63,7 +63,7 @@ protected:
 
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTestPacker();
+		gfxPacker = new GfxTransparentPacker();
 		game = new TransformTestGame( gfxPacker );
 		game->GlobalStart();
 

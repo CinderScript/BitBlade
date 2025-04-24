@@ -38,6 +38,9 @@ namespace game {
 		void* bladeGraphicsAddress;
 
 		ImageSource( gfxLink::IGfxMessageProducer* messageProducer, const char* filename );
+
+		/// @brief Packs a Create Image Data message using the Message Producer
+		/// @return the current position of the packed message buffer
 		uint16_t Pack_CreateImageData();
 	};
 }

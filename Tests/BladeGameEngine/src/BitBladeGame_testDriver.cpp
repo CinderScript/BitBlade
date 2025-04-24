@@ -4,21 +4,21 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "GfxTestPacker_test.h"
+#include "GfxTransparentPacker.h"
 #include "GameObject.h"
 #include "DebugComponents.h"
 #include "Logging.h"
 
 using game::GameObject;
 
-/* ------------------------------- GAME ALPHA ------------------------------- */
+/* ----------------------------- BIT BLADE GAMES ---------------------------- */
 
-class GameAlpha : public game::BitBladeGame
+class EmptyGame : public game::BitBladeGame
 {
 public:
 
 	using BitBladeGame::BitBladeGame;  // Inherit the base constructor
-	~GameAlpha() {}
+	~EmptyGame() {}
 
 	const char* GetGameTitle() override;
 	void GlobalStart() override;
@@ -29,16 +29,16 @@ public:
 
 };
 
-const char* GameAlpha::GetGameTitle() {
+const char* EmptyGame::GetGameTitle() {
 	return "TestGame-Alpha\n";
 }
 
-void GameAlpha::GlobalStart()
+void EmptyGame::GlobalStart()
 {
 
 }
 
-void GameAlpha::GlobalUpdate()
+void EmptyGame::GlobalUpdate()
 {
 	updateCount++;
 
@@ -49,14 +49,12 @@ void GameAlpha::GlobalUpdate()
 
 }
 
-/* -------------------------------- GAME ZULU ------------------------------- */
-
-class GameZulu : public game::BitBladeGame
+class GameWithObjects : public game::BitBladeGame
 {
 public:
 
 	using BitBladeGame::BitBladeGame;  // Inherit the base constructor
-	~GameZulu() {}
+	~GameWithObjects() {}
 
 	const char* GetGameTitle() override;
 	void GlobalStart() override;
@@ -76,11 +74,11 @@ public:
 	game::GameObject* shield;
 };
 
-const char* GameZulu::GetGameTitle() {
-	return "TestGame-Zulu\n";
+const char* GameWithObjects::GetGameTitle() {
+	return "TestGame-ObjectsAndComponents\n";
 }
 
-void GameZulu::GlobalStart()
+void GameWithObjects::GlobalStart()
 {
 	backgroundImage = LoadImageSource( "forrest_background.bmp" );
 	treeImage = LoadImageSource( "pine_tree.bmp" );
@@ -102,7 +100,7 @@ void GameZulu::GlobalStart()
 	sword->AddComponent<DebugPrintComponent>();      		//objID = 5
 }
 
-void GameZulu::GlobalUpdate()
+void GameWithObjects::GlobalUpdate()
 {
 	if (updateCount == 1) {
 		shield = Instantiate( rarm, "Shield" );
@@ -118,91 +116,18 @@ void GameZulu::GlobalUpdate()
 }
 
 
-/* -------------------------------- GAME BETA ------------------------------- */
-
-class GameBeta : public game::BitBladeGame
-{
-public:
-
-	using BitBladeGame::BitBladeGame;  // Inherit the base constructor
-	~GameBeta() {}
-
-	const char* GetGameTitle() override;
-	void GlobalStart() override;
-	void GlobalUpdate() override;
-
-	size_t totalUpdates = 3;
-	size_t updateCount = 0;
-
-	game::GameObject* hero;
-	game::GameObject* larm;
-	game::GameObject* rarm;
-	game::GameObject* sword;
-};
-
-const char* GameBeta::GetGameTitle() {
-	return "TestGame-Zulu\n";
-}
-
-void GameBeta::GlobalStart()
-{
-	hero = Instantiate( "Hero" );
-	larm = Instantiate( hero, "leftarm" );
-	rarm = Instantiate( hero, "rightarm" );
-	sword = Instantiate( "Sword" );
-	sword->SetParent( larm );
-
-	//hero->AddComponent<DebugOnTransformChanged>();
-}
-
-void GameBeta::GlobalUpdate()
-{
-	if (updateCount == 1) {
-		hero->GetTransform()->SetPosition( 2, 3 );
-	}
-
-	if (updateCount > totalUpdates) {
-
-		QuitGame();
-	}
-
-	updateCount++;
-}
-
-
 /* -------------------------------- FIXTURES -------------------------------- */
 
-class GameEngine_BladeGame_GameAlpha : public ::testing::Test {
+
+class GameEngine_BitBladeGame_Functions : public ::testing::Test {
 protected:
-	GameAlpha* game;
-	GfxTestPacker* packer;
-
-	GameEngine_BladeGame_GameAlpha() {
-		packer = new GfxTestPacker();
-		game = new GameAlpha( packer );
-	}
-
-	void SetUp() override {
-		game->totalUpdates = 3;
-		game->GlobalStart();
-	}
-
-	void TearDown() override {
-		delete game;
-		delete packer;
-	}
-};
-
-
-class GameEngine_BladeGame_BitBladeGame : public ::testing::Test {
-protected:
-	GameAlpha* game;
-	GfxTestPacker* gfxPacker;
+	EmptyGame* game;
+	GfxTransparentPacker* gfxPacker;
 
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTestPacker();
-		game = new GameAlpha( gfxPacker );
+		gfxPacker = new GfxTransparentPacker();
+		game = new EmptyGame( gfxPacker );
 		game->totalUpdates = 3;
 		game->GlobalStart();
 	}
@@ -213,10 +138,30 @@ protected:
 	}
 };
 
+class GameEngine_BitBladeGame_ObjectTests : public ::testing::Test {
+protected:
+	GameWithObjects* gameZulu;
+	GfxTransparentPacker* gfxPacker;
+	std::string output;
+
+	void SetUp() override {
+		gfxPacker = new GfxTransparentPacker();
+		gameZulu = new GameWithObjects( gfxPacker );
+		std::string output = logging::captureCoutOutput( [this]() {
+			gameZulu->GlobalStart();
+			} );
+
+	}
+
+	void TearDown() override {
+		delete gameZulu;
+		delete gfxPacker;
+	}
+};
 
 /* ---------------------------------- TESTS --------------------------------- */
 
-TEST_F( GameEngine_BladeGame_BitBladeGame, QuitGame ) {
+TEST_F( GameEngine_BitBladeGame_Functions, QuitGame ) {
 	bool shouldContinue = true;
 
 	for (size_t i = 0; i < game->totalUpdates - 1; i++)
@@ -230,7 +175,7 @@ TEST_F( GameEngine_BladeGame_BitBladeGame, QuitGame ) {
 	EXPECT_FALSE( shouldContinue );
 }
 
-TEST_F( GameEngine_BladeGame_BitBladeGame, InstantiateTopLevel ) {
+TEST_F( GameEngine_BitBladeGame_Functions, InstantiateTopLevel ) {
 	GameObject* obj = game->Instantiate( "TestObject" );
 	ASSERT_NE( obj, nullptr );
 	EXPECT_STREQ( obj->Name(), "TestObject" );
@@ -240,7 +185,7 @@ TEST_F( GameEngine_BladeGame_BitBladeGame, InstantiateTopLevel ) {
 	EXPECT_EQ( game->GetTopLevelObjects()[0], obj );
 }
 
-TEST_F( GameEngine_BladeGame_BitBladeGame, InstantiateChild ) {
+TEST_F( GameEngine_BitBladeGame_Functions, InstantiateChild ) {
 	GameObject* parent = game->Instantiate( "ParentObject" );
 	GameObject* child = game->Instantiate( parent, "ChildObject" );
 
@@ -255,7 +200,7 @@ TEST_F( GameEngine_BladeGame_BitBladeGame, InstantiateChild ) {
 }
 
 // Test setting a new parent for a GameObject
-TEST_F( GameEngine_BladeGame_BitBladeGame, SetParent ) {
+TEST_F( GameEngine_BitBladeGame_Functions, SetParent ) {
 	GameObject* parent1 = game->Instantiate( "Parent1" );
 	GameObject* parent2 = game->Instantiate( "Parent2" );
 	GameObject* child = game->Instantiate( parent1, "Child" );
@@ -287,34 +232,8 @@ public:
 };
 
 
-
-
-/* ---------------------------------- ZULU ---------------------------------- */
-
-
-class GameEngine_BladeGame_GameZulu : public ::testing::Test {
-protected:
-	GameZulu* gameZulu;
-	GfxTestPacker* gfxPacker;
-	std::string output;
-
-	void SetUp() override {
-		gfxPacker = new GfxTestPacker();
-		gameZulu = new GameZulu( gfxPacker );
-		std::string output = logging::captureCoutOutput( [this]() {
-			gameZulu->GlobalStart();
-			} );
-
-	}
-
-	void TearDown() override {
-		delete gameZulu;
-		delete gfxPacker;
-	}
-};
-
 // Test that Initialize creates the correct GameObjects and hierarchy
-TEST_F( GameEngine_BladeGame_GameZulu, GameObjectHierarchy ) {
+TEST_F( GameEngine_BitBladeGame_ObjectTests, GameObjectHierarchy ) {
 	EXPECT_NE( gameZulu->background, nullptr );
 	EXPECT_NE( gameZulu->tree, nullptr );
 	EXPECT_NE( gameZulu->hero, nullptr );
@@ -336,8 +255,8 @@ TEST_F( GameEngine_BladeGame_GameZulu, GameObjectHierarchy ) {
 	EXPECT_EQ( gameZulu->sword->Parent(), gameZulu->larm );
 }
 
-
-TEST_F( GameEngine_BladeGame_GameZulu, UpdatePrecedence ) {
+// Parent objects' components should be updated before child components.
+TEST_F( GameEngine_BitBladeGame_ObjectTests, ComponenentUpdatePrecedence ) {
 	// Capture the cout output while performing internalUpdate
 	output = logging::captureCoutOutput( [this]() {
 		gameZulu->internalUpdate();
@@ -368,7 +287,7 @@ TEST_F( GameEngine_BladeGame_GameZulu, UpdatePrecedence ) {
 }
 
 
-TEST_F( GameEngine_BladeGame_GameZulu, GameLogicTest ) {
+TEST_F( GameEngine_BitBladeGame_ObjectTests, InternalUpdateCycle ) {
 
 	// Expected output sequence for DFS
 	std::string expectedOutput =
@@ -421,59 +340,4 @@ TEST_F( GameEngine_BladeGame_GameZulu, GameLogicTest ) {
 		"Component-6-Update-Obj-Shield\n";		//shield
 
 	EXPECT_EQ( output, expectedOutput );
-}
-
-
-
-
-class GameEngine_BladeGame_GameBeta : public ::testing::Test {
-protected:
-	GameBeta* game;
-	GfxTestPacker* gfxPacker;
-
-	void SetUp() override {
-		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTestPacker();
-		game = new GameBeta( gfxPacker );
-		game->totalUpdates = 3;
-		game->GlobalStart();
-	}
-
-	void TearDown() override {
-		delete game;
-		delete gfxPacker;
-	}
-};
-
-
-TEST_F( GameEngine_BladeGame_GameBeta, TransformSetPosition ) {
-	// Capture the cout output while performing internalUpdate
-	game->internalUpdate();
-
-	EXPECT_EQ( game->hero->GetTransform()->Position(), game::Vector2( 0, 0 ) );
-
-	game->internalUpdate();
-
-	EXPECT_EQ( game->hero->GetTransform()->Position(), game::Vector2( 2, 3 ) );
-}
-
-TEST_F( GameEngine_BladeGame_GameBeta, TransformOnChangedEvent ) {
-	// Capture the cout output while performing internalUpdate
-	std::string output = logging::captureCoutOutput( [this]() {
-		game->internalUpdate();
-		} );
-
-	std::string expectedOutput = "";
-
-	EXPECT_EQ( output, expectedOutput );
-
-	output = logging::captureCoutOutput( [this]() {
-		game->internalUpdate();
-		} );
-
-	expectedOutput =
-		"Hero's Transform Changed. Pos: (2, 3)\n";
-
-	EXPECT_EQ( output, expectedOutput );
-
 }

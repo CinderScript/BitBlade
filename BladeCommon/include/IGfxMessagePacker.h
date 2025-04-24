@@ -7,6 +7,9 @@
 
 namespace gfxLink {
 
+	/// @brief Interface that provides a AddPackedInstruction method call. Inherited by
+	/// ConsoleLink so that anything with a reference can pack messages into the link, which
+	/// are sent through the link to BladeGraphics.
 	class IGfxMessagePacker {
 	public:
 		virtual ~IGfxMessagePacker() = default;

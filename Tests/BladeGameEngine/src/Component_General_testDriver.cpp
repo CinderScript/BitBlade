@@ -5,13 +5,13 @@
 #include <iostream>
 
 #include "GameObject.h"
-#include "GfxTestPacker_test.h"
+#include "GfxTransparentPacker.h"
 #include "DebugComponents.h"
 
 using game::GameObject;
 
 
-/* ------------------------------- GAME ALPHA ------------------------------- */
+/* ----------------------------- BIT BLADE GAMES ---------------------------- */
 
 class TestGame : public game::BitBladeGame
 {
@@ -66,11 +66,11 @@ public:
 class GameEngine_Components_General : public ::testing::Test {
 protected:
 	TestGame* game;
-	GfxTestPacker* gfxPacker;
+	GfxTransparentPacker* gfxPacker;
 
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTestPacker();
+		gfxPacker = new GfxTransparentPacker();
 		game = new TestGame( gfxPacker );
 		game->totalUpdates = 3;
 		game->GlobalStart();

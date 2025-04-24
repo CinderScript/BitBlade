@@ -1,22 +1,22 @@
-#ifndef GFXTESTPACKER_TEST_H
-#define GFXTESTPACKER_TEST_H
-
-
-
+#ifndef GFX_TRANSPARENT_PACKER_H
+#define GFX_TRANSPARENT_PACKER_H
 
 #include "IGfxMessagePacker.h"
 #include "GfxLinkCommon.h"
 #include "BladeConfig.h"
 
-class GfxTestPacker : public gfxLink::IGfxMessagePacker
+
+/// @brief Provides a way for objects that need to AddPackedInstructions from BitBladeGame
+/// can simulate the method call and be tested by viewing the packed instructions and position
+class GfxTransparentPacker : public gfxLink::IGfxMessagePacker
 {
 
 public:
-	inline GfxTestPacker() : currentPosition( 0 )
+	inline GfxTransparentPacker() : currentPosition( 0 )
 	{
 		packedInstructions = new char[gfxLinkConfig::MESSAGE_BUFFER_LENGTH]();
 	}
-	inline ~GfxTestPacker() {}
+	inline ~GfxTransparentPacker() {}
 
 	inline void AddPackedInstruction(
 		gfxLink::GfxCode functionCode,
@@ -31,4 +31,4 @@ public:
 
 };
 
-#endif // GFXTESTPACKER_TEST_H
+#endif // GFX_TRANSPARENT_PACKER_H

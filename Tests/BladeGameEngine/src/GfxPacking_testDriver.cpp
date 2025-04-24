@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "GfxTestPacker_test.h"
+#include "GfxTransparentPacker.h"
 #include "GameObject.h"
 #include "GfxLinkCommon.h"
 
@@ -15,6 +15,8 @@ using gfxLink::readMessageBuffer;
 using gfxLink::readMessageBufferString;
 using gfxLink::toGfxCommand;
 
+/* ----------------------------- BIT BLADE GAMES ---------------------------- */
+
 class GfxPackingGameTest : public game::BitBladeGame
 {
 public:
@@ -23,11 +25,17 @@ public:
 
 	const char* GetGameTitle() override { return "GfxPackingGameTest"; }
 	void GlobalStart() override {
+
+	}
+	void GlobalUpdate() override {}
+
+	void CreateImageSource() {
 		heroImg = LoadImageSource( "Hero.bmp" );
 		swordImg = LoadImageSource( "Sword.bmp" );
 	}
-	void GlobalUpdate() override {
-
+	void CreateSprite() {
+		heroImg = LoadImageSource( "Hero.bmp" );
+		swordImg = LoadImageSource( "Sword.bmp" );
 	}
 
 	size_t totalUpdates = 3;
@@ -40,14 +48,16 @@ public:
 };
 
 
-class GameEngine_Tools_GfxPacking : public ::testing::Test {
+/* -------------------------------- FIXTURES -------------------------------- */
+
+class GameEngine_GfxPacking_Message : public ::testing::Test {
 protected:
 	GfxPackingGameTest* game;
-	GfxTestPacker* gfxPacker;
+	GfxTransparentPacker* gfxPacker;
 
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTestPacker();
+		gfxPacker = new GfxTransparentPacker();
 		game = new GfxPackingGameTest( gfxPacker );
 		game->totalUpdates = 3;
 	}
@@ -58,8 +68,36 @@ protected:
 	}
 };
 
+/* ---------------------------------- TESTS --------------------------------- */
 
-TEST_F( GameEngine_Tools_GfxPacking, CreateImageData ) {
+TEST_F( GameEngine_GfxPacking_Message, CreateImageData ) {
+
+	game->CreateImageSource();
+
+	char* buffer = gfxPacker->packedInstructions;
+	uint16_t pos;
+	GfxCode cmd;
+
+	cmd = toGfxCommand( buffer[pos++] );
+	uint16_t imageDataID;
+	char filename[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
+	readMessageBuffer( buffer, imageDataID, pos );
+	readMessageBufferString( buffer, filename, pos );
+
+	EXPECT_EQ( cmd, GfxCode::CreateImageData );
+	EXPECT_EQ( imageDataID, 0 );
+	EXPECT_STREQ( filename, "Hero.bmp" );
+
+	cmd = toGfxCommand( buffer[pos++] );
+	readMessageBuffer( buffer, imageDataID, pos );
+	readMessageBufferString( buffer, filename, pos );
+
+	EXPECT_EQ( cmd, GfxCode::CreateImageData );
+	EXPECT_EQ( imageDataID, 1 );
+	EXPECT_STREQ( filename, "Sword.bmp" );
+}
+
+TEST_F( GameEngine_GfxPacking_Message, CreateSpriteInstance ) {
 
 	game->GlobalStart();
 
