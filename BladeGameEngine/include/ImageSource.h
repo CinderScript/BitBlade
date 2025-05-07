@@ -37,7 +37,10 @@ namespace game {
 		uint8_t isResolved;
 		void* bladeGraphicsAddress;
 
-		ImageSource( gfxLink::IGfxMessageProducer* messageProducer, const char* filename );
+		ImageSource( uint16_t poolID,
+			uint16_t objectID,
+			gfxLink::IGfxMessageProducer* messageProducer,
+			const char* filename );
 
 		/// @brief Packs a Create Image Data message using the Message Producer
 		/// @return the current position of the packed message buffer

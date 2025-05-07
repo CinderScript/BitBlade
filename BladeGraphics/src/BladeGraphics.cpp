@@ -121,7 +121,7 @@ bool BladeGraphics::ProcessGfxInstructions()
 			std::cout << "Create Image Data: " << imageDataID << ",  '" << filename << "'\n";
 			break;
 		}
-		case GfxCode::CreateSpriteInstance:
+		case GfxCode::CreateSprite:
 		{
 			uint8_t isImageDataResolved;
 			uint16_t imageDataID;

@@ -19,7 +19,7 @@ namespace game
 		friend class GameObject;
 
 
-		Transform( GameObject* owner );
+		Transform( uint16_t poolID, uint16_t objectID, GameObject* owner );
 		~Transform();
 
 		Transform* Parent() { return parent; }

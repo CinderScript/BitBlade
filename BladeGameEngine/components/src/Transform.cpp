@@ -11,8 +11,8 @@ using std::queue;
 
 namespace game
 {
-	Transform::Transform( GameObject* owner )
-		: Component( owner ),
+	Transform::Transform( uint16_t poolID, uint16_t objectID, GameObject* owner )
+		: Component( poolID, objectID, owner ),
 		localRotation( 0.0f ), localScale( 1.0f, 1.0f ),
 		localMatrixDirty( false ), globalMatrixDirty( false ),
 		owner( owner ),

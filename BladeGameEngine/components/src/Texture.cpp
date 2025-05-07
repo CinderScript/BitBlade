@@ -8,8 +8,8 @@
 
 namespace game {
 
-	Texture::Texture( GameObject* owner, const ImageSource* imageSource )
-		: Component( owner ),
+	Texture::Texture( uint16_t poolID, uint16_t objectID, GameObject* owner, const ImageSource* imageSource )
+		: Component( poolID, objectID, owner ),
 		image( imageSource ),
 		pivot( imageSource->Pivot() ),
 		scale( imageSource->Scale() )

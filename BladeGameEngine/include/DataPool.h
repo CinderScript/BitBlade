@@ -49,7 +49,7 @@ namespace game {
 			// Call destructors for all occupied objects
 			for (uint16_t i = 0; i < capacity; ++i) {
 				if (occupied[i]) {
-					T* obj = reinterpret_cast<T*>(buffer + i * sizeof( T ));
+					T* obj = reinterpret_cast<T*>( buffer + i * sizeof( T ) );
 					obj->~T();
 				}
 			}
@@ -61,7 +61,7 @@ namespace game {
 		}
 
 		template<typename... Args>
-		T* Add( Args&&... args ) {
+		T* Add( uint16_t poolID, Args&&... args ) {
 
 			//if (count < capacity)
 			if (!freeIndices.empty())
@@ -70,7 +70,7 @@ namespace game {
 				freeIndices.pop_back();
 
 				// Construct object in place using placement new
-				T* obj = new (buffer + pos * sizeof( T )) T( std::forward<Args>( args )... );
+				T* obj = new (buffer + pos * sizeof( T )) T( poolID, pos, std::forward<Args>( args )... );
 				occupied[pos] = true;
 
 				count++;
@@ -86,7 +86,7 @@ namespace game {
 			assert( occupied[index] && "Object at index is already free." );
 
 			// Call the destructor
-			T* obj = reinterpret_cast<T*>(buffer + index * sizeof( T ));
+			T* obj = reinterpret_cast<T*>( buffer + index * sizeof( T ) );
 			obj->~T();
 
 			// Mark as free
@@ -103,13 +103,13 @@ namespace game {
 			assert( pos < capacity && "Invalid index." );
 			assert( occupied[pos] && "Object at index is not occupied." );
 
-			return reinterpret_cast<T*>(buffer + pos * sizeof( T ));
+			return reinterpret_cast<T*>( buffer + pos * sizeof( T ) );
 		}
 		uint16_t GetObjID( T* obj ) {
-			uintptr_t objAddress = reinterpret_cast<uintptr_t>(obj);
-			uintptr_t baseAddress = reinterpret_cast<uintptr_t>(buffer);
+			uintptr_t objAddress = reinterpret_cast<uintptr_t>( obj );
+			uintptr_t baseAddress = reinterpret_cast<uintptr_t>( buffer );
 
-			uint16_t pos = static_cast<uint16_t>((objAddress - baseAddress) / sizeof( T ));
+			uint16_t pos = static_cast<uint16_t>( (objAddress - baseAddress) / sizeof( T ) );
 			assert( pos < capacity && "Invalid object pointer." );
 			return pos;
 		}
@@ -125,7 +125,6 @@ namespace game {
 		alignas(alignof(T)) char* buffer;  						// Raw memory buffer
 		bool* occupied;						                    // Occupancy flags
 		std::vector<uint16_t> freeIndices;                      // Indices of free slots
-
 	};
 
 } // End of namespace game

@@ -35,15 +35,12 @@ namespace game {
 			DataPool<T>& pool = GetOrCreatePool<T>( poolID );
 
 			// Add the object to the pool
-			T* obj = pool.Add( std::forward<Args>( args )... );
+			T* obj = pool.Add( poolID, std::forward<Args>( args )... );
 
 			// if there was not room for the new object
 			if (obj == nullptr)
 				return nullptr;
 
-			// Set the identification of the Pool member
-			uint16_t objID = pool.GetObjID( obj );
-			obj->SetIdentification( poolID, objID );
 			return obj;
 		}
 

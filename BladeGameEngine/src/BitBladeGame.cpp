@@ -100,7 +100,7 @@ namespace game {// Define the static members
 			GameObject* current = stack.back();
 			stack.pop_back();
 
-			// Update the current GameObject
+			/* * Update the current GameObject * */
 			current->updateComponents();
 
 			// Push children onto the stack in reverse order to maintain original order
@@ -109,6 +109,9 @@ namespace game {// Define the static members
 				stack.push_back( *it );
 			}
 		}
+
+		// check amount of frame time used:
+		// Sort Insertion Order? Does it matter? 
 
 		return shouldContinue;
 	}

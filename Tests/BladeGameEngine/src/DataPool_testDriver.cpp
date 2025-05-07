@@ -8,6 +8,7 @@
 class GameEngine_Tools_DataPool : public ::testing::Test {
 protected:
 	game::DataPool<Flower> flowerPool;
+	uint16_t poolID = 0;
 
 	GameEngine_Tools_DataPool() : flowerPool( 10 ) {}
 
@@ -19,9 +20,9 @@ protected:
 
 TEST_F( GameEngine_Tools_DataPool, BasicAssertions ) {
 
-	Flower* d = flowerPool.Add( "Daisy" );
-	Flower* r = flowerPool.Add( "Rose" );
-	Flower* l = flowerPool.Add( "Lily" );
+	Flower* d = flowerPool.Add( poolID, "Daisy" );
+	Flower* r = flowerPool.Add( poolID, "Rose" );
+	Flower* l = flowerPool.Add( poolID, "Lily" );
 
 	ASSERT_NE( d, nullptr ) << "Failed to add Plant object. Pointer is null.";
 	EXPECT_EQ( d->name, "Daisy" );
@@ -53,7 +54,7 @@ TEST_F( GameEngine_Tools_DataPool, IndexManagement )
 	// fill each element
 	for (size_t i = 0; i < 10; i++)
 	{
-		flowerPool.Add( "Flower " + std::to_string( i ) );
+		flowerPool.Add( poolID, "Flower " + std::to_string( i ) );
 	}
 
 	const std::vector<uint16_t>& free = flowerPool.GetFreeIndices();
@@ -74,7 +75,7 @@ TEST_F( GameEngine_Tools_DataPool, IndexManagement )
 	EXPECT_EQ( free[3], 7 );
 
 	// test addition to next free index
-	auto* daisy = flowerPool.Add( "Daisy" );
+	auto* daisy = flowerPool.Add( poolID, "Daisy" );
 	uint16_t dID = flowerPool.GetObjID( daisy );
 
 	EXPECT_EQ( dID, 7 ) << "Daisy should have been added to index 7.";
@@ -89,7 +90,7 @@ TEST_F( GameEngine_Tools_DataPool, IndexManagement )
 	EXPECT_EQ( free[1], 4 );
 	EXPECT_EQ( free[2], 2 );
 
-	auto* lily = flowerPool.Add( "Lily" );
+	auto* lily = flowerPool.Add( poolID, "Lily" );
 	uint16_t lID = flowerPool.GetObjID( lily );
 
 	EXPECT_EQ( lID, 2 ) << "Daisy should have been added to index 7.";
@@ -106,7 +107,7 @@ TEST_F( GameEngine_Tools_DataPool, MatchingObjectRetrieval ) {
 	// Assuming we have Flower derived from Plant
 	game::DataPool<Flower> flowerPool;
 
-	Flower* f1 = flowerPool.Add( "Rose", Color::Red );
+	Flower* f1 = flowerPool.Add( poolID, "Rose", Color::Red );
 	uint16_t index = flowerPool.GetObjID( f1 );
 
 	Flower* retrieved = flowerPool.GetObject( index );

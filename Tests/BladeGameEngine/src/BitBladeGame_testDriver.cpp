@@ -222,7 +222,7 @@ TEST_F( GameEngine_BitBladeGame_Functions, SetParent ) {
 
 class TestComponent : public game::Component {
 public:
-	TestComponent( GameObject* owner ) : Component( owner ), updateCalled( false ) {}
+	TestComponent( GameObject* owner ) : Component( 0, 0, owner ), updateCalled( false ) {}
 	void Awake() override {}
 	void Start() override {}
 	void Update() override { updateCalled = true; }

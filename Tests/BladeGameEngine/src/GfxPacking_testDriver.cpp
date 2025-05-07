@@ -6,10 +6,12 @@
 
 #include "GfxTransparentPacker.h"
 #include "GameObject.h"
+#include "Texture.h"
 #include "GfxLinkCommon.h"
 
 
 using game::GameObject;
+using game::Texture;
 using gfxLink::GfxCode;
 using gfxLink::readMessageBuffer;
 using gfxLink::readMessageBufferString;
@@ -24,9 +26,7 @@ public:
 	~GfxPackingGameTest() {}
 
 	const char* GetGameTitle() override { return "GfxPackingGameTest"; }
-	void GlobalStart() override {
-
-	}
+	void GlobalStart() override {}
 	void GlobalUpdate() override {}
 
 	void CreateImageSource() {
@@ -34,8 +34,11 @@ public:
 		swordImg = LoadImageSource( "Sword.bmp" );
 	}
 	void CreateSprite() {
-		heroImg = LoadImageSource( "Hero.bmp" );
-		swordImg = LoadImageSource( "Sword.bmp" );
+		CreateImageSource();
+		hero = Instantiate( "hero" );
+		sword = Instantiate( hero, "sword" );
+		hero->AddComponent<Texture>( heroImg );
+		sword->AddComponent<Texture>( swordImg );
 	}
 
 	size_t totalUpdates = 3;
@@ -97,21 +100,32 @@ TEST_F( GameEngine_GfxPacking_Message, CreateImageData ) {
 	EXPECT_STREQ( filename, "Sword.bmp" );
 }
 
-TEST_F( GameEngine_GfxPacking_Message, CreateSpriteInstance ) {
+TEST_F( GameEngine_GfxPacking_Message, CreateSprite ) {
 
-	game->GlobalStart();
+	game->CreateSprite();
 
 	char* buffer = gfxPacker->packedInstructions;
 	uint16_t pos;
 	GfxCode cmd;
 
-	cmd = toGfxCommand( buffer[pos++] );
-	uint16_t imageDataID;
+	// get first two ImageData creation messages
 	char filename[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
+	uint16_t imageDataID;
+
+	// image 1
+	cmd = toGfxCommand( buffer[pos++] );
 	readMessageBuffer( buffer, imageDataID, pos );
 	readMessageBufferString( buffer, filename, pos );
 
-	EXPECT_EQ( cmd, GfxCode::CreateImageData );
+	// image 2
+	cmd = toGfxCommand( buffer[pos++] );
+	readMessageBuffer( buffer, imageDataID, pos );
+	readMessageBufferString( buffer, filename, pos );
+
+	// sprite 1
+	cmd = toGfxCommand( buffer[pos++] );
+
+	EXPECT_EQ( cmd, GfxCode::CreateSprite );
 	EXPECT_EQ( imageDataID, 0 );
 	EXPECT_STREQ( filename, "Hero.bmp" );
 }

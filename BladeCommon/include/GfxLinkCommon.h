@@ -17,13 +17,18 @@ namespace gfxLink
 	enum class GfxCode : uint8_t {
 
 		EndMessage = 0,						// end of the graphics instructions buffer
+
 		CreateImageData = 1,
-		CreateSpriteInstance = 2,
+		DeleteImageData = 2,
+		CreateSprite = 3,
+		DeleteSprite = 4,
 
-		DeleteMasterSprite = 3,
-		DeleteSpriteInstance = 4,
-
-		MovePosition = 3,
+		SpriteVisibility = 5,
+		SpritePosition = 6,
+		SpriteRotation = 7,
+		SpriteScale = 8,
+		SpritePRS = 9,
+		SpriteLayer = 10,
 
 		StopGraphics = 255					// program end
 	};

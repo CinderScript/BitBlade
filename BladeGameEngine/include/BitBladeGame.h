@@ -16,6 +16,7 @@ namespace game {
 
 	class GameObject;
 	class ImageSource;
+	class Texture;
 
 	class BitBladeGame : public gfxLink::IGfxMessageProducer {
 	public:
@@ -35,6 +36,8 @@ namespace game {
 		void internalInitialize() final override;
 		bool internalUpdate() final override;
 
+		const std::vector<GameObject*>& GetTopLevelObjects() const { return topLevelObjects; }
+
 		ImageSource* LoadImageSource( const char* filename );
 
 		GameObject* Instantiate();
@@ -49,13 +52,16 @@ namespace game {
 
 		void QuitGame();
 
-		const std::vector<GameObject*>& GetTopLevelObjects() const { return topLevelObjects; }
+		void PackImageSourceCreationMessage( ImageSource* newImageSource );
+		void PackTextureCreationMessage( ImageSource* newImageSource );
 
 	private:
 		std::vector<GameObject*> topLevelObjects;
 		DataCluster gameData;
 		uint16_t gameObjectCount;
 
+		std::vector<ImageSource*> pendingImageSourceCreationMessage;
+		std::vector<ImageSource*> pendingTextureCreationMessage;
 
 		bool shouldContinue;
 	};

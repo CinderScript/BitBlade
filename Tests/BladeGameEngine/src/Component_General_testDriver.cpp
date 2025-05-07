@@ -53,7 +53,7 @@ void TestGame::GlobalUpdate()
 
 class TestComponent : public game::Component {
 public:
-	TestComponent( GameObject* owner ) : Component( owner ), updateCalled( false ) {}
+	TestComponent( uint16_t pID, uint16_t oID, GameObject* owner ) : Component( pID, oID, owner ), updateCalled( false ) {}
 	void Awake() override {}
 	void Start() override {}
 	void Update() override { updateCalled = true; }
@@ -146,7 +146,7 @@ TEST_F( GameEngine_Components_General, ComponentUpdate ) {
 
 class UniqueComponent : public game::Component {
 public:
-	UniqueComponent( GameObject* owner ) : Component( owner ), updateCalled( false ) {}
+	UniqueComponent( uint16_t pID, uint16_t oID, GameObject* owner ) : Component( pID, oID, owner ), updateCalled( false ) {}
 	void Awake() override {}
 	void Start() override {}
 	void Update() override { updateCalled = true; }

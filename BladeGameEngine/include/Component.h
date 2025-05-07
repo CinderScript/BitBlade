@@ -12,8 +12,8 @@ namespace game {
 
 	template<typename T>
 	class DataPool;
+	class BitBladeGame;
 	class GameObject; // forward declaration
-
 
 	class Component : public DataPoolMember
 	{
@@ -23,7 +23,7 @@ namespace game {
 
 		/// @brief DataPoolMembers are assigned a PoolID and ObjectID after construction.
 		/// @param owner  - the parent GameObject
-		Component( GameObject* owner ) : owner( owner ) {}
+		Component( uint16_t poolID, uint16_t objectID, GameObject* owner );
 		virtual ~Component() {}
 
 		/// @brief Called right after Component is added to the GameObject.
@@ -38,8 +38,14 @@ namespace game {
 		GameObject* Owner() { return owner; }
 
 
+		/// ToDo:  Add functions usefull inside the game update loop, such as
+		///  Quit, Instantiate, CreateImageSource, etc...
+
+		void Quit();
+
 	protected:
 		GameObject* owner;
+		BitBladeGame* game;
 	};
 }
 

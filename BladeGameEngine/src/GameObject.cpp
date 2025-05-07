@@ -9,25 +9,29 @@
 #include <cassert>  // Make sure to include this
 
 namespace game {
-	GameObject::GameObject( BitBladeGame* game )
-		: game( game ), name( "unnamed" ), parent( nullptr )
+	GameObject::GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game )
+		: DataPoolMember( poolID, objectID ),
+		game( game ), name( "unnamed" ), parent( nullptr )
 	{
 		initialize();
 	}
-	GameObject::GameObject( BitBladeGame* game, const char* name )
-		: game( game ), name( name ? name : "unnamed" ), parent( nullptr )
+	GameObject::GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game, const char* name )
+		: DataPoolMember( poolID, objectID ),
+		game( game ), name( name ? name : "unnamed" ), parent( nullptr )
 	{
 		initialize();
 	}
-	GameObject::GameObject( BitBladeGame* game, GameObject* parent )
-		: game( game ), name( "unnamed" ), parent( parent )
+	GameObject::GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game, GameObject* parent )
+		: DataPoolMember( poolID, objectID ),
+		game( game ), name( "unnamed" ), parent( parent )
 	{
 		initialize();
 		assert( parent != nullptr );
 		parent->children.push_back( this );
 	}
-	GameObject::GameObject( BitBladeGame* game, GameObject* parent, const char* name )
-		: game( game ), name( name ? name : "unnamed" ), parent( parent )
+	GameObject::GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game, GameObject* parent, const char* name )
+		: DataPoolMember( poolID, objectID ),
+		game( game ), name( name ? name : "unnamed" ), parent( parent )
 	{
 		initialize();
 		assert( parent != nullptr );

@@ -13,13 +13,19 @@ namespace game {
 
 	/* --------------------------------- PRIVATE -------------------------------- */
 
-	ImageSource::ImageSource( gfxLink::IGfxMessageProducer* messageProducer, const char* filename )
-		: filename( filename ),
+	ImageSource::ImageSource(
+		uint16_t poolID,
+		uint16_t objectID,
+		gfxLink::IGfxMessageProducer* messageProducer,
+		const char* filename )
+		: DataPoolMember( poolID, objectID ),
+		filename( filename ),
 		messageProducer( messageProducer ),
 		pivot(),
 		scale(),
 		isResolved( 0 ),
 		bladeGraphicsAddress( nullptr ) {}
+
 
 	uint16_t ImageSource::Pack_CreateImageData()
 	{

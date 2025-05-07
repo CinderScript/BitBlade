@@ -16,36 +16,36 @@ enum class Color {
 
 struct Organism : public game::DataPoolMember {
 	std::string name;
-	Organism( std::string name ) : name( name ) {}
+	Organism( uint16_t pID, uint16_t oID, std::string name ) : DataPoolMember( pID, oID ), name( name ) {}
 };
 
 struct Plant : public Organism {
-	Plant( std::string name ) : Organism( name ) {}
+	Plant( uint16_t pID, uint16_t oID, std::string name ) : Organism( pID, oID, name ) {}
 };
 
 struct Tree : Plant {
-	Tree( std::string name ) : Plant( name ) {}
+	Tree( uint16_t pID, uint16_t oID, std::string name ) : Plant( pID, oID, name ) {}
 };
 struct Flower : Plant {
 	Color color;
-	Flower( std::string name ) : Plant( name ), color( Color::Blue ) {}
-	Flower( std::string name, Color color ) : Plant( name ), color( color ) {}
+	Flower( uint16_t pID, uint16_t oID, std::string name ) : Plant( pID, oID, name ), color( Color::Blue ) {}
+	Flower( uint16_t pID, uint16_t oID, std::string name, Color color ) : Plant( pID, oID, name ), color( color ) {}
 };
 
 struct Animal : public Organism {
-	Animal( std::string name ) : Organism( name ) {}
+	Animal( uint16_t pID, uint16_t oID, std::string name ) : Organism( pID, oID, name ) {}
 };
 
 struct Cat : public Animal {
 	bool isIndoor;
-	Cat() : Animal( "unknown" ), isIndoor( false ) {}
-	Cat( std::string name, bool isIndoor ) : Animal( name ), isIndoor( isIndoor ) {}
+	Cat( uint16_t pID, uint16_t oID ) : Animal( pID, oID, "unknown" ), isIndoor( false ) {}
+	Cat( uint16_t pID, uint16_t oID, std::string name, bool isIndoor ) : Animal( pID, oID, name ), isIndoor( isIndoor ) {}
 };
 
 struct Dog : public Animal {
 	int weight;
-	Dog( std::string name, int weight ) : Animal( name ), weight( weight ) {}
-	Dog( std::string name ) : Animal( name ), weight( 50 ) {}
+	Dog( uint16_t pID, uint16_t oID, std::string name, int weight ) : Animal( pID, oID, name ), weight( weight ) {}
+	Dog( uint16_t pID, uint16_t oID, std::string name ) : Animal( pID, oID, name ), weight( 50 ) {}
 };
 
 

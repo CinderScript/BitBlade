@@ -14,6 +14,7 @@ namespace game {
 	public:
 		friend class DataCluster;
 
+		DataPoolMember( uint16_t poolID, uint16_t objectID ) : poolID( poolID ), objectID( objectID ) {}
 		virtual ~DataPoolMember() = default;
 
 		uint16_t PoolID() const { return poolID; }

@@ -43,7 +43,11 @@ namespace game {
 		Vector2 pivot;
 		Vector2 scale;
 
-		Texture( GameObject* owner, const ImageSource* imageSource );
+		Texture( uint16_t poolID, uint16_t objectID, GameObject* owner, const ImageSource* imageSource );
+
+		/// @brief Packs a Create Image Data message using the Message Producer
+		/// @return the current position of the packed message buffer
+		uint16_t Pack_CreateSprite();
 	};
 }
 

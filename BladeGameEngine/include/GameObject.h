@@ -15,8 +15,6 @@ namespace game {
 	template<typename T>
 	class DataPool;
 	class Component;
-	class ImageSource;
-	class Texture;
 
 	class GameObject : public DataPoolMember {
 
@@ -26,7 +24,7 @@ namespace game {
 
 		~GameObject();
 
-
+		BitBladeGame* Game() const { return game; }
 		GameObject* Parent() const { return parent; }
 		void SetParent( GameObject* parent );
 
@@ -103,10 +101,10 @@ namespace game {
 		std::vector<Component*> components;
 		std::vector<Component*> startComponents;
 
-		GameObject( BitBladeGame* game );
-		GameObject( BitBladeGame* game, const char* name );
-		GameObject( BitBladeGame* game, GameObject* parent );
-		GameObject( BitBladeGame* game, GameObject* parent, const char* name );
+		GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game );
+		GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game, const char* name );
+		GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game, GameObject* parent );
+		GameObject( uint16_t poolID, uint16_t objectID, BitBladeGame* game, GameObject* parent, const char* name );
 
 		// Disable copy constructor and copy assignment operator
 		GameObject( const GameObject& ) = delete;
@@ -118,7 +116,6 @@ namespace game {
 
 		void initialize();
 
-		inline void cleanTransform() {}
 		inline void updateComponents()
 		{
 			// run Start for any components that have just been added, then remove them
