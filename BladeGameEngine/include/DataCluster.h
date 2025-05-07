@@ -54,7 +54,7 @@ namespace game {
 			IPool* ipool = it->second.get();
 			ipool->Remove( objID );
 
-			obj->SetIdentification( 65535, 65535 ); // Invalidate identification
+			obj->InvalidateStorage(); // Invalidate identification
 		}
 
 
