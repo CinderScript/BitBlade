@@ -15,7 +15,7 @@ namespace game {
 	class ImageSource : public DataPoolMember {
 	public:
 		friend struct DataPool<ImageSource>;
-		friend class BitBladeGame;					// calls Pack_CreateImageData
+		friend class BitBladeGame;					// calls gfx_CreateImageData
 
 		~ImageSource();
 
@@ -44,7 +44,7 @@ namespace game {
 
 		/// @brief Packs a Create Image Data message using the Message Producer
 		/// @return the current position of the packed message buffer
-		uint16_t Pack_CreateImageData();
+		uint16_t gfx_CreateImageData();
 	};
 }
 

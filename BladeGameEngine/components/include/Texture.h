@@ -47,7 +47,7 @@ namespace game {
 
 		/// @brief Packs a Create Image Data message using the Message Producer
 		/// @return the current position of the packed message buffer
-		uint16_t Pack_CreateSprite();
+		uint16_t gfx_CreateSprite();
 	};
 }
 

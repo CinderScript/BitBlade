@@ -26,11 +26,11 @@ namespace game {
 		isResolved( 0 ),
 		bladeGraphicsAddress( nullptr )
 	{
-		Pack_CreateImageData();
+		gfx_CreateImageData();
 	}
 
 
-	uint16_t ImageSource::Pack_CreateImageData()
+	uint16_t ImageSource::gfx_CreateImageData()
 	{
 		uint16_t pos = 0;
 		char message[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
