@@ -24,7 +24,10 @@ namespace game {
 		pivot(),
 		scale(),
 		isResolved( 0 ),
-		bladeGraphicsAddress( nullptr ) {}
+		bladeGraphicsAddress( nullptr )
+	{
+		Pack_CreateImageData();
+	}
 
 
 	uint16_t ImageSource::Pack_CreateImageData()
