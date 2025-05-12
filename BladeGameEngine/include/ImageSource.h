@@ -5,8 +5,11 @@
 #define IMAGE_SOURCE_H
 
 #include "DataPoolMember.h"
-#include "IGfxMessageProducer.h"
 #include "Vector2.h"
+
+namespace gfxLink {
+	class IGfxMessageProducer;
+}
 
 namespace game {
 	template<typename T>
@@ -24,6 +27,7 @@ namespace game {
 
 		Vector2 Scale() const { return scale; }
 		void SetScale( const Vector2& Scale ) { scale = Scale; }
+
 
 
 	private:

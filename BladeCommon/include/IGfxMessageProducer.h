@@ -1,13 +1,13 @@
 #ifndef I_GFX_MESSAGE_PRODUCER_H
 #define I_GFX_MESSAGE_PRODUCER_H
 
-#include "IGfxMessagePacker.h"
+#include "IGfxMessageLink.h"
 
 namespace gfxLink {
 
 	class IGfxMessageProducer {
 	public:
-		IGfxMessageProducer( IGfxMessagePacker* link ) : gfxMessagePacker( link ) {}
+		IGfxMessageProducer( IGfxMessageLink* link ) : gfxMessageLink( link ) {}
 
 		virtual ~IGfxMessageProducer() = default;
 		virtual void internalInitialize() = 0;
@@ -18,14 +18,16 @@ namespace gfxLink {
 			const char* data,
 			uint16_t length )
 		{
-			gfxMessagePacker->AddPackedInstruction(
+			gfxMessageLink->AddPackedInstruction(
 				functionCode,
 				data,
 				length );
 		}
 
+
+
 	private:
-		IGfxMessagePacker* gfxMessagePacker;
+		IGfxMessageLink* gfxMessageLink;
 	};
 }
 

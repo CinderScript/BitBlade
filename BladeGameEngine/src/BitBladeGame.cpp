@@ -8,8 +8,8 @@
 
 namespace game {// Define the static members
 
-	BitBladeGame::BitBladeGame( gfxLink::IGfxMessagePacker* messagePacker )
-		: IGfxMessageProducer( messagePacker ), gameObjectCount( 0 ), shouldContinue( true )
+	BitBladeGame::BitBladeGame( gfxLink::IGfxMessageLink* messageLink )
+		: IGfxMessageProducer( messageLink ), gameObjectCount( 0 ), shouldContinue( true )
 	{
 		/* ------------------------------------ _ ----------------------------------- */
 	   //gameData.ReservePool<Texture>( 200 );
@@ -55,6 +55,8 @@ namespace game {// Define the static members
 	}
 	GameObject* BitBladeGame::Instantiate( GameObject* parent )
 	{
+		assert( parent != nullptr && "Instantiate: parent must not be null" );
+
 		gameObjectCount++;
 		auto* obj = gameData.Add<GameObject>( this, parent );
 		if (!parent) {
@@ -64,6 +66,8 @@ namespace game {// Define the static members
 	}
 	GameObject* BitBladeGame::Instantiate( GameObject* parent, const char* name )
 	{
+		assert( parent != nullptr && "Instantiate: parent must not be null" );
+
 		gameObjectCount++;
 		auto* obj = gameData.Add<GameObject>( this, parent, name );
 		if (!parent) {

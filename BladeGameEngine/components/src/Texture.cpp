@@ -1,7 +1,8 @@
-#include "Texture.h"
 /* Texture.cpp
 */
 
+#include "Texture.h"
+#include "BladeConfig.h"
 #include "IGfxMessageProducer.h"
 #include "ImageSource.h"
 #include "GameObject.h"
@@ -15,6 +16,16 @@ namespace game {
 		scale( imageSource->Scale() )
 	{
 		messageProducer = owner->GetMessageProducer();
+	}
+
+	uint16_t Texture::gfx_CreateSprite()
+	{
+		uint16_t pos = 0;
+		char message[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
+
+		// copy ID
+
+		return 0;
 	}
 
 }

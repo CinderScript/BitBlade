@@ -7,13 +7,13 @@
 #include "BitBladeGame.h"
 #include "Transform.h"
 
-#include "IGfxMessagePacker.h"
+#include "IGfxMessageLink.h"
 #include "ImageSource.h"
 
 class TestGame : public game::BitBladeGame {
 public:
 
-	TestGame( gfxLink::IGfxMessagePacker* link );
+	TestGame( gfxLink::IGfxMessageLink* link );
 	~TestGame() override;
 
 	const char* GetGameTitle() override;
@@ -24,11 +24,11 @@ private:
 	const game::ImageSource* backgroundImage;
 	const game::ImageSource* heroImage;
 
-	game::GameObject* background;
-	game::GameObject* tree;
-	game::GameObject* hero;
-	game::GameObject* arm;
-	game::GameObject* sword;
+	game::GameObject* background = nullptr;
+	game::GameObject* tree = nullptr;
+	game::GameObject* hero = nullptr;
+	game::GameObject* arm = nullptr;
+	game::GameObject* sword = nullptr;
 
 	game::Transform* heroTransform = nullptr;
 	game::Transform* armTransform = nullptr;

@@ -5,7 +5,7 @@
 #define BIT_BLADE_GAME_H
 
 #include "BladeConfig.h"
-#include "IGfxMessagePacker.h"
+#include "IGfxMessageLink.h"
 #include "IGfxMessageProducer.h"
 #include "DataCluster.h"
 #include "DataPool.h"
@@ -23,7 +23,7 @@ namespace game {
 		// removing parent requires topLevelObjects
 		friend class GameObject;
 
-		explicit BitBladeGame( gfxLink::IGfxMessagePacker* messagePacker );
+		explicit BitBladeGame( gfxLink::IGfxMessageLink* messageLink );
 		virtual ~BitBladeGame();
 
 		void LoadNewLevel() {}

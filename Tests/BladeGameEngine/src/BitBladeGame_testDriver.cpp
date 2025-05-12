@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "GfxTransparentPacker.h"
+#include "GfxTransparentLink.h"
 #include "GameObject.h"
 #include "DebugComponents.h"
 #include "Logging.h"
@@ -122,11 +122,11 @@ void GameWithObjects::GlobalUpdate()
 class GameEngine_BitBladeGame_Functions : public ::testing::Test {
 protected:
 	EmptyGame* game;
-	GfxTransparentPacker* gfxPacker;
+	GfxTransparentLink* gfxPacker;
 
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTransparentPacker();
+		gfxPacker = new GfxTransparentLink();
 		game = new EmptyGame( gfxPacker );
 		game->totalUpdates = 3;
 		game->GlobalStart();
@@ -141,11 +141,11 @@ protected:
 class GameEngine_BitBladeGame_ObjectTests : public ::testing::Test {
 protected:
 	GameWithObjects* gameZulu;
-	GfxTransparentPacker* gfxPacker;
+	GfxTransparentLink* gfxPacker;
 	std::string output;
 
 	void SetUp() override {
-		gfxPacker = new GfxTransparentPacker();
+		gfxPacker = new GfxTransparentLink();
 		gameZulu = new GameWithObjects( gfxPacker );
 		std::string output = logging::captureCoutOutput( [this]() {
 			gameZulu->GlobalStart();

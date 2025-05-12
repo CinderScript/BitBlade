@@ -25,13 +25,10 @@ namespace console {
 	ConsoleLink::ConsoleLink()
 		: linkStopSignal( false ),
 		isGraphicsReady( true ),
-		isResolvedObjectsReceived( false ),
-		currentPosition( 0 )
+		isResolvedObjectsReceived( false )
 	{
 		// isGraphicsReady:
 		// we want isGraphicsReady = true, because the first time
-
-		packedInstructions = new char[MESSAGE_BUFFER_LENGTH]();
 
 		hfinishedConsoleInstructionTransferSignal = CreateOrConnectEvent( "BitBladeConsoleUpdateSendFinish" );
 		hGraphicsFinishedProcessingSignal = CreateOrConnectEvent( "BitBladeGraphicsProcessingFinished" );
@@ -59,8 +56,8 @@ namespace console {
 			return;
 		}
 
-		CreateOrOpenMemoryMap( graphicsOutputFileName, hGraphicsOutputBuffer, graphicsOutputBuffer );
-		CreateOrOpenMemoryMap( consoleOutputFileName, hConsoleOutputBuffer, consoleOutputBuffer );
+		CreateOrOpenMemoryMap( graphicsOutputFileName, hGraphicsOutputBuffer, inputBuffer );
+		CreateOrOpenMemoryMap( consoleOutputFileName, hConsoleOutputBuffer, outputBuffer );
 
 		// start simulated irq listening
 		futureGraphicsReadyListener = triggerListenerGraphicsReadyGpioIrqAsync();
@@ -84,10 +81,10 @@ namespace console {
 
 		/* * * let graphics close all handles * * */
 
-		// if (consoleOutputBuffer != NULL)
-		// 	UnmapViewOfFile( consoleOutputBuffer );
-		// if (graphicsOutputBuffer != NULL)
-		// 	UnmapViewOfFile( graphicsOutputBuffer );
+		// if (outputBuffer != NULL)
+		// 	UnmapViewOfFile( outputBuffer );
+		// if (inputBuffer != NULL)
+		// 	UnmapViewOfFile( inputBuffer );
 
 		// if (hConsoleOutputBuffer != NULL)
 		// 	CloseHandle( hConsoleOutputBuffer );
@@ -103,19 +100,11 @@ namespace console {
 		// 	CloseHandle( hGraphicsFinishedProcessingSignal );
 		// if (hGraphicsResolvedObjectSendFinishSignal != NULL)
 		// 	CloseHandle( hGraphicsResolvedObjectSendFinishSignal );
-
-		delete[] packedInstructions;
 	}
 
-	void ConsoleLink::AddPackedInstruction(
-		gfxLink::GfxCode functionCode, const char appendData[], uint16_t length )
-	{
-		gfxLink::packGfxInstruction(
-			packedInstructions, functionCode, appendData, length, currentPosition );
-	}
 	const char* ConsoleLink::GetReceivedResolvedObjectsInstructions()
 	{
-		return graphicsOutputBuffer;
+		return inputBuffer;
 	}
 
 	bool ConsoleLink::HasReceivedResolvedObjects()
@@ -136,7 +125,7 @@ namespace console {
 		currentPosition++;
 
 		// On spi implementation, start DMA transfer
-		memcpy( consoleOutputBuffer, packedInstructions, currentPosition );
+		memcpy( outputBuffer, packedInstructions, currentPosition );
 
 		// get ready for next set of instructions in message
 		currentPosition = 0;

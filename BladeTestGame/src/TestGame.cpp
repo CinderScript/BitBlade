@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-TestGame::TestGame( gfxLink::IGfxMessagePacker* link ) : BitBladeGame( link )
+TestGame::TestGame( gfxLink::IGfxMessageLink* link ) : BitBladeGame( link )
 {
 	std::cout << "Test Game - Constructor." << "\n";
 }
@@ -25,11 +25,11 @@ void TestGame::GlobalStart()
 {
 	// backgroundImage = LoadImageSource( "background.bmp" );
 	heroImage = LoadImageSource( "hero.bmp" );
+	hero = Instantiate( "Hero" );
 	arm = Instantiate( hero, "arm" );
 	sword = Instantiate( "Sword" );
 	sword->SetParent( arm );
 
-	hero = Instantiate( "Hero" );
 	heroTransform = hero->GetTransform();
 	armTransform = arm->GetTransform();
 	swordTransform = sword->GetTransform();

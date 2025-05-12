@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-#include "GfxTransparentPacker.h"
+#include "GfxTransparentLink.h"
 #include "GameObject.h"
 #include "Texture.h"
 #include "GfxLinkCommon.h"
@@ -56,11 +56,11 @@ public:
 class GameEngine_GfxPacking_Message : public ::testing::Test {
 protected:
 	GfxPackingGameTest* game;
-	GfxTransparentPacker* gfxPacker;
+	GfxTransparentLink* gfxPacker;
 
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTransparentPacker();
+		gfxPacker = new GfxTransparentLink();
 		game = new GfxPackingGameTest( gfxPacker );
 		game->totalUpdates = 3;
 	}
@@ -77,13 +77,13 @@ TEST_F( GameEngine_GfxPacking_Message, CreateImageData ) {
 
 	game->CreateImageSource();
 
-	char* buffer = gfxPacker->packedInstructions;
+	char* buffer = gfxPacker->PackedInstructions();
 	uint16_t pos;
 	GfxCode cmd;
-
-	cmd = toGfxCommand( buffer[pos++] );
 	uint16_t imageDataID;
 	char filename[gfxLinkConfig::PACKED_INSTRUCTION_MAX_LENGTH];
+
+	cmd = toGfxCommand( buffer[pos++] );
 	readMessageBuffer( buffer, imageDataID, pos );
 	readMessageBufferString( buffer, filename, pos );
 
@@ -104,7 +104,7 @@ TEST_F( GameEngine_GfxPacking_Message, CreateSprite ) {
 
 	game->CreateSprite();
 
-	char* buffer = gfxPacker->packedInstructions;
+	char* buffer = gfxPacker->PackedInstructions();
 	uint16_t pos;
 	GfxCode cmd;
 

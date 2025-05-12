@@ -3,6 +3,7 @@
 
 #include "ImageSource.h"
 #include "BladeConfig.h"
+#include "IGfxMessageProducer.h"
 
 #include <cstring>
 namespace game {

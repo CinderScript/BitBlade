@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "GameObject.h"
-#include "GfxTransparentPacker.h"
+#include "GfxTransparentLink.h"
 #include "DebugComponents.h"
 
 using game::GameObject;
@@ -66,11 +66,11 @@ public:
 class GameEngine_Components_General : public ::testing::Test {
 protected:
 	TestGame* game;
-	GfxTransparentPacker* gfxPacker;
+	GfxTransparentLink* gfxPacker;
 
 	void SetUp() override {
 		// Initialize the graphics packer and game instance
-		gfxPacker = new GfxTransparentPacker();
+		gfxPacker = new GfxTransparentLink();
 		game = new TestGame( gfxPacker );
 		game->totalUpdates = 3;
 		game->GlobalStart();

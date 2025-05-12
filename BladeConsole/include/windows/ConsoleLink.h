@@ -5,7 +5,7 @@
 #define CONSOLE_LINK_H
 
 #include "BladeConfig.h"
-#include "IGfxMessagePacker.h"
+#include "IGfxMessageLink.h"
 
 #include <Windows.h>
 #include <atomic>
@@ -14,7 +14,7 @@
 
 namespace console {
 
-  class ConsoleLink : public gfxLink::IGfxMessagePacker
+  class ConsoleLink : public gfxLink::IGfxMessageLink
   {
   public:
     ConsoleLink();
@@ -30,15 +30,10 @@ namespace console {
     void WaitForResolvedObjectsReceived();
     void WaitForGraphicsStartupEvent(); // reuses resolve objects received irq (blocking)
 
+
   private:
     static constexpr LPCSTR graphicsOutputFileName = "BitBladeGraphicsOutputBuffer";
     static constexpr LPCSTR consoleOutputFileName = "BitBladeConsoleOutputBuffer";
-
-    // buffers
-    char* packedInstructions;     // double buffer for sending graphics update
-    char* consoleOutputBuffer;    // given packed instructions when finished
-    char* graphicsOutputBuffer;   // resolved objects received
-    uint16_t currentPosition;     // Position tracker for writing to the buffer
 
     // memory mapped files
     HANDLE hConsoleOutputBuffer;
